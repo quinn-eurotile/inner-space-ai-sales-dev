@@ -121,7 +121,7 @@ const Index = () => {
       <div className="bg-primary py-3">
         <div className="section-container text-center">
           <span className="text-2xl sm:text-3xl font-bold text-primary-foreground tracking-wide">
-            LIMITED FACTORY ALLOCATION (NO FACTORY DROP)
+            LIMITED FACTORY ALLOCATION
           </span>
         </div>
       </div>
