@@ -284,7 +284,7 @@ const Index = () => {
                 </div>
                 <h4 className="font-bold text-lg mb-2">Order a Sample</h4>
                 <p className="text-muted-foreground text-sm mb-6">
-                  Get a 20×15cm sample tile for £7. Dispatched within 24–48 hours.
+                  Get a 20×15cm sample tile for £7. Charged to cover postage and packaging.
                 </p>
                 <Button variant="secondary" className="w-full">
                   Order Sample – £7
