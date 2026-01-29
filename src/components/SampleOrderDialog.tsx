@@ -168,7 +168,7 @@ export function SampleOrderDialog({ children }: SampleOrderDialogProps) {
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Order a Sample</DialogTitle>
               <DialogDescription>
-                Get a 20×15cm sample tile for £7 (including P&P)
+                Get a 20×15cm sample tile for £7. Charged to cover postage and packaging.
               </DialogDescription>
             </DialogHeader>
             
