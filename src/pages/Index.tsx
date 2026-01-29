@@ -150,9 +150,11 @@ const Index = () => {
             </div>
 
             <div className="flex flex-col">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-1">
                 Miami Grande Bianco 120x120cm
               </h1>
+              
+              <p className="text-muted-foreground text-sm mb-3">Made in Italy</p>
               
               <p className="text-foreground font-medium mb-1">
                 Including Nationwide Kerbside Delivery
