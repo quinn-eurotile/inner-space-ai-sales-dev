@@ -8,6 +8,7 @@ import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
+import { ShareButtons } from '@/components/ShareButtons';
 import { Package, Bell, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
@@ -196,6 +197,11 @@ const Index = () => {
                     Order Sample – £7
                   </Button>
                 </SampleOrderDialog>
+              </div>
+
+              {/* Share Buttons */}
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
+                <ShareButtons />
               </div>
             </div>
           </div>
