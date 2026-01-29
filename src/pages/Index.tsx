@@ -179,7 +179,7 @@ const Index = () => {
 
               {product?.matching_outdoor_option && (
                 <div className="inline-flex items-center gap-2 bg-success/10 text-success border border-success/20 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6 w-fit">
-                  <span className="font-medium text-xs sm:text-sm">✓ Outdoor Anti-Slip Option Available</span>
+                  <span className="font-medium text-xs sm:text-sm">✓ Matching Outdoor Anti-Slip Option Available</span>
                 </div>
               )}
 
