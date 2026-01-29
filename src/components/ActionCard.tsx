@@ -40,7 +40,7 @@ export function ActionCard({
         <Icon className="h-6 w-6 text-foreground" />
       </div>
       
-      <h3 className="text-lg font-serif font-semibold mb-2">{title}</h3>
+      <h3 className="text-lg font-bold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground mb-6">{description}</p>
       
       <Dialog>
@@ -51,7 +51,7 @@ export function ActionCard({
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-serif">{title}</DialogTitle>
+            <DialogTitle className="font-bold">{title}</DialogTitle>
           </DialogHeader>
           {children}
         </DialogContent>
