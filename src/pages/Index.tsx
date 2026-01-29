@@ -1,18 +1,95 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from '@/components/CountdownTimer';
-import { StockIndicator } from '@/components/StockIndicator';
-import { PostcodeChecker } from '@/components/PostcodeChecker';
+import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ActionCard } from '@/components/ActionCard';
-import { ReservationForm } from '@/components/ReservationForm';
+import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleForm } from '@/components/SampleForm';
 import { InterestForm } from '@/components/InterestForm';
-import { Package, Box, Bell, Check, Factory, Ruler, Award } from 'lucide-react';
+import { ImageCarousel } from '@/components/ImageCarousel';
+import { TechnicalSpecs } from '@/components/TechnicalSpecs';
+import { Package, Box, Bell, Download, ExternalLink } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import innerSpaceLogo from '@/assets/inner-space-logo.png';
 import heroImage from '@/assets/hero-tiles.jpg';
-import tileDetail from '@/assets/tile-detail.jpg';
+
+interface Product {
+  id: string;
+  name: string;
+  collection: string | null;
+  origin: string | null;
+  price_per_sqm: number;
+  price_per_tile: number | null;
+  factory_rating: string | null;
+  tile_colour: string | null;
+  thickness_mm: number | null;
+  width_mm: number | null;
+  length_mm: number | null;
+  nominal_size: string | null;
+  finish: string | null;
+  matching_outdoor_option: boolean | null;
+  shape: string | null;
+  suitability: string | null;
+  underfloor_heating_compatible: boolean | null;
+  tile_style: string | null;
+  edge: string | null;
+  slip_rating: string | null;
+  no_tile_faces: string | null;
+  material: string | null;
+  frost_resistant: boolean | null;
+  sqm_per_tile: number | null;
+  tiles_per_box: number | null;
+  sqm_per_box: number | null;
+  kg_per_box: number | null;
+  boxes_per_pallet: number | null;
+  sqm_per_pallet: number | null;
+  stock_allocation: number | null;
+  stock_sold: number | null;
+  google_drive_link: string | null;
+}
 
 const Index = () => {
   const [isExpired, setIsExpired] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [productImages, setProductImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data: products, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+
+      if (products && !error) {
+        setProduct(products);
+        
+        // Fetch product images
+        const { data: images } = await supabase
+          .from('product_images')
+          .select('image_url')
+          .eq('product_id', products.id)
+          .order('display_order');
+        
+        if (images) {
+          setProductImages(images.map(img => img.image_url));
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchProduct();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   if (isExpired) {
     return (
@@ -25,161 +102,176 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="py-6 border-b border-border">
-        <div className="section-container">
-          <h1 className="font-serif text-2xl font-semibold tracking-tight">InniSpace</h1>
+      <header className="py-4 border-b border-border">
+        <div className="section-container flex items-center justify-between">
+          <img 
+            src={innerSpaceLogo} 
+            alt="Inner Space" 
+            className="h-10 sm:h-12 w-auto"
+          />
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Premium Italian porcelain tiles" 
-            className="w-full h-full object-cover opacity-40"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+      {/* Factory Drop Banner */}
+      <div className="bg-primary py-3">
+        <div className="section-container text-center">
+          <span className="text-2xl sm:text-3xl font-serif font-bold text-primary-foreground tracking-wide">
+            FACTORY DROP!
+          </span>
         </div>
-        
-        <div className="relative z-10 section-container py-16 sm:py-24 lg:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold mb-6 text-balance animate-fade-in-up">
-              120×120 Italian Porcelain — Allocated Stock Release
-            </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-10 text-balance animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              Factory-allocated. Pallet-only. First-quality. Once this batch is gone, pricing reverts.
-            </p>
-            
-            <div className="mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <CountdownTimer onExpired={() => setIsExpired(true)} />
+      </div>
+
+      {/* Hero Section with Image Carousel */}
+      <section className="py-8 sm:py-12">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Image Carousel */}
+            <div>
+              <ImageCarousel 
+                images={productImages} 
+                heroImage={heroImage}
+              />
+              
+              {/* Download Link */}
+              {product?.google_drive_link && (
+                <a 
+                  href={product.google_drive_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 mt-4 py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="text-sm font-medium">Download High-Res Images</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-              <Button size="lg" className="h-14 px-8 text-base" asChild>
-                <a href="#actions">Reserve a Pallet</a>
-              </Button>
-              <Button size="lg" variant="secondary" className="h-14 px-8 text-base" asChild>
-                <a href="#actions">Order a Sample</a>
-              </Button>
+
+            {/* Product Info */}
+            <div className="flex flex-col">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold mb-2">
+                {product?.name || 'Miami Grande Bianco'}
+              </h1>
+              
+              <p className="text-muted-foreground mb-4">
+                {product?.collection || 'Miami Grande'} Collection
+              </p>
+
+              <div className="flex flex-wrap items-baseline gap-2 mb-6">
+                <span className="text-4xl font-serif font-bold text-primary">
+                  £{product?.price_per_sqm?.toFixed(2) || '36.00'}
+                </span>
+                <span className="text-lg text-muted-foreground">per SQ.M</span>
+                {product?.price_per_tile && (
+                  <span className="text-sm text-muted-foreground">
+                    (£{product.price_per_tile.toFixed(2)} per tile)
+                  </span>
+                )}
+                <span className="text-sm text-muted-foreground ml-2">EX.VAT</span>
+              </div>
+
+              {product?.matching_outdoor_option && (
+                <div className="inline-flex items-center gap-2 bg-success/10 text-success border border-success/20 rounded-full px-4 py-2 mb-6 w-fit">
+                  <span className="font-medium text-sm">✓ Outdoor Anti-Slip Option Available</span>
+                </div>
+              )}
+
+              {/* Countdown Timer */}
+              <div className="mb-8">
+                <CountdownTimer onExpired={() => setIsExpired(true)} />
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="h-14 px-8 text-base flex-1" asChild>
+                  <a href="#reservation">Request Reservation</a>
+                </Button>
+                <Button size="lg" variant="secondary" className="h-14 px-8 text-base flex-1" asChild>
+                  <a href="#actions">Order Sample</a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Stock Indicator Section */}
-      <section className="py-16 bg-secondary/50">
+      <section className="py-12 bg-secondary/30 border-y border-border">
         <div className="section-container">
-          <StockIndicator />
+          {product && (
+            <ProductStockIndicator 
+              productId={product.id}
+              initialAllocation={product.stock_allocation || 38}
+              initialSold={product.stock_sold || 0}
+            />
+          )}
         </div>
       </section>
 
-      {/* What Makes This Different */}
-      <section className="py-16 lg:py-24">
+      {/* Technical Specifications */}
+      <section className="py-12 lg:py-16">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-2xl sm:text-3xl font-serif font-semibold mb-8">
-                What makes this allocation different
-              </h3>
-              
-              <div className="space-y-6">
-                <FeatureItem 
-                  icon={Factory}
-                  title="Made in Italy — First Quality"
-                  description="Direct from Italian factories, not clearance or seconds"
-                />
-                <FeatureItem 
-                  icon={Ruler}
-                  title="120×120 Large-Format Porcelain"
-                  description="Normally limited availability in this specification"
-                />
-                <FeatureItem 
-                  icon={Award}
-                  title="Factory-Allocated Stock"
-                  description="Logistics-optimised release, not end-of-line"
-                />
-              </div>
-            </div>
-            
-            <div className="relative">
-              <img 
-                src={tileDetail} 
-                alt="Tile surface detail" 
-                className="rounded shadow-premium-lg w-full aspect-square object-cover"
-              />
-              <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground py-3 px-6 rounded shadow-lg">
-                <span className="font-serif font-semibold">120×120cm</span>
-              </div>
-            </div>
-          </div>
+          {product && (
+            <TechnicalSpecs 
+              specs={{
+                origin: product.origin || undefined,
+                factoryRating: product.factory_rating || undefined,
+                tileColour: product.tile_colour || undefined,
+                thicknessMm: product.thickness_mm || undefined,
+                widthMm: product.width_mm || undefined,
+                lengthMm: product.length_mm || undefined,
+                nominalSize: product.nominal_size || undefined,
+                finish: product.finish || undefined,
+                matchingOutdoorOption: product.matching_outdoor_option || undefined,
+                shape: product.shape || undefined,
+                suitability: product.suitability || undefined,
+                underfloorHeatingCompatible: product.underfloor_heating_compatible || undefined,
+                tileStyle: product.tile_style || undefined,
+                edge: product.edge || undefined,
+                slipRating: product.slip_rating || undefined,
+                noTileFaces: product.no_tile_faces || undefined,
+                material: product.material || undefined,
+                frostResistant: product.frost_resistant || undefined,
+                sqmPerTile: product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
+                tilesPerBox: product.tiles_per_box || undefined,
+                sqmPerBox: product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
+                kgPerBox: product.kg_per_box ? Number(product.kg_per_box) : undefined,
+                boxesPerPallet: product.boxes_per_pallet || undefined,
+                sqmPerPallet: product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined,
+              }}
+            />
+          )}
         </div>
       </section>
 
-      {/* Postcode Checker */}
-      <section className="py-16 bg-card border-y border-border">
+      {/* Reservation Section */}
+      <section id="reservation" className="py-12 lg:py-16 bg-card border-y border-border">
         <div className="section-container">
-          <div className="max-w-xl mx-auto text-center mb-8">
-            <h3 className="text-2xl font-serif font-semibold mb-3">Check Delivery Availability</h3>
-            <p className="text-muted-foreground">
-              Enter your postcode to confirm this allocation is available in your area.
-            </p>
-          </div>
-          <PostcodeChecker />
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-16 lg:py-24">
-        <div className="section-container">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl sm:text-3xl font-serif font-semibold mb-6">
-              Allocation Pricing
-            </h3>
-            
-            <div className="bg-secondary/50 rounded-lg p-8 mb-6">
-              <p className="text-muted-foreground mb-4">Typical retail pricing</p>
-              <p className="text-3xl sm:text-4xl font-serif font-semibold line-through text-muted-foreground/60">
-                £60/m²+ delivered
-              </p>
-              
-              <div className="my-6 border-t border-border" />
-              
-              <p className="text-muted-foreground mb-2">Allocated pricing</p>
-              <p className="text-xl font-medium text-foreground">
-                Available during this release only
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-serif font-semibold mb-3 text-primary">
+                Request Reservation
+              </h2>
+              <p className="text-muted-foreground">
+                Secure your allocation with a reservation request
               </p>
             </div>
-            
-            <p className="text-sm text-muted-foreground">
-              Once this allocation closes, pricing reverts immediately.
-            </p>
+            {product && <ReservationRequestForm productId={product.id} />}
           </div>
         </div>
       </section>
 
       {/* Actions Section */}
-      <section id="actions" className="py-16 lg:py-24 bg-muted/50">
+      <section id="actions" className="py-12 lg:py-16">
         <div className="section-container">
           <div className="text-center mb-12">
             <h3 className="text-2xl sm:text-3xl font-serif font-semibold mb-3">
-              How to Proceed
+              Other Options
             </h3>
             <p className="text-muted-foreground">Choose the option that suits your needs</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <ActionCard
-              icon={Package}
-              title="Reserve a Pallet"
-              description="Secure your allocation for 48 hours. No payment required upfront."
-              buttonText="Reserve Now"
-              buttonVariant="default"
-              highlight
-            >
-              <ReservationForm />
-            </ActionCard>
-            
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <ActionCard
               icon={Box}
               title="Order a Sample"
@@ -203,16 +295,20 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer / Brand Authority */}
-      <footer className="py-16 bg-primary text-primary-foreground">
+      {/* Footer */}
+      <footer className="py-12 bg-card border-t border-border">
         <div className="section-container text-center">
-          <h2 className="font-serif text-2xl font-semibold mb-4">InniSpace</h2>
-          <p className="text-primary-foreground/80 max-w-md mx-auto">
+          <img 
+            src={innerSpaceLogo} 
+            alt="Inner Space" 
+            className="h-8 w-auto mx-auto mb-4"
+          />
+          <p className="text-muted-foreground/80 max-w-md mx-auto text-sm">
             Supplying premium porcelain to designers and contractors across the UK.
           </p>
-          <div className="mt-8 pt-8 border-t border-primary-foreground/20">
-            <p className="text-sm text-primary-foreground/60">
-              © {new Date().getFullYear()} InniSpace. All rights reserved.
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-xs text-muted-foreground/60">
+              © {new Date().getFullYear()} Inner Space. All rights reserved.
             </p>
           </div>
         </div>
@@ -221,34 +317,16 @@ const Index = () => {
   );
 };
 
-function FeatureItem({ 
-  icon: Icon, 
-  title, 
-  description 
-}: { 
-  icon: typeof Check; 
-  title: string; 
-  description: string; 
-}) {
-  return (
-    <div className="flex gap-4">
-      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-        <Icon className="h-5 w-5 text-foreground" />
-      </div>
-      <div>
-        <h4 className="font-medium mb-1">{title}</h4>
-        <p className="text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  );
-}
-
 function AllocationClosed() {
   return (
     <>
-      <header className="py-6 border-b border-border">
+      <header className="py-4 border-b border-border">
         <div className="section-container">
-          <h1 className="font-serif text-2xl font-semibold tracking-tight">InniSpace</h1>
+          <img 
+            src={innerSpaceLogo} 
+            alt="Inner Space" 
+            className="h-10 sm:h-12 w-auto"
+          />
         </div>
       </header>
       
@@ -273,9 +351,13 @@ function AllocationClosed() {
         </div>
       </section>
       
-      <footer className="py-12 bg-muted/50 border-t border-border">
+      <footer className="py-12 bg-card border-t border-border">
         <div className="section-container text-center">
-          <h2 className="font-serif text-xl font-semibold mb-2">InniSpace</h2>
+          <img 
+            src={innerSpaceLogo} 
+            alt="Inner Space" 
+            className="h-8 w-auto mx-auto mb-2"
+          />
           <p className="text-sm text-muted-foreground">
             Supplying premium porcelain to designers and contractors across the UK.
           </p>
