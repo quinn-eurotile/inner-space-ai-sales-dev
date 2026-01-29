@@ -14,16 +14,283 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      product_images: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_type: string
+          image_url: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_type: string
+          image_url: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_type?: string
+          image_url?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          boxes_per_pallet: number | null
+          collection: string | null
+          created_at: string
+          edge: string | null
+          factory_rating: string | null
+          finish: string | null
+          frost_resistant: boolean | null
+          google_drive_link: string | null
+          id: string
+          is_active: boolean | null
+          kg_per_box: number | null
+          length_mm: number | null
+          matching_outdoor_option: boolean | null
+          material: string | null
+          name: string
+          no_tile_faces: string | null
+          nominal_size: string | null
+          origin: string | null
+          price_per_sqm: number
+          price_per_tile: number | null
+          shape: string | null
+          slip_rating: string | null
+          sqm_per_box: number | null
+          sqm_per_pallet: number | null
+          sqm_per_tile: number | null
+          stock_allocation: number | null
+          stock_sold: number | null
+          suitability: string | null
+          thickness_mm: number | null
+          tile_colour: string | null
+          tile_style: string | null
+          tiles_per_box: number | null
+          underfloor_heating_compatible: boolean | null
+          updated_at: string
+          width_mm: number | null
+        }
+        Insert: {
+          boxes_per_pallet?: number | null
+          collection?: string | null
+          created_at?: string
+          edge?: string | null
+          factory_rating?: string | null
+          finish?: string | null
+          frost_resistant?: boolean | null
+          google_drive_link?: string | null
+          id?: string
+          is_active?: boolean | null
+          kg_per_box?: number | null
+          length_mm?: number | null
+          matching_outdoor_option?: boolean | null
+          material?: string | null
+          name: string
+          no_tile_faces?: string | null
+          nominal_size?: string | null
+          origin?: string | null
+          price_per_sqm: number
+          price_per_tile?: number | null
+          shape?: string | null
+          slip_rating?: string | null
+          sqm_per_box?: number | null
+          sqm_per_pallet?: number | null
+          sqm_per_tile?: number | null
+          stock_allocation?: number | null
+          stock_sold?: number | null
+          suitability?: string | null
+          thickness_mm?: number | null
+          tile_colour?: string | null
+          tile_style?: string | null
+          tiles_per_box?: number | null
+          underfloor_heating_compatible?: boolean | null
+          updated_at?: string
+          width_mm?: number | null
+        }
+        Update: {
+          boxes_per_pallet?: number | null
+          collection?: string | null
+          created_at?: string
+          edge?: string | null
+          factory_rating?: string | null
+          finish?: string | null
+          frost_resistant?: boolean | null
+          google_drive_link?: string | null
+          id?: string
+          is_active?: boolean | null
+          kg_per_box?: number | null
+          length_mm?: number | null
+          matching_outdoor_option?: boolean | null
+          material?: string | null
+          name?: string
+          no_tile_faces?: string | null
+          nominal_size?: string | null
+          origin?: string | null
+          price_per_sqm?: number
+          price_per_tile?: number | null
+          shape?: string | null
+          slip_rating?: string | null
+          sqm_per_box?: number | null
+          sqm_per_pallet?: number | null
+          sqm_per_tile?: number | null
+          stock_allocation?: number | null
+          stock_sold?: number | null
+          suitability?: string | null
+          thickness_mm?: number | null
+          tile_colour?: string | null
+          tile_style?: string | null
+          tiles_per_box?: number | null
+          underfloor_heating_compatible?: boolean | null
+          updated_at?: string
+          width_mm?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reservations: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          delivery_city: string | null
+          delivery_door_house: string | null
+          delivery_postcode: string
+          delivery_street: string | null
+          email: string
+          held_until: string
+          id: string
+          name: string
+          need_outdoor_tile: boolean | null
+          phone: string
+          product_id: string
+          required_delivery_date: string | null
+          required_quantity_sqm: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          delivery_city?: string | null
+          delivery_door_house?: string | null
+          delivery_postcode: string
+          delivery_street?: string | null
+          email: string
+          held_until: string
+          id?: string
+          name: string
+          need_outdoor_tile?: boolean | null
+          phone: string
+          product_id: string
+          required_delivery_date?: string | null
+          required_quantity_sqm: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          delivery_city?: string | null
+          delivery_door_house?: string | null
+          delivery_postcode?: string
+          delivery_street?: string | null
+          email?: string
+          held_until?: string
+          id?: string
+          name?: string
+          need_outdoor_tile?: boolean | null
+          phone?: string
+          product_id?: string
+          required_delivery_date?: string | null
+          required_quantity_sqm?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +417,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
