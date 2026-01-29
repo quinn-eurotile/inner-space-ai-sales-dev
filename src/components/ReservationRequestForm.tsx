@@ -3,23 +3,27 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Check, Clock, AlertCircle } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, Clock, AlertCircle, CalendarIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
+import { cn } from '@/lib/utils';
+
+const MIN_ORDER_SQM = 57;
 
 const reservationSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
   email: z.string().trim().email('Please enter a valid email').max(255),
   phone: z.string().trim().min(10, 'Please enter a valid phone number').max(20),
-  requiredQuantitySqm: z.number().min(1, 'Quantity is required'),
+  requiredQuantitySqm: z.number().min(MIN_ORDER_SQM, `Minimum order is ${MIN_ORDER_SQM} SQ.M`),
   needOutdoorTile: z.boolean(),
   deliveryDoorHouse: z.string().trim().min(1, 'Door/House number is required').max(100),
   deliveryStreet: z.string().trim().min(1, 'Street name is required').max(200),
   deliveryCity: z.string().trim().min(1, 'City is required').max(100),
   deliveryPostcode: z.string().trim().min(5, 'Please enter a valid postcode').max(10),
-  requiredDeliveryDate: z.string().optional(),
+  requiredDeliveryDate: z.date().optional(),
 });
 
 type FormData = z.infer<typeof reservationSchema>;
@@ -41,7 +45,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     deliveryStreet: '',
     deliveryCity: '',
     deliveryPostcode: '',
-    requiredDeliveryDate: '',
+    requiredDeliveryDate: undefined,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,7 +91,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     try {
       const heldUntilDate = addDays(new Date(), 7);
       
-      const { error } = await supabase.from('reservations').insert({
+      const { error } = await supabase.from('reservations').insert([{
         product_id: productId,
         name: formData.name,
         email: formData.email,
@@ -98,10 +102,10 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         delivery_street: formData.deliveryStreet,
         delivery_city: formData.deliveryCity,
         delivery_postcode: formData.deliveryPostcode,
-        required_delivery_date: formData.requiredDeliveryDate || null,
+        required_delivery_date: formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, 'yyyy-MM-dd') : null,
         held_until: heldUntilDate.toISOString(),
         status: 'pending',
-      });
+      }]);
 
       if (error) throw error;
 
@@ -142,7 +146,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
           <Check className="h-8 w-8 text-success" />
         </div>
-        <h3 className="text-xl font-serif font-semibold mb-2">Reservation Request Sent</h3>
+        <h3 className="text-xl font-bold mb-2">Reservation Request Sent</h3>
         <div className="bg-secondary/50 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
             <Clock className="h-4 w-4" />
@@ -306,13 +310,30 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="requiredDeliveryDate">Required Delivery Date (Optional)</Label>
-        <Input
-          id="requiredDeliveryDate"
-          type="date"
-          value={formData.requiredDeliveryDate}
-          onChange={handleChange('requiredDeliveryDate')}
-        />
+        <Label>Required Delivery Date (Optional)</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !formData.requiredDeliveryDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={formData.requiredDeliveryDate}
+              onSelect={(date) => setFormData(prev => ({ ...prev, requiredDeliveryDate: date }))}
+              disabled={(date) => date < new Date()}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {submitError && (

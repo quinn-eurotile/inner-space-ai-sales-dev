@@ -4,13 +4,13 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ActionCard } from '@/components/ActionCard';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
-import { SampleForm } from '@/components/SampleForm';
+import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
-import { Package, Box, Bell, Download, ExternalLink } from 'lucide-react';
+import { Package, Bell, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import innerSpaceLogo from '@/assets/inner-space-logo.png';
+import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
 import heroImage from '@/assets/hero-tiles.jpg';
 
 interface Product {
@@ -102,20 +102,25 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="py-4 border-b border-border">
-        <div className="section-container flex items-center justify-between">
+      <header className="py-6 border-b border-border">
+        <div className="section-container flex flex-col sm:flex-row items-center justify-between gap-4">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-10 sm:h-12 w-auto"
+            className="h-14 sm:h-16 w-auto"
           />
+          <div className="bg-primary/20 border border-primary/40 rounded-lg px-4 py-2">
+            <span className="text-primary font-bold text-sm sm:text-base">
+              MINIMUM ORDER: 57 SQ.M
+            </span>
+          </div>
         </div>
       </header>
 
       {/* Factory Drop Banner */}
       <div className="bg-primary py-3">
         <div className="section-container text-center">
-          <span className="text-2xl sm:text-3xl font-serif font-bold text-primary-foreground tracking-wide">
+          <span className="text-2xl sm:text-3xl font-bold text-primary-foreground tracking-wide">
             FACTORY DROP!
           </span>
         </div>
@@ -132,24 +137,20 @@ const Index = () => {
                 heroImage={heroImage}
               />
               
-              {/* Download Link */}
-              {product?.google_drive_link && (
-                <a 
-                  href={product.google_drive_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 mt-4 py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
-                >
-                  <Download className="h-4 w-4" />
-                  <span className="text-sm font-medium">Download High-Res Images</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
+              {/* Download Link - Always show */}
+              <a 
+                href={product?.google_drive_link || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 mt-4 py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                <span className="text-sm font-bold">Download High-Res Images</span>
+              </a>
             </div>
 
-            {/* Product Info */}
             <div className="flex flex-col">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold mb-2">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
                 {product?.name || 'Miami Grande Bianco'}
               </h1>
               
@@ -158,7 +159,7 @@ const Index = () => {
               </p>
 
               <div className="flex flex-wrap items-baseline gap-2 mb-6">
-                <span className="text-4xl font-serif font-bold text-primary">
+                <span className="text-4xl font-bold text-primary">
                   £{product?.price_per_sqm?.toFixed(2) || '36.00'}
                 </span>
                 <span className="text-lg text-muted-foreground">per SQ.M</span>
@@ -181,14 +182,15 @@ const Index = () => {
                 <CountdownTimer onExpired={() => setIsExpired(true)} />
               </div>
 
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="h-14 px-8 text-base flex-1" asChild>
                   <a href="#reservation">Request Reservation</a>
                 </Button>
-                <Button size="lg" variant="secondary" className="h-14 px-8 text-base flex-1" asChild>
-                  <a href="#actions">Order Sample</a>
-                </Button>
+                <SampleOrderDialog>
+                  <Button size="lg" variant="secondary" className="h-14 px-8 text-base flex-1">
+                    Order Sample – £7
+                  </Button>
+                </SampleOrderDialog>
               </div>
             </div>
           </div>
@@ -249,11 +251,11 @@ const Index = () => {
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-serif font-semibold mb-3 text-primary">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-primary">
                 Request Reservation
               </h2>
               <p className="text-muted-foreground">
-                Secure your allocation with a reservation request
+                Secure your allocation with a reservation request (minimum 57 SQ.M)
               </p>
             </div>
             {product && <ReservationRequestForm productId={product.id} />}
@@ -265,22 +267,29 @@ const Index = () => {
       <section id="actions" className="py-12 lg:py-16">
         <div className="section-container">
           <div className="text-center mb-12">
-            <h3 className="text-2xl sm:text-3xl font-serif font-semibold mb-3">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-3">
               Other Options
             </h3>
             <p className="text-muted-foreground">Choose the option that suits your needs</p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <ActionCard
-              icon={Box}
-              title="Order a Sample"
-              description="See and feel the quality before committing. Dispatched within 24–48 hours."
-              buttonText="Request Sample"
-              buttonVariant="secondary"
-            >
-              <SampleForm />
-            </ActionCard>
+            <SampleOrderDialog>
+              <div className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-secondary">
+                    <Package className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-bold text-lg">Order a Sample</h4>
+                </div>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Get a 20×15cm sample tile for £7. Dispatched within 24–48 hours.
+                </p>
+                <Button variant="secondary" className="w-full">
+                  Order Sample – £7
+                </Button>
+              </div>
+            </SampleOrderDialog>
             
             <ActionCard
               icon={Bell}
@@ -301,7 +310,7 @@ const Index = () => {
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 w-auto mx-auto mb-4"
+            className="h-12 w-auto mx-auto mb-4"
           />
           <p className="text-muted-foreground/80 max-w-md mx-auto text-sm">
             Supplying premium porcelain to designers and contractors across the UK.
