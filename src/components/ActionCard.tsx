@@ -30,7 +30,7 @@ export function ActionCard({
 }: ActionCardProps) {
   return (
     <div 
-      className={`p-6 rounded border transition-all ${
+      className={`p-6 rounded-lg border transition-all ${
         highlight 
           ? 'bg-primary/5 border-primary/20 shadow-premium' 
           : 'bg-card border-border hover:border-primary/30 hover:shadow-premium'

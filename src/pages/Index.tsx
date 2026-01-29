@@ -117,11 +117,11 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Factory Drop Banner */}
+      {/* Factory Allocation Banner */}
       <div className="bg-primary py-3">
         <div className="section-container text-center">
           <span className="text-2xl sm:text-3xl font-bold text-primary-foreground tracking-wide">
-            FACTORY DROP!
+            LIMITED FACTORY ALLOCATION (NO FACTORY DROP)
           </span>
         </div>
       </div>
@@ -142,7 +142,7 @@ const Index = () => {
                 href={product?.google_drive_link || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 mt-4 py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                className="flex items-center justify-center gap-2 mt-4 py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors"
               >
                 <Download className="h-4 w-4" />
                 <span className="text-sm font-bold">Download High-Res Images</span>
@@ -151,11 +151,14 @@ const Index = () => {
 
             <div className="flex flex-col">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
-                {product?.name || 'Miami Grande Bianco'}
+                Miami Grande Bianco 120x120cm
               </h1>
               
-              <p className="text-muted-foreground mb-4">
-                {product?.collection || 'Miami Grande'} Collection
+              <p className="text-foreground font-medium mb-1">
+                Including Nationwide Kerbside Delivery
+              </p>
+              <p className="text-muted-foreground text-sm mb-4">
+                Some addresses may incur additional delivery charges
               </p>
 
               <div className="flex flex-wrap items-baseline gap-2 mb-6">
@@ -275,14 +278,12 @@ const Index = () => {
           
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <SampleOrderDialog>
-              <div className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-secondary">
-                    <Package className="h-5 w-5 text-primary" />
-                  </div>
-                  <h4 className="font-bold text-lg">Order a Sample</h4>
+              <div className="bg-card border border-border rounded-lg p-6 hover:border-primary/30 hover:shadow-premium transition-all cursor-pointer">
+                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-4">
+                  <Package className="h-6 w-6 text-foreground" />
                 </div>
-                <p className="text-muted-foreground text-sm mb-4">
+                <h4 className="font-bold text-lg mb-2">Order a Sample</h4>
+                <p className="text-muted-foreground text-sm mb-6">
                   Get a 20×15cm sample tile for £7. Dispatched within 24–48 hours.
                 </p>
                 <Button variant="secondary" className="w-full">

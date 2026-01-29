@@ -70,17 +70,17 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
-      <h3 className="text-xl font-serif font-semibold mb-6 text-primary">
+      <h3 className="text-xl font-bold mb-6 text-primary">
         Technical Specification
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
         {specItems.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between items-center py-2 border-b border-border/50 last:border-0"
+            className="flex justify-between items-center py-2 border-b border-border/50 last:border-0 gap-4"
           >
-            <span className="text-sm text-muted-foreground">{item.label}</span>
-            <span className="text-sm font-medium text-foreground flex items-center">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
+            <span className="text-sm font-medium text-foreground flex items-center text-right">
               {renderValue(item.value)}
             </span>
           </div>
