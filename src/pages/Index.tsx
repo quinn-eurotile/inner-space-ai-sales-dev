@@ -192,7 +192,7 @@ const Index = () => {
                 <Button size="lg" className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full" asChild>
                   <a href="#reservation">Request Reservation</a>
                 </Button>
-                <SampleOrderDialog>
+                <SampleOrderDialog productId={product?.id}>
                   <Button size="lg" variant="secondary" className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full">
                     Order Sample – £7
                   </Button>
@@ -285,7 +285,7 @@ const Index = () => {
           </div>
           
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
-            <SampleOrderDialog>
+            <SampleOrderDialog productId={product?.id}>
               <div className="bg-card border border-border rounded-lg p-4 sm:p-6 hover:border-primary/30 hover:shadow-premium transition-all cursor-pointer">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-secondary flex items-center justify-center mb-3 sm:mb-4">
                   <Package className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
