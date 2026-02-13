@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Check, Package, CreditCard } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -27,9 +28,10 @@ type FormErrors = Partial<Record<keyof FormData, string>>;
 
 interface SampleOrderDialogProps {
   children: React.ReactNode;
+  productId?: string;
 }
 
-export function SampleOrderDialog({ children }: SampleOrderDialogProps) {
+export function SampleOrderDialog({ children, productId }: SampleOrderDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -71,14 +73,27 @@ export function SampleOrderDialog({ children }: SampleOrderDialogProps) {
     setShowPayment(true);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsSubmitting(true);
     
-    // Simulate payment processing
-    setTimeout(() => {
+    try {
+      // Save sample order to database
+      await supabase.from('sample_orders').insert([{
+        product_id: productId || null,
+        name: formData.name,
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone,
+        address: formData.address,
+        postcode: formData.postcode,
+        status: 'confirmed',
+      }]);
+      
       setIsSubmitting(false);
       setIsSuccess(true);
-    }, 1500);
+    } catch (error) {
+      console.error('Sample order error:', error);
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {

@@ -6,19 +6,20 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, Clock, AlertCircle, CalendarIcon } from 'lucide-react';
+import { Check, Clock, AlertCircle, CalendarIcon, ShieldCheck, Info } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 const MIN_ORDER_SQM = 57;
+const MAX_RESERVATION_SQM = 200;
 
 const reservationSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
   email: z.string().trim().email('Please enter a valid email').max(255),
   phone: z.string().trim().min(10, 'Please enter a valid phone number').max(20),
   requiredQuantitySqm: z.number().min(MIN_ORDER_SQM, `Minimum order is ${MIN_ORDER_SQM} SQ.M`),
-  needOutdoorTile: z.boolean(),
+  needOutdoorTile: z.enum(['yes', 'no'], { required_error: 'Please select whether you need a matching outdoor tile' }),
   deliveryDoorHouse: z.string().trim().min(1, 'Door/House number is required').max(100),
   deliveryStreet: z.string().trim().min(1, 'Street name is required').max(200),
   deliveryCity: z.string().trim().min(1, 'City is required').max(100),
@@ -40,7 +41,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     email: '',
     phone: '',
     requiredQuantitySqm: 0,
-    needOutdoorTile: false,
+    needOutdoorTile: undefined as any,
     deliveryDoorHouse: '',
     deliveryStreet: '',
     deliveryCity: '',
@@ -52,6 +53,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   const [isSuccess, setIsSuccess] = useState(false);
   const [heldUntil, setHeldUntil] = useState<Date | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isCheckingEligibility, setIsCheckingEligibility] = useState(false);
+  const [exceededMax, setExceededMax] = useState(false);
+  const [requestedQuantity, setRequestedQuantity] = useState(0);
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,7 +71,10 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   };
 
   const handleOutdoorChange = (value: string) => {
-    setFormData(prev => ({ ...prev, needOutdoorTile: value === 'yes' }));
+    setFormData(prev => ({ ...prev, needOutdoorTile: value as 'yes' | 'no' }));
+    if (errors.needOutdoorTile) {
+      setErrors(prev => ({ ...prev, needOutdoorTile: undefined }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,17 +94,57 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     }
     
     setIsSubmitting(true);
-    
+    setIsCheckingEligibility(true);
+
     try {
+      // Check if the email has a confirmed sample order
+      const { data: sampleOrders, error: sampleError } = await supabase
+        .from('sample_orders')
+        .select('id')
+        .eq('email', formData.email.trim().toLowerCase())
+        .eq('status', 'confirmed')
+        .limit(1);
+
+      if (sampleError) throw sampleError;
+
+      if (!sampleOrders || sampleOrders.length === 0) {
+        setSubmitError('A sample order is required before reserving stock. Please order a sample first — your reservation will be linked to the same email address.');
+        setIsSubmitting(false);
+        setIsCheckingEligibility(false);
+        return;
+      }
+
+      setIsCheckingEligibility(false);
+
+      // Check existing reservations for this email
+      const { data: existingReservations } = await supabase
+        .from('reservations')
+        .select('required_quantity_sqm')
+        .eq('email', formData.email.trim().toLowerCase())
+        .in('status', ['pending', 'confirmed']);
+
+      const existingTotal = existingReservations?.reduce((sum, r) => sum + Number(r.required_quantity_sqm), 0) || 0;
+      const remainingAllowance = MAX_RESERVATION_SQM - existingTotal;
+
+      if (remainingAllowance <= 0) {
+        setSubmitError(`You have already reserved the maximum of ${MAX_RESERVATION_SQM} SQ.M with this email address. A representative will contact you if you need additional stock.`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const originalQuantity = formData.requiredQuantitySqm;
+      const reservedQuantity = Math.min(formData.requiredQuantitySqm, remainingAllowance);
+      const didExceed = originalQuantity > remainingAllowance;
+
       const heldUntilDate = addDays(new Date(), 7);
       
       const { error } = await supabase.from('reservations').insert([{
         product_id: productId,
         name: formData.name,
-        email: formData.email,
+        email: formData.email.trim().toLowerCase(),
         phone: formData.phone,
-        required_quantity_sqm: formData.requiredQuantitySqm,
-        need_outdoor_tile: formData.needOutdoorTile,
+        required_quantity_sqm: reservedQuantity,
+        need_outdoor_tile: formData.needOutdoorTile === 'yes',
         delivery_door_house: formData.deliveryDoorHouse,
         delivery_street: formData.deliveryStreet,
         delivery_city: formData.deliveryCity,
@@ -117,8 +164,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               name: formData.name,
               email: formData.email,
               phone: formData.phone,
-              requiredQuantitySqm: formData.requiredQuantitySqm,
-              needOutdoorTile: formData.needOutdoorTile,
+              requiredQuantitySqm: reservedQuantity,
+              needOutdoorTile: formData.needOutdoorTile === 'yes',
               deliveryAddress: `${formData.deliveryDoorHouse}, ${formData.deliveryStreet}, ${formData.deliveryCity}, ${formData.deliveryPostcode}`,
               requiredDeliveryDate: formData.requiredDeliveryDate,
               heldUntil: heldUntilDate.toISOString(),
@@ -130,6 +177,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       }
 
       setHeldUntil(heldUntilDate);
+      setExceededMax(didExceed);
+      setRequestedQuantity(originalQuantity);
       setIsSubmitting(false);
       setIsSuccess(true);
       onSuccess?.();
@@ -137,16 +186,36 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       console.error('Reservation error:', error);
       setSubmitError('Failed to submit reservation. Please try again.');
       setIsSubmitting(false);
+      setIsCheckingEligibility(false);
     }
   };
 
   if (isSuccess && heldUntil) {
+    const reservedQty = Math.min(requestedQuantity, MAX_RESERVATION_SQM);
     return (
       <div className="text-center py-8 animate-fade-in">
         <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
           <Check className="h-8 w-8 text-success" />
         </div>
         <h3 className="text-xl font-bold mb-2">Reservation Request Sent</h3>
+        
+        {exceededMax && (
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4 text-left">
+            <div className="flex items-start gap-2">
+              <Info className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-foreground mb-1">
+                  Maximum reservation limit reached
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  You requested {requestedQuantity} SQ.M, but the maximum per sample order is {MAX_RESERVATION_SQM} SQ.M. 
+                  We've reserved {reservedQty} SQ.M for you. An Inner Space representative will contact you shortly about your additional requirements.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-secondary/50 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
             <Clock className="h-4 w-4" />
@@ -165,12 +234,20 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-6">
-        <p className="text-sm text-foreground leading-relaxed">
-          <strong>Please note:</strong> Reservation requests are held provisionally for 7 days.
-          During this time, samples can be ordered and an Inner Space representative will contact you to finalise details.
-          If not confirmed within 7 days, the reservation is automatically released.
-        </p>
+      <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-2">
+        <div className="flex items-start gap-3">
+          <ShieldCheck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm text-foreground leading-relaxed mb-2">
+              <strong>Sample order required:</strong> To ensure our limited stock goes to genuinely interested customers, 
+              reservations are only available after a sample has been ordered. Your reservation will be linked to the email address used for your sample order.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} SQ.M per order). 
+              During this time, an Inner Space representative will contact you to finalise details.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -192,11 +269,12 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
           <Input
             id="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="Same email used for sample order"
             value={formData.email}
             onChange={handleChange('email')}
             className={errors.email ? 'border-destructive' : ''}
           />
+          <p className="text-xs text-muted-foreground">Must match your sample order email</p>
           {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
         </div>
         
@@ -231,9 +309,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         </div>
 
         <div className="space-y-2">
-          <Label>Need Matching Outdoor Tile?</Label>
+          <Label>Need Matching Outdoor/Patio Tile? *</Label>
           <RadioGroup
-            value={formData.needOutdoorTile ? 'yes' : 'no'}
+            value={formData.needOutdoorTile || ''}
             onValueChange={handleOutdoorChange}
             className="flex gap-4 pt-2"
           >
@@ -246,6 +324,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               <Label htmlFor="outdoor-no" className="font-normal cursor-pointer">No</Label>
             </div>
           </RadioGroup>
+          {errors.needOutdoorTile && <p className="text-xs text-destructive">{errors.needOutdoorTile}</p>}
         </div>
       </div>
 
@@ -337,8 +416,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       </div>
 
       {submitError && (
-        <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-destructive" />
+        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
           <p className="text-sm text-destructive">{submitError}</p>
         </div>
       )}
@@ -349,7 +428,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
           className="w-full h-12 text-base"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Processing...' : 'Request Reservation'}
+          {isCheckingEligibility ? 'Verifying eligibility...' : isSubmitting ? 'Processing...' : 'Request Reservation'}
         </Button>
       </div>
     </form>
