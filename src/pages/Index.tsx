@@ -10,6 +10,7 @@ import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { ShareButtons } from '@/components/ShareButtons';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
+import { FAQ } from '@/components/FAQ';
 import { Package, Bell, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
@@ -316,6 +317,13 @@ const Index = () => {
               <InterestForm />
             </ActionCard>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-6 sm:py-12 lg:py-16 bg-secondary/30 border-y border-border">
+        <div className="section-container">
+          <FAQ />
         </div>
       </section>
 
