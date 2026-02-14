@@ -26,7 +26,7 @@ const reservationSchema = z.object({
   deliveryStreet: z.string().trim().min(1, 'Street name is required').max(200),
   deliveryCity: z.string().trim().min(1, 'City is required').max(100),
   deliveryPostcode: z.string().trim().min(5, 'Please enter a valid postcode').max(10),
-  requiredDeliveryDate: z.date().optional(),
+  requiredDeliveryDate: z.date({ required_error: 'Please select a delivery date' }),
 });
 
 type FormData = z.infer<typeof reservationSchema>;
@@ -489,14 +489,15 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       </div>
 
       <div className="space-y-2">
-        <Label>Required Delivery Date (Optional)</Label>
+        <Label>Required Delivery Date *</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal",
-                !formData.requiredDeliveryDate && "text-muted-foreground"
+                !formData.requiredDeliveryDate && "text-muted-foreground",
+                errors.requiredDeliveryDate && "border-destructive"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -507,12 +508,22 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
             <Calendar
               mode="single"
               selected={formData.requiredDeliveryDate}
-              onSelect={(date) => setFormData(prev => ({ ...prev, requiredDeliveryDate: date }))}
+              onSelect={(date) => {
+                setFormData(prev => ({ ...prev, requiredDeliveryDate: date }));
+                if (errors.requiredDeliveryDate) {
+                  setErrors(prev => ({ ...prev, requiredDeliveryDate: undefined }));
+                }
+              }}
               disabled={(date) => date < new Date()}
               initialFocus
+              className={cn("p-3 pointer-events-auto")}
             />
           </PopoverContent>
         </Popover>
+        <p className="text-xs text-muted-foreground">
+          Please confirm your preferred delivery date. We provide 7 days complimentary storage from this date. Thereafter, storage is charged at £10 per pallet, per week.
+        </p>
+        {errors.requiredDeliveryDate && <p className="text-xs text-destructive">{errors.requiredDeliveryDate}</p>}
       </div>
 
       <div className="pt-2">

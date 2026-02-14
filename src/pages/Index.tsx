@@ -11,7 +11,7 @@ import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { ShareButtons } from '@/components/ShareButtons';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
-import { Package, Bell, Download } from 'lucide-react';
+import { Package, Bell, Download, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
 import heroImage from '@/assets/hero-tiles.jpg';
@@ -205,6 +205,17 @@ const Index = () => {
                   </Button>
                 </SampleOrderDialog>
               </div>
+
+              {/* Tile Performance Data Sheet */}
+              <a
+                href="/tile-performance-data-sheet.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 mt-4 sm:mt-6 py-2.5 px-4 bg-secondary hover:bg-secondary/80 border border-border rounded-lg transition-colors w-fit"
+              >
+                <FileText className="h-4 w-4 text-primary" />
+                <span className="text-xs sm:text-sm font-medium">Tile Performance Data Sheet</span>
+              </a>
 
               {/* Share Buttons */}
               <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
