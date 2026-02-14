@@ -14,6 +14,134 @@ export type Database = {
   }
   public: {
     Tables: {
+      delivery_zones: {
+        Row: {
+          created_at: string
+          id: string
+          luxury_message: string
+          surcharge_per_sqm: number
+          surcharge_type: Database["public"]["Enums"]["surcharge_type"]
+          tier_code: string
+          tier_label: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          luxury_message: string
+          surcharge_per_sqm?: number
+          surcharge_type?: Database["public"]["Enums"]["surcharge_type"]
+          tier_code: string
+          tier_label: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          luxury_message?: string
+          surcharge_per_sqm?: number
+          surcharge_type?: Database["public"]["Enums"]["surcharge_type"]
+          tier_code?: string
+          tier_label?: string
+        }
+        Relationships: []
+      }
+      postcode_checks: {
+        Row: {
+          created_at: string
+          extracted_area: string | null
+          extracted_district: string | null
+          id: string
+          matched_rule_id: string | null
+          normalized_postcode: string
+          raw_postcode_input: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          extracted_area?: string | null
+          extracted_district?: string | null
+          id?: string
+          matched_rule_id?: string | null
+          normalized_postcode: string
+          raw_postcode_input: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          extracted_area?: string | null
+          extracted_district?: string | null
+          id?: string
+          matched_rule_id?: string | null
+          normalized_postcode?: string
+          raw_postcode_input?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postcode_checks_matched_rule_id_fkey"
+            columns: ["matched_rule_id"]
+            isOneToOne: false
+            referencedRelation: "postcode_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postcode_checks_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      postcode_rules: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          match_type: Database["public"]["Enums"]["match_type"]
+          pattern: string
+          priority: number
+          zone_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          match_type: Database["public"]["Enums"]["match_type"]
+          pattern: string
+          priority?: number
+          zone_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          match_type?: Database["public"]["Enums"]["match_type"]
+          pattern?: string
+          priority?: number
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postcode_rules_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_images: {
         Row: {
           created_at: string
@@ -338,6 +466,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      match_type: "DISTRICT" | "AREA"
+      surcharge_type: "none" | "per_sqm" | "quote_required"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -466,6 +596,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      match_type: ["DISTRICT", "AREA"],
+      surcharge_type: ["none", "per_sqm", "quote_required"],
     },
   },
 } as const

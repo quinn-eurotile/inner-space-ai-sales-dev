@@ -9,6 +9,7 @@ import { InterestForm } from '@/components/InterestForm';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { ShareButtons } from '@/components/ShareButtons';
+import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { Package, Bell, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
@@ -182,6 +183,11 @@ const Index = () => {
                   <span className="font-medium text-xs sm:text-sm">✓ Matching Outdoor Anti-Slip Option Available</span>
                 </div>
               )}
+
+              {/* Postcode Checker */}
+              <div className="mb-4 sm:mb-6">
+                <PostcodeChecker compact />
+              </div>
 
               {/* Countdown Timer */}
               <div className="mb-4 sm:mb-8">

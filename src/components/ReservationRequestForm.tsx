@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, Clock, AlertCircle, CalendarIcon, ShieldCheck, Info } from 'lucide-react';
+import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -56,6 +57,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   const [isCheckingEligibility, setIsCheckingEligibility] = useState(false);
   const [exceededMax, setExceededMax] = useState(false);
   const [requestedQuantity, setRequestedQuantity] = useState(0);
+  const [deliveryResult, setDeliveryResult] = useState<{
+    zone: { tier_code: string; tier_label: string; surcharge_type: string; surcharge_per_sqm: number; luxury_message: string };
+  } | null>(null);
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -152,6 +156,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         required_delivery_date: formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, 'yyyy-MM-dd') : null,
         held_until: heldUntilDate.toISOString(),
         status: 'pending',
+        admin_notes: deliveryResult ? `Delivery: ${deliveryResult.zone.tier_label}${deliveryResult.zone.surcharge_type === 'per_sqm' ? ` (+£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)}/m²)` : deliveryResult.zone.surcharge_type === 'quote_required' ? ' (Quote required)' : ''}` : null,
       }]);
 
       if (error) throw error;
@@ -233,6 +238,28 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   }
 
   return (
+    <div className="space-y-6">
+      {/* Postcode Checker for Reservation */}
+      <div className="bg-secondary/20 border border-border rounded-lg p-4">
+        <h4 className="font-medium text-sm mb-3">Check Delivery Tariff for Your Postcode</h4>
+        <PostcodeChecker
+          compact
+          defaultSqm={formData.requiredQuantitySqm || 57}
+          onResult={(res) => setDeliveryResult(res)}
+        />
+      </div>
+
+      {deliveryResult && deliveryResult.zone.surcharge_type !== 'none' && (
+        <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-start gap-2">
+          <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-sm text-muted-foreground">
+            {deliveryResult.zone.surcharge_type === 'quote_required'
+              ? 'A delivery quotation will be included with your reservation request.'
+              : `An additional delivery surcharge of +£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)} per m² applies and will be included with your reservation request.`}
+          </p>
+        </div>
+      )}
+
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-2">
         <div className="flex items-start gap-3">
@@ -432,5 +459,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         </Button>
       </div>
     </form>
+    </div>
   );
 }
