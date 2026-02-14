@@ -182,6 +182,7 @@ export type Database = {
           boxes_per_pallet: number | null
           collection: string | null
           created_at: string
+          data_sheet_url: string | null
           edge: string | null
           factory_rating: string | null
           finish: string | null
@@ -219,6 +220,7 @@ export type Database = {
           boxes_per_pallet?: number | null
           collection?: string | null
           created_at?: string
+          data_sheet_url?: string | null
           edge?: string | null
           factory_rating?: string | null
           finish?: string | null
@@ -256,6 +258,7 @@ export type Database = {
           boxes_per_pallet?: number | null
           collection?: string | null
           created_at?: string
+          data_sheet_url?: string | null
           edge?: string | null
           factory_rating?: string | null
           finish?: string | null

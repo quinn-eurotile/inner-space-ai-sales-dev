@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -21,10 +20,10 @@ import {
   Package, 
   Users, 
   Image as ImageIcon, 
-  Settings,
   Upload,
   Trash2,
-  Save
+  FileText,
+  ShoppingBag
 } from 'lucide-react';
 import { format } from 'date-fns';
 import innerSpaceLogo from '@/assets/inner-space-logo.png';
@@ -33,11 +32,37 @@ interface Product {
   id: string;
   name: string;
   collection: string | null;
+  origin: string | null;
   price_per_sqm: number;
+  price_per_tile: number | null;
   stock_allocation: number | null;
   stock_sold: number | null;
   google_drive_link: string | null;
+  data_sheet_url: string | null;
   is_active: boolean | null;
+  nominal_size: string | null;
+  finish: string | null;
+  material: string | null;
+  tile_colour: string | null;
+  tile_style: string | null;
+  slip_rating: string | null;
+  factory_rating: string | null;
+  matching_outdoor_option: boolean | null;
+  underfloor_heating_compatible: boolean | null;
+  frost_resistant: boolean | null;
+  thickness_mm: number | null;
+  width_mm: number | null;
+  length_mm: number | null;
+  sqm_per_tile: number | null;
+  tiles_per_box: number | null;
+  sqm_per_box: number | null;
+  kg_per_box: number | null;
+  boxes_per_pallet: number | null;
+  sqm_per_pallet: number | null;
+  edge: string | null;
+  shape: string | null;
+  suitability: string | null;
+  no_tile_faces: string | null;
 }
 
 interface Reservation {
@@ -48,8 +73,24 @@ interface Reservation {
   required_quantity_sqm: number;
   need_outdoor_tile: boolean | null;
   delivery_postcode: string;
+  delivery_door_house: string | null;
+  delivery_street: string | null;
+  delivery_city: string | null;
+  required_delivery_date: string | null;
   status: string;
   held_until: string;
+  created_at: string;
+  admin_notes: string | null;
+}
+
+interface SampleOrder {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  postcode: string;
+  status: string;
   created_at: string;
 }
 
@@ -66,10 +107,12 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [sampleOrders, setSampleOrders] = useState<SampleOrder[]>([]);
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -98,15 +141,17 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     
-    const [productsRes, reservationsRes, imagesRes] = await Promise.all([
+    const [productsRes, reservationsRes, imagesRes, samplesRes] = await Promise.all([
       supabase.from('products').select('*').order('created_at', { ascending: false }),
       supabase.from('reservations').select('*').order('created_at', { ascending: false }),
       supabase.from('product_images').select('*').order('display_order'),
+      supabase.from('sample_orders').select('*').order('created_at', { ascending: false }),
     ]);
 
     if (productsRes.data) setProducts(productsRes.data);
     if (reservationsRes.data) setReservations(reservationsRes.data);
     if (imagesRes.data) setProductImages(imagesRes.data);
+    if (samplesRes.data) setSampleOrders(samplesRes.data);
     
     if (productsRes.data && productsRes.data.length > 0) {
       setSelectedProduct(productsRes.data[0]);
@@ -152,6 +197,19 @@ export default function AdminDashboard() {
     }
   };
 
+  const updateSampleStatus = async (id: string, status: string) => {
+    const { error } = await supabase
+      .from('sample_orders')
+      .update({ status })
+      .eq('id', id);
+
+    if (!error) {
+      setSampleOrders(sampleOrders.map(s => 
+        s.id === id ? { ...s, status } : s
+      ));
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, imageType: 'hero' | 'carousel') => {
     if (!e.target.files || !e.target.files[0] || !selectedProduct) return;
     
@@ -160,7 +218,7 @@ export default function AdminDashboard() {
     const fileExt = file.name.split('.').pop();
     const fileName = `${selectedProduct.id}/${Date.now()}.${fileExt}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(fileName, file);
 
@@ -192,8 +250,32 @@ export default function AdminDashboard() {
     setUploadingImage(false);
   };
 
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !selectedProduct) return;
+    
+    setUploadingPdf(true);
+    const file = e.target.files[0];
+    const fileName = `${selectedProduct.id}/data-sheet-${Date.now()}.pdf`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, file, { contentType: 'application/pdf' });
+
+    if (uploadError) {
+      console.error('PDF upload error:', uploadError);
+      setUploadingPdf(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(fileName);
+
+    await updateProduct({ data_sheet_url: publicUrl } as any);
+    setUploadingPdf(false);
+  };
+
   const deleteImage = async (imageId: string, imageUrl: string) => {
-    // Extract file path from URL
     const urlParts = imageUrl.split('/');
     const filePath = urlParts.slice(-2).join('/');
     
@@ -215,6 +297,8 @@ export default function AdminDashboard() {
         return <Badge variant="secondary">Pending</Badge>;
       case 'confirmed':
         return <Badge className="bg-success text-success-foreground">Confirmed</Badge>;
+      case 'dispatched':
+        return <Badge className="bg-primary text-primary-foreground">Dispatched</Badge>;
       case 'released':
         return <Badge variant="outline">Released</Badge>;
       case 'cancelled':
@@ -265,6 +349,10 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4" />
               Reservations
             </TabsTrigger>
+            <TabsTrigger value="samples" className="gap-2">
+              <ShoppingBag className="h-4 w-4" />
+              Sample Orders
+            </TabsTrigger>
             <TabsTrigger value="images" className="gap-2">
               <ImageIcon className="h-4 w-4" />
               Images
@@ -297,10 +385,76 @@ export default function AdminDashboard() {
 
               {/* Product Details */}
               {selectedProduct && (
-                <div className="lg:col-span-2 bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-xl font-semibold mb-6">Edit Product</h3>
+                <div className="lg:col-span-2 bg-card border border-border rounded-lg p-6 space-y-6">
+                  <h3 className="text-xl font-semibold">Edit Product</h3>
                   
-                  <div className="grid gap-6">
+                  {/* Basic Info */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Basic Info</h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Product Name</Label>
+                        <Input
+                          value={selectedProduct.name}
+                          onChange={(e) => updateProduct({ name: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Collection</Label>
+                        <Input
+                          value={selectedProduct.collection || ''}
+                          onChange={(e) => updateProduct({ collection: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Origin</Label>
+                        <Input
+                          value={selectedProduct.origin || ''}
+                          onChange={(e) => updateProduct({ origin: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Material</Label>
+                        <Input
+                          value={selectedProduct.material || ''}
+                          onChange={(e) => updateProduct({ material: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Factory Rating</Label>
+                        <Input
+                          value={selectedProduct.factory_rating || ''}
+                          onChange={(e) => updateProduct({ factory_rating: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pricing & Stock */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Pricing & Stock</h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Price Per SQ.M (£)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.price_per_sqm}
+                          onChange={(e) => updateProduct({ price_per_sqm: parseFloat(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Price Per Tile (£)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.price_per_tile || ''}
+                          onChange={(e) => updateProduct({ price_per_tile: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
+                    </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Stock Allocation (Pallets)</Label>
@@ -319,17 +473,207 @@ export default function AdminDashboard() {
                         />
                       </div>
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label>Price Per SQ.M (£)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={selectedProduct.price_per_sqm}
-                        onChange={(e) => updateProduct({ price_per_sqm: parseFloat(e.target.value) })}
-                      />
+                  {/* Tile Specifications */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Tile Specifications</h4>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nominal Size</Label>
+                        <Input
+                          value={selectedProduct.nominal_size || ''}
+                          onChange={(e) => updateProduct({ nominal_size: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Colour</Label>
+                        <Input
+                          value={selectedProduct.tile_colour || ''}
+                          onChange={(e) => updateProduct({ tile_colour: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Style</Label>
+                        <Input
+                          value={selectedProduct.tile_style || ''}
+                          onChange={(e) => updateProduct({ tile_style: e.target.value })}
+                        />
+                      </div>
                     </div>
+                    <div className="grid sm:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <Label>Thickness (mm)</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.thickness_mm || ''}
+                          onChange={(e) => updateProduct({ thickness_mm: parseInt(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Width (mm)</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.width_mm || ''}
+                          onChange={(e) => updateProduct({ width_mm: parseInt(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Length (mm)</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.length_mm || ''}
+                          onChange={(e) => updateProduct({ length_mm: parseInt(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Shape</Label>
+                        <Input
+                          value={selectedProduct.shape || ''}
+                          onChange={(e) => updateProduct({ shape: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Finish</Label>
+                        <Input
+                          value={selectedProduct.finish || ''}
+                          onChange={(e) => updateProduct({ finish: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Edge</Label>
+                        <Input
+                          value={selectedProduct.edge || ''}
+                          onChange={(e) => updateProduct({ edge: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Slip Rating</Label>
+                        <Input
+                          value={selectedProduct.slip_rating || ''}
+                          onChange={(e) => updateProduct({ slip_rating: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Suitability</Label>
+                        <Input
+                          value={selectedProduct.suitability || ''}
+                          onChange={(e) => updateProduct({ suitability: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>No. Tile Faces</Label>
+                        <Input
+                          value={selectedProduct.no_tile_faces || ''}
+                          onChange={(e) => updateProduct({ no_tile_faces: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
+                  {/* Packing Info */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Packing Info</h4>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>SQM per Tile</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.sqm_per_tile || ''}
+                          onChange={(e) => updateProduct({ sqm_per_tile: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tiles per Box</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.tiles_per_box || ''}
+                          onChange={(e) => updateProduct({ tiles_per_box: parseInt(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>SQM per Box</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.sqm_per_box || ''}
+                          onChange={(e) => updateProduct({ sqm_per_box: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>KG per Box</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.kg_per_box || ''}
+                          onChange={(e) => updateProduct({ kg_per_box: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Boxes per Pallet</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.boxes_per_pallet || ''}
+                          onChange={(e) => updateProduct({ boxes_per_pallet: parseInt(e.target.value) || null } as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>SQM per Pallet</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={selectedProduct.sqm_per_pallet || ''}
+                          onChange={(e) => updateProduct({ sqm_per_pallet: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Toggles */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Options</h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                        <Label>Active</Label>
+                        <Switch
+                          checked={selectedProduct.is_active || false}
+                          onCheckedChange={(checked) => updateProduct({ is_active: checked })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                        <Label>Matching Outdoor Option</Label>
+                        <Switch
+                          checked={selectedProduct.matching_outdoor_option || false}
+                          onCheckedChange={(checked) => updateProduct({ matching_outdoor_option: checked } as any)}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                        <Label>Underfloor Heating</Label>
+                        <Switch
+                          checked={selectedProduct.underfloor_heating_compatible || false}
+                          onCheckedChange={(checked) => updateProduct({ underfloor_heating_compatible: checked } as any)}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                        <Label>Frost Resistant</Label>
+                        <Switch
+                          checked={selectedProduct.frost_resistant || false}
+                          onCheckedChange={(checked) => updateProduct({ frost_resistant: checked } as any)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Links & Downloads */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Links & Downloads</h4>
                     <div className="space-y-2">
                       <Label>Google Drive Link (High-Res Images)</Label>
                       <Input
@@ -339,23 +683,59 @@ export default function AdminDashboard() {
                         onChange={(e) => updateProduct({ google_drive_link: e.target.value })}
                       />
                     </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Active</Label>
-                        <p className="text-sm text-muted-foreground">Show this product on the main page</p>
+                    
+                    <div className="space-y-2">
+                      <Label>Tile Performance Data Sheet (PDF)</Label>
+                      {selectedProduct.data_sheet_url ? (
+                        <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
+                          <FileText className="h-5 w-5 text-primary shrink-0" />
+                          <a 
+                            href={selectedProduct.data_sheet_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary underline truncate flex-1"
+                          >
+                            View current PDF
+                          </a>
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            onClick={() => updateProduct({ data_sheet_url: null } as any)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : null}
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={handlePdfUpload}
+                          className="hidden"
+                          id="pdf-upload"
+                          disabled={uploadingPdf}
+                        />
+                        <label htmlFor="pdf-upload" className="cursor-pointer">
+                          <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground">
+                            {uploadingPdf ? 'Uploading...' : 'Click to upload PDF data sheet'}
+                          </p>
+                        </label>
                       </div>
-                      <Switch
-                        checked={selectedProduct.is_active || false}
-                        onCheckedChange={(checked) => updateProduct({ is_active: checked })}
+                      <p className="text-xs text-muted-foreground">Or enter a URL directly:</p>
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/data-sheet.pdf"
+                        value={selectedProduct.data_sheet_url || ''}
+                        onChange={(e) => updateProduct({ data_sheet_url: e.target.value } as any)}
                       />
                     </div>
+                  </div>
 
-                    <div className="pt-4 border-t border-border">
-                      <p className="text-sm text-muted-foreground">
-                        {saving ? 'Saving...' : 'Changes are saved automatically'}
-                      </p>
-                    </div>
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
+                      {saving ? 'Saving...' : 'Changes are saved automatically'}
+                    </p>
                   </div>
                 </div>
               )}
@@ -364,17 +744,20 @@ export default function AdminDashboard() {
 
           {/* Reservations Tab */}
           <TabsContent value="reservations">
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="bg-card border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Quantity (SQ.M)</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Qty (m²)</TableHead>
                     <TableHead>Outdoor</TableHead>
-                    <TableHead>Postcode</TableHead>
+                    <TableHead>Delivery Address</TableHead>
+                    <TableHead>Delivery Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Held Until</TableHead>
+                    <TableHead>Notes</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -382,13 +765,22 @@ export default function AdminDashboard() {
                   {reservations.map(reservation => (
                     <TableRow key={reservation.id}>
                       <TableCell className="font-medium">{reservation.name}</TableCell>
-                      <TableCell>{reservation.email}</TableCell>
+                      <TableCell className="text-xs">{reservation.email}</TableCell>
+                      <TableCell className="text-xs">{reservation.phone}</TableCell>
                       <TableCell>{reservation.required_quantity_sqm}</TableCell>
                       <TableCell>{reservation.need_outdoor_tile ? 'Yes' : 'No'}</TableCell>
-                      <TableCell>{reservation.delivery_postcode}</TableCell>
+                      <TableCell className="text-xs max-w-[150px] truncate">
+                        {[reservation.delivery_door_house, reservation.delivery_street, reservation.delivery_city, reservation.delivery_postcode].filter(Boolean).join(', ')}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {reservation.required_delivery_date || '—'}
+                      </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
-                      <TableCell>
-                        {format(new Date(reservation.held_until), 'dd/MM/yyyy HH:mm')}
+                      <TableCell className="text-xs">
+                        {format(new Date(reservation.held_until), 'dd/MM/yyyy')}
+                      </TableCell>
+                      <TableCell className="text-xs max-w-[120px] truncate">
+                        {reservation.admin_notes || '—'}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
@@ -415,8 +807,79 @@ export default function AdminDashboard() {
                   ))}
                   {reservations.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
                         No reservations yet
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </TabsContent>
+
+          {/* Sample Orders Tab */}
+          <TabsContent value="samples">
+            <div className="bg-card border border-border rounded-lg overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Postcode</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sampleOrders.map(order => (
+                    <TableRow key={order.id}>
+                      <TableCell className="text-xs">
+                        {format(new Date(order.created_at), 'dd/MM/yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell className="font-medium">{order.name}</TableCell>
+                      <TableCell className="text-xs">{order.email}</TableCell>
+                      <TableCell className="text-xs">{order.phone}</TableCell>
+                      <TableCell className="text-xs max-w-[200px] truncate">{order.address}</TableCell>
+                      <TableCell>{order.postcode}</TableCell>
+                      <TableCell>{getStatusBadge(order.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {order.status === 'confirmed' && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => updateSampleStatus(order.id, 'dispatched')}
+                            >
+                              Mark Dispatched
+                            </Button>
+                          )}
+                          {order.status === 'pending' && (
+                            <>
+                              <Button 
+                                size="sm" 
+                                onClick={() => updateSampleStatus(order.id, 'confirmed')}
+                              >
+                                Confirm
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={() => updateSampleStatus(order.id, 'cancelled')}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {sampleOrders.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        No sample orders yet
                       </TableCell>
                     </TableRow>
                   )}
