@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, Clock, AlertCircle, CalendarIcon, ShieldCheck, Info } from 'lucide-react';
+import { Check, Clock, AlertCircle, CalendarIcon, ShieldCheck, Info, CircleAlert } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
@@ -60,6 +61,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   const [deliveryResult, setDeliveryResult] = useState<{
     zone: { tier_code: string; tier_label: string; surcharge_type: string; surcharge_per_sqm: number; luxury_message: string };
   } | null>(null);
+  const [showTerms, setShowTerms] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -81,7 +84,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleShowTerms = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
     
@@ -97,6 +100,13 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       return;
     }
     
+    setShowTerms(true);
+    setTermsAccepted(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!termsAccepted) return;
+    setSubmitError(null);
     setIsSubmitting(true);
     setIsCheckingEligibility(true);
 
@@ -260,7 +270,70 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         </div>
       )}
 
-    <form onSubmit={handleSubmit} className="space-y-4">
+    {showTerms && (
+      <div className="bg-secondary/30 border border-border rounded-lg p-5 space-y-4 animate-fade-in">
+        <div className="flex items-start gap-3">
+          <CircleAlert className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          <h4 className="font-semibold text-foreground">Important Allocation Conditions</h4>
+        </div>
+        <ul className="space-y-2 text-sm text-muted-foreground pl-2">
+          {[
+            `Minimum ${MIN_ORDER_SQM} m² applies`,
+            '£36 per m² + VAT',
+            'Full payment required prior to delivery',
+            'Kerbside HGV delivery',
+            '10–15% overage recommended',
+            'Additional quantities not batch guaranteed',
+            'Delivery tariff may apply',
+            'Qualifying damage credited (no replacements)',
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-start gap-3 pt-2 border-t border-border">
+          <Checkbox
+            id="terms-accept"
+            checked={termsAccepted}
+            onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+          />
+          <Label htmlFor="terms-accept" className="font-normal cursor-pointer text-sm leading-relaxed">
+            I confirm I have reviewed and understand the allocation terms
+          </Label>
+        </div>
+
+        {submitError && (
+          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+            <p className="text-sm text-destructive">{submitError}</p>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowTerms(false)}
+            className="flex-1"
+          >
+            Back
+          </Button>
+          <Button
+            type="button"
+            className="flex-1 h-12 text-base"
+            disabled={!termsAccepted || isSubmitting}
+            onClick={handleSubmit}
+          >
+            {isCheckingEligibility ? 'Verifying eligibility...' : isSubmitting ? 'Processing...' : 'Complete Reservation Request'}
+          </Button>
+        </div>
+      </div>
+    )}
+
+    <form onSubmit={handleShowTerms} className={cn("space-y-4", showTerms && "hidden")}>
       <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-2">
         <div className="flex items-start gap-3">
           <ShieldCheck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
@@ -442,20 +515,12 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         </Popover>
       </div>
 
-      {submitError && (
-        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-          <p className="text-sm text-destructive">{submitError}</p>
-        </div>
-      )}
-      
       <div className="pt-2">
         <Button 
           type="submit" 
           className="w-full h-12 text-base"
-          disabled={isSubmitting}
         >
-          {isCheckingEligibility ? 'Verifying eligibility...' : isSubmitting ? 'Processing...' : 'Request Reservation'}
+          Request Reservation
         </Button>
       </div>
     </form>
