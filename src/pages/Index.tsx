@@ -7,6 +7,7 @@ import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
@@ -159,13 +160,13 @@ const Index = () => {
               </div>
 
               {/* Editorial paragraph */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md mx-auto lg:mx-0">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-3 max-w-md mx-auto lg:mx-0">
                 This allocation has been secured directly from production and is available in confirmed pallet quantities only. Suitable for ground floor renovations and indoor–outdoor architectural continuity.
               </p>
 
               {product?.matching_outdoor_option && (
-                <p className="text-sm text-muted-foreground mb-6">
-                  Matching outdoor anti-slip option available
+                <p className="text-sm text-muted-foreground mb-6 uppercase tracking-[0.1em] font-medium">
+                  Need a matching patio/outdoor porcelain tile for indoor/outdoors?
                 </p>
               )}
 
@@ -242,82 +243,74 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Technical Specifications */}
+      {/* Technical Specifications - Collapsible */}
       <section className="pb-14 sm:pb-16">
         <div className="section-container">
-          {product && (
-            <TechnicalSpecs 
-              specs={{
-                origin: product.origin || undefined,
-                factoryRating: product.factory_rating || undefined,
-                tileColour: product.tile_colour || undefined,
-                thicknessMm: product.thickness_mm || undefined,
-                widthMm: product.width_mm || undefined,
-                lengthMm: product.length_mm || undefined,
-                nominalSize: product.nominal_size || undefined,
-                finish: product.finish || undefined,
-                matchingOutdoorOption: product.matching_outdoor_option || undefined,
-                shape: product.shape || undefined,
-                suitability: product.suitability || undefined,
-                underfloorHeatingCompatible: product.underfloor_heating_compatible || undefined,
-                tileStyle: product.tile_style || undefined,
-                edge: product.edge || undefined,
-                slipRating: product.slip_rating || undefined,
-                noTileFaces: product.no_tile_faces || undefined,
-                material: product.material || undefined,
-                frostResistant: product.frost_resistant || undefined,
-                sqmPerTile: product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
-                tilesPerBox: product.tiles_per_box || undefined,
-                sqmPerBox: product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
-                kgPerBox: product.kg_per_box ? Number(product.kg_per_box) : undefined,
-                boxesPerPallet: product.boxes_per_pallet || undefined,
-                sqmPerPallet: product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined,
-              }}
-            />
-          )}
-          {product?.data_sheet_url && (
-            <a
-              href={product.data_sheet_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline mt-8"
-            >
-              <FileText className="h-4 w-4" />
-              <span>Download performance data (PDF)</span>
-            </a>
-          )}
+          <Collapsible>
+            <CollapsibleTrigger className="w-full text-left group">
+              <p className="section-label">Technical Specification</p>
+              <div className="flex items-center justify-between">
+                <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">
+                  Performance & Material Data
+                </h2>
+                <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
+                  Show details
+                </span>
+                <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:inline">
+                  Hide details
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 mb-3">
+                Full technical and performance data.
+              </p>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              {product && (
+                <TechnicalSpecs 
+                  specs={{
+                    origin: product.origin || undefined,
+                    factoryRating: product.factory_rating || undefined,
+                    tileColour: product.tile_colour || undefined,
+                    thicknessMm: product.thickness_mm || undefined,
+                    widthMm: product.width_mm || undefined,
+                    lengthMm: product.length_mm || undefined,
+                    nominalSize: product.nominal_size || undefined,
+                    finish: product.finish || undefined,
+                    matchingOutdoorOption: product.matching_outdoor_option || undefined,
+                    shape: product.shape || undefined,
+                    suitability: product.suitability || undefined,
+                    underfloorHeatingCompatible: product.underfloor_heating_compatible || undefined,
+                    tileStyle: product.tile_style || undefined,
+                    edge: product.edge || undefined,
+                    slipRating: product.slip_rating || undefined,
+                    noTileFaces: product.no_tile_faces || undefined,
+                    material: product.material || undefined,
+                    frostResistant: product.frost_resistant || undefined,
+                    sqmPerTile: product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
+                    tilesPerBox: product.tiles_per_box || undefined,
+                    sqmPerBox: product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
+                    kgPerBox: product.kg_per_box ? Number(product.kg_per_box) : undefined,
+                    boxesPerPallet: product.boxes_per_pallet || undefined,
+                    sqmPerPallet: product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined,
+                  }}
+                />
+              )}
+              {product?.data_sheet_url && (
+                <a
+                  href={product.data_sheet_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline mt-8"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Download performance data (PDF)</span>
+                </a>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </section>
 
-      {/* Project Suitability - alt bg */}
-      <section className="section-alt py-14 sm:py-16">
-        <div className="section-container">
-          <p className="section-label">Project Suitability</p>
-          <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-5">
-            Recommended Applications
-          </h2>
-          <div className="max-w-2xl">
-            <ul className="space-y-3 text-sm text-foreground leading-relaxed">
-              <li className="flex items-start gap-3">
-                <span className="text-muted-foreground mt-0.5">·</span>
-                <span>Ground floor renovations and open-plan living spaces</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-muted-foreground mt-0.5">·</span>
-                <span>Large-format contemporary interiors requiring visual continuity</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-muted-foreground mt-0.5">·</span>
-                <span>Indoor–outdoor architectural schemes (matching 20mm outdoor format available in R11)</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-muted-foreground mt-0.5">·</span>
-                <span>Residential and commercial projects requiring first-quality Italian porcelain</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
 
       {/* Reservation Section */}
       <section id="reservation" className="section-alt py-14 sm:py-16">
@@ -339,28 +332,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="section-container"><div className="section-divider" /></div>
-
-      {/* Next Steps strip */}
-      <section className="py-14 sm:py-16">
-        <div className="section-container">
-          <p className="section-label">Next Steps</p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
-            <SampleOrderDialog productId={product?.id}>
-              <Button variant="secondary" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1 hover:bg-brand-accent hover:text-white hover:border-brand-accent">
-                Order Sample — £7
-              </Button>
-            </SampleOrderDialog>
-            <Button className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1" asChild>
-              <a href="#reservation">Request Reservation</a>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="section-container"><div className="section-divider" /></div>
 
       {/* FAQ Section */}
       <section className="py-14 sm:py-16">
