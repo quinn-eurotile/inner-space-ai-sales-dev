@@ -438,7 +438,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs tracking-wide uppercase text-muted-foreground">Matching Outdoor Tile?</Label>
+            <Label className="text-xs tracking-wide uppercase text-muted-foreground">Need a matching patio/outdoor porcelain tile for indoor/outdoors?</Label>
             <RadioGroup
               value={formData.needOutdoorTile || ''}
               onValueChange={handleOutdoorChange}
