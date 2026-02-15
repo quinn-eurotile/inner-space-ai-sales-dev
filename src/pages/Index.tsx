@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 import heroImage from '@/assets/hero-tiles.jpg';
@@ -247,11 +247,11 @@ const Index = () => {
                 <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">
                   Performance & Material Data
                 </h2>
-                <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
-                  Show details
+                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
+                  Show details <ChevronDown className="h-3.5 w-3.5" />
                 </span>
-                <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:inline">
-                  Hide details
+                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
+                  Hide details <ChevronUp className="h-3.5 w-3.5" />
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-1 mb-3">
