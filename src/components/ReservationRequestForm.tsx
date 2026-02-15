@@ -286,7 +286,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
           </div>
 
           {submitError && (
-            <p className="text-sm text-muted-foreground">{submitError}</p>
+            <p className="text-sm text-destructive">{submitError}</p>
           )}
 
           <div className="flex gap-3">
@@ -325,9 +325,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
             placeholder="Your full name"
             value={formData.name}
             onChange={handleChange('name')}
-            className={`h-11 ${errors.name ? 'border-muted-foreground' : ''}`}
+            className={`h-11 ${errors.name ? 'border-destructive' : ''}`}
           />
-          {errors.name && <p className="text-xs text-muted-foreground">{errors.name}</p>}
+          {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -339,10 +339,10 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               placeholder="Same email used for sample order"
               value={formData.email}
               onChange={handleChange('email')}
-              className={`h-11 ${errors.email ? 'border-muted-foreground' : ''}`}
+              className={`h-11 ${errors.email ? 'border-destructive' : ''}`}
             />
             <p className="text-xs text-muted-foreground">Must match your sample order email</p>
-            {errors.email && <p className="text-xs text-muted-foreground">{errors.email}</p>}
+            {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
           </div>
           
           <div className="space-y-2">
@@ -353,9 +353,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               placeholder="07XXX XXXXXX"
               value={formData.phone}
               onChange={handleChange('phone')}
-              className={`h-11 ${errors.phone ? 'border-muted-foreground' : ''}`}
+              className={`h-11 ${errors.phone ? 'border-destructive' : ''}`}
             />
-            {errors.phone && <p className="text-xs text-muted-foreground">{errors.phone}</p>}
+            {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
           </div>
         </div>
 
@@ -370,9 +370,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               placeholder="e.g. 57.12"
               value={formData.requiredQuantitySqm || ''}
               onChange={handleChange('requiredQuantitySqm')}
-              className={`h-11 ${errors.requiredQuantitySqm ? 'border-muted-foreground' : ''}`}
+              className={`h-11 ${errors.requiredQuantitySqm ? 'border-destructive' : ''}`}
             />
-            {errors.requiredQuantitySqm && <p className="text-xs text-muted-foreground">{errors.requiredQuantitySqm}</p>}
+            {errors.requiredQuantitySqm && <p className="text-xs text-destructive">{errors.requiredQuantitySqm}</p>}
           </div>
 
           <div className="space-y-2">
@@ -391,7 +391,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 <Label htmlFor="outdoor-no" className="font-normal cursor-pointer text-sm">No</Label>
               </div>
             </RadioGroup>
-            {errors.needOutdoorTile && <p className="text-xs text-muted-foreground">{errors.needOutdoorTile}</p>}
+            {errors.needOutdoorTile && <p className="text-xs text-destructive">{errors.needOutdoorTile}</p>}
           </div>
         </div>
 
@@ -407,9 +407,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 placeholder="e.g. 42"
                 value={formData.deliveryDoorHouse}
                 onChange={handleChange('deliveryDoorHouse')}
-                className={`h-11 ${errors.deliveryDoorHouse ? 'border-muted-foreground' : ''}`}
+                className={`h-11 ${errors.deliveryDoorHouse ? 'border-destructive' : ''}`}
               />
-              {errors.deliveryDoorHouse && <p className="text-xs text-muted-foreground">{errors.deliveryDoorHouse}</p>}
+              {errors.deliveryDoorHouse && <p className="text-xs text-destructive">{errors.deliveryDoorHouse}</p>}
             </div>
 
             <div className="space-y-2">
@@ -420,9 +420,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 placeholder="e.g. High Street"
                 value={formData.deliveryStreet}
                 onChange={handleChange('deliveryStreet')}
-                className={`h-11 ${errors.deliveryStreet ? 'border-muted-foreground' : ''}`}
+                className={`h-11 ${errors.deliveryStreet ? 'border-destructive' : ''}`}
               />
-              {errors.deliveryStreet && <p className="text-xs text-muted-foreground">{errors.deliveryStreet}</p>}
+              {errors.deliveryStreet && <p className="text-xs text-destructive">{errors.deliveryStreet}</p>}
             </div>
           </div>
 
@@ -435,9 +435,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 placeholder="e.g. London"
                 value={formData.deliveryCity}
                 onChange={handleChange('deliveryCity')}
-                className={`h-11 ${errors.deliveryCity ? 'border-muted-foreground' : ''}`}
+                className={`h-11 ${errors.deliveryCity ? 'border-destructive' : ''}`}
               />
-              {errors.deliveryCity && <p className="text-xs text-muted-foreground">{errors.deliveryCity}</p>}
+              {errors.deliveryCity && <p className="text-xs text-destructive">{errors.deliveryCity}</p>}
             </div>
 
             <div className="space-y-2">
@@ -448,9 +448,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 placeholder="e.g. SW1A 1AA"
                 value={formData.deliveryPostcode}
                 onChange={handleChange('deliveryPostcode')}
-                className={`h-11 ${errors.deliveryPostcode ? 'border-muted-foreground' : ''}`}
+                className={`h-11 ${errors.deliveryPostcode ? 'border-destructive' : ''}`}
               />
-              {errors.deliveryPostcode && <p className="text-xs text-muted-foreground">{errors.deliveryPostcode}</p>}
+              {errors.deliveryPostcode && <p className="text-xs text-destructive">{errors.deliveryPostcode}</p>}
             </div>
           </div>
         </div>
@@ -464,7 +464,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 className={cn(
                   "w-full justify-start text-left font-normal h-11",
                   !formData.requiredDeliveryDate && "text-muted-foreground",
-                  errors.requiredDeliveryDate && "border-muted-foreground"
+                  errors.requiredDeliveryDate && "border-destructive"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -495,7 +495,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
           <p className="text-xs text-muted-foreground">
             7 days complimentary storage from this date. Thereafter £10 per pallet per week.
           </p>
-          {errors.requiredDeliveryDate && <p className="text-xs text-muted-foreground">{errors.requiredDeliveryDate}</p>}
+          {errors.requiredDeliveryDate && <p className="text-xs text-destructive">{errors.requiredDeliveryDate}</p>}
         </div>
 
         <div className="pt-2">
