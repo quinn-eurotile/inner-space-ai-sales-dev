@@ -70,13 +70,6 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
 
   return (
     <div>
-      <p className="section-label">Technical Specification</p>
-      <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
-        Performance & Material Data
-      </h2>
-      <p className="text-sm text-muted-foreground mb-8">
-        Full technical and performance data.
-      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-16">
         {specItems.map((item) => (
           <div
