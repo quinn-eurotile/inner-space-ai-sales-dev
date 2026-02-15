@@ -87,7 +87,7 @@ export function ProductStockIndicator({
         </div>
       </div>
       
-      <p className="text-xs text-muted-foreground mt-6">
+      <p className="text-xs text-muted-foreground mt-6 mb-6">
         Updated in real time based on confirmed reservations.
       </p>
     </div>
