@@ -229,11 +229,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="section-container"><div className="section-divider" /></div>
-
       {/* Stock Allocation */}
-      <section className="py-14 sm:py-16">
+      <section className="pb-14 sm:pb-16">
         <div className="section-container">
           {product && (
             <ProductStockIndicator 
