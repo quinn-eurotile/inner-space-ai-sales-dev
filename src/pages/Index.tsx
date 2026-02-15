@@ -105,7 +105,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="py-5 sm:py-6">
+      <header className="py-4 sm:py-6">
         <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
@@ -121,7 +121,7 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Allocation Notice */}
-      <div className="py-4">
+      <div className="py-3 sm:py-4">
         <div className="section-container text-center">
           <p className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground">
             Limited Factory Allocation
@@ -132,21 +132,21 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Hero Section */}
-      <section className="pt-10 pb-14 sm:pt-14 sm:pb-16 lg:pt-16 lg:pb-20">
+      <section className="pt-8 pb-10 sm:pt-14 sm:pb-16 lg:pt-16 lg:pb-20">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             {/* Left: Text */}
             <div className="order-2 lg:order-1 text-center lg:text-left">
               <h1 className="font-serif text-[40px] sm:text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
                 Miami Grande Bianco
               </h1>
-              <div className="w-16 h-[2px] bg-brand-accent mb-5 mx-auto lg:mx-0" />
+              <div className="w-16 h-[2px] bg-brand-accent mb-4 mx-auto lg:mx-0" />
               <p className="text-muted-foreground text-base mb-1">120×120cm — Made in Italy</p>
-              <p className="text-muted-foreground text-sm mb-6">
+              <p className="text-muted-foreground text-sm mb-4">
                 Including nationwide kerbside delivery
               </p>
 
-              <div className="flex items-baseline gap-3 mb-5 justify-center lg:justify-start">
+              <div className="flex items-baseline gap-3 mb-4 justify-center lg:justify-start">
                 <span className="font-serif text-3xl lg:text-4xl font-light text-foreground">
                   £{product?.price_per_sqm?.toFixed(2) || '36.00'}
                 </span>
@@ -160,17 +160,17 @@ const Index = () => {
               </div>
 
               {/* Editorial paragraph */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md mx-auto lg:mx-0">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5 max-w-md mx-auto lg:mx-0">
                 This allocation has been secured directly from production and is available in confirmed pallet quantities only. Suitable for ground floor renovations and indoor–outdoor architectural continuity.
               </p>
 
               {/* Postcode Checker */}
-              <div className="mb-8">
+              <div className="mb-5">
                 <PostcodeChecker compact />
               </div>
 
               {/* Countdown */}
-              <div className="mb-8">
+              <div className="mb-5">
                 <CountdownTimer onExpired={() => setIsExpired(true)} />
               </div>
 
@@ -186,7 +186,7 @@ const Index = () => {
               </div>
 
               {/* Data Sheet & Downloads */}
-              <div className="mt-8 pt-6 border-t border-border space-y-3">
+              <div className="mt-5 pt-4 border-t border-border space-y-2">
                 {product?.google_drive_link && (
                   <a 
                     href={product.google_drive_link}
@@ -225,7 +225,7 @@ const Index = () => {
       </section>
 
       {/* Stock Allocation */}
-      <section className="pb-14 sm:pb-16">
+      <section className="pb-8 sm:pb-16">
         <div className="section-container">
           {product && (
             <ProductStockIndicator 
@@ -238,7 +238,7 @@ const Index = () => {
       </section>
 
       {/* Technical Specifications - Collapsible */}
-      <section className="pb-14 sm:pb-16">
+      <section className="pb-8 sm:pb-16">
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
@@ -307,11 +307,11 @@ const Index = () => {
 
 
       {/* Reservation Section */}
-      <section id="reservation" className="section-alt py-14 sm:py-16">
+      <section id="reservation" className="section-alt py-10 sm:py-16">
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
             <p className="section-label">Reservation Process</p>
-            <div className="mb-8">
+            <div className="mb-5">
               <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
                 Request Reservation
               </h2>
@@ -328,15 +328,15 @@ const Index = () => {
 
 
       {/* FAQ Section */}
-      <section className="py-14 sm:py-16">
+      <section className="py-10 sm:py-16">
         <div className="section-container">
           <FAQ />
         </div>
       </section>
 
-      {/* Pre-footer divider + tagline */}
+      {/* Pre-footer tagline */}
       <div className="section-container"><div className="section-divider" /></div>
-      <div className="py-8 text-center">
+      <div className="py-5 sm:py-8 text-center">
         <p className="font-serif text-sm text-muted-foreground tracking-[0.05em]">
           Supplying premium porcelain to designers and contractors across the UK.
         </p>
@@ -344,7 +344,7 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Footer */}
-      <footer className="py-10 sm:py-12">
+      <footer className="py-8 sm:py-12">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
