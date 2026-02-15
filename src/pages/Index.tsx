@@ -161,7 +161,7 @@ const Index = () => {
 
               {/* Editorial paragraph */}
               <p className="text-sm text-muted-foreground leading-relaxed mb-5 max-w-md mx-auto lg:mx-0">
-                This allocation has been secured directly from production and is available in confirmed pallet quantities only. Suitable for ground floor renovations and indoor–outdoor architectural continuity.
+                This allocation has been secured directly from production and is available in confirmed bulk quantities (over 57 sq.m only). Suitable for walls and floors, with matching 20mm outdoor option.
               </p>
 
               {/* Postcode Checker */}
