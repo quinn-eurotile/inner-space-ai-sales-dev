@@ -312,11 +312,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
       <form onSubmit={handleShowTerms} className={cn("space-y-5", showTerms && "hidden")}>
         <div className="py-4 border-y border-border">
-          <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-            Reservations require a prior sample order. Your reservation will be linked to the email address used for your sample order.
-          </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} sq.m per order).
+            Reservations are linked to confirmed sample requests. Minimum {MIN_ORDER_SQM} sq.m. Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} sq.m per order).
           </p>
         </div>
 
@@ -484,7 +481,12 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                     setErrors(prev => ({ ...prev, requiredDeliveryDate: undefined }));
                   }
                 }}
-                disabled={(date) => date < new Date()}
+                disabled={(date) => {
+                  const fourWeeksFromNow = new Date();
+                  fourWeeksFromNow.setDate(fourWeeksFromNow.getDate() + 28);
+                  fourWeeksFromNow.setHours(0, 0, 0, 0);
+                  return date < fourWeeksFromNow;
+                }}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
               />
