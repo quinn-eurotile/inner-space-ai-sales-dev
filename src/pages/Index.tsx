@@ -7,7 +7,7 @@ import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
-import { ShareButtons } from '@/components/ShareButtons';
+
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
 import { Download, FileText } from 'lucide-react';
@@ -216,10 +216,6 @@ const Index = () => {
                 )}
               </div>
 
-              {/* Share */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <ShareButtons />
-              </div>
             </div>
 
             {/* Right: Image */}
