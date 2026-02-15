@@ -132,7 +132,7 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Hero Section */}
-      <section className="pt-8 pb-10 sm:pt-14 sm:pb-16 lg:pt-16 lg:pb-20">
+      <section className="pt-8 pb-6 sm:pt-14 sm:pb-10 lg:pt-16 lg:pb-12">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             {/* Left: Text */}
