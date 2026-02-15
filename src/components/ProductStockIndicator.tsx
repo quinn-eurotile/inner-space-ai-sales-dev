@@ -65,7 +65,7 @@ export function ProductStockIndicator({
 
   return (
     <div className="w-full max-w-xl mx-auto text-center">
-      <p className="section-label">Allocation Overview</p>
+      <p className="section-label section-label--center">Allocation Overview</p>
       
       <div className="flex justify-center gap-16 sm:gap-24">
         <div>
@@ -83,6 +83,7 @@ export function ProductStockIndicator({
           <p className="font-serif text-3xl font-light text-foreground tabular-nums">
             {Math.round(remainingSqm).toLocaleString()} sq.m
           </p>
+          <div className="w-10 h-[2px] bg-brand-accent mx-auto mt-2" />
         </div>
       </div>
       

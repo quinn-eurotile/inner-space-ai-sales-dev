@@ -13,7 +13,7 @@ import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
 import { Package, Bell, Download, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import innerSpaceLogo from '@/assets/inner-space-logo.png';
+import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 import heroImage from '@/assets/hero-tiles.jpg';
 
 interface Product {
@@ -135,9 +135,10 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Left: Text */}
             <div className="order-2 lg:order-1">
-              <h1 className="font-serif text-h1 lg:text-h1-lg font-light text-foreground mb-4 leading-[1.05]">
+              <h1 className="font-serif text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
                 Miami Grande Bianco
               </h1>
+              <div className="w-16 h-[2px] bg-brand-accent mb-4" />
               <p className="text-muted-foreground text-base mb-1">120×120cm — Made in Italy</p>
               <p className="text-muted-foreground text-sm mb-8">
                 Including nationwide kerbside delivery
@@ -195,7 +196,7 @@ const Index = () => {
                     href={product.google_drive_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline"
                   >
                     <Download className="h-4 w-4" />
                     <span>Download high-res images</span>
@@ -206,7 +207,7 @@ const Index = () => {
                     href={product.data_sheet_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline"
                   >
                     <FileText className="h-4 w-4" />
                     <span>Tile performance data sheet</span>
