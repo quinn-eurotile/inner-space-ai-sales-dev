@@ -142,10 +142,14 @@ Due to pallet quantities, it is generally unsuitable for small bathroom installa
   },
 ];
 
-export function FAQ() {
+interface FAQProps {
+  showHeader?: boolean;
+}
+
+export function FAQ({ showHeader = true }: FAQProps) {
   return (
     <div>
-      <p className="section-label">Frequently Asked Questions</p>
+      {showHeader && <p className="section-label">Frequently Asked Questions</p>}
       <div className="max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
