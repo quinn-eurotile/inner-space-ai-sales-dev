@@ -225,10 +225,10 @@ const Index = () => {
       </section>
 
       {/* Stock Allocation */}
-      <section className="pb-8 sm:pb-16">
+      <section className="pb-4 sm:pb-10">
         <div className="section-container">
           {product && (
-            <ProductStockIndicator 
+            <ProductStockIndicator
               productId={product.id}
               initialAllocation={product.stock_allocation || 38}
               initialSold={product.stock_sold || 0}
@@ -238,7 +238,7 @@ const Index = () => {
       </section>
 
       {/* Technical Specifications - Collapsible */}
-      <section className="pb-8 sm:pb-16">
+      <section className="pb-4 sm:pb-8">
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
@@ -307,7 +307,7 @@ const Index = () => {
 
 
       {/* Reservation Section */}
-      <section id="reservation" className="section-alt py-10 sm:py-16">
+      <section id="reservation" className="section-alt py-6 sm:py-12">
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
             <p className="section-label">Reservation Process</p>
@@ -328,7 +328,7 @@ const Index = () => {
 
 
       {/* FAQ Section */}
-      <section className="py-10 sm:py-16">
+      <section className="py-6 sm:py-12">
         <div className="section-container">
           <FAQ />
         </div>
