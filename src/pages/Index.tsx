@@ -104,15 +104,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="py-4 sm:py-6">
+      {/* Header - Fixed on mobile */}
+      <header className="py-3 sm:py-6 sticky top-0 z-50 bg-background/95 backdrop-blur-sm">
         <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 sm:h-10 w-auto"
+            className="h-6 sm:h-10 w-auto"
           />
-          <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
             Min. order 57 sq.m
           </span>
         </div>
@@ -254,9 +254,6 @@ const Index = () => {
                   Hide details <ChevronUp className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 mb-3">
-                Full technical and performance data.
-              </p>
             </CollapsibleTrigger>
             <CollapsibleContent>
               {product && (
@@ -330,7 +327,27 @@ const Index = () => {
       {/* FAQ Section */}
       <section className="py-6 sm:py-12">
         <div className="section-container">
-          <FAQ />
+          <Collapsible>
+            <CollapsibleTrigger className="w-full text-left group">
+              <p className="section-label">Frequently Asked Questions</p>
+              <div className="flex items-center justify-between">
+                <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">
+                  FAQ
+                </h2>
+                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
+                  Show <ChevronDown className="h-3.5 w-3.5" />
+                </span>
+                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
+                  Hide <ChevronUp className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-4">
+                <FAQ showHeader={false} />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </section>
 
