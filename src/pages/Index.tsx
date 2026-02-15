@@ -160,15 +160,9 @@ const Index = () => {
               </div>
 
               {/* Editorial paragraph */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-3 max-w-md mx-auto lg:mx-0">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md mx-auto lg:mx-0">
                 This allocation has been secured directly from production and is available in confirmed pallet quantities only. Suitable for ground floor renovations and indoor–outdoor architectural continuity.
               </p>
-
-              {product?.matching_outdoor_option && (
-                <p className="text-sm text-muted-foreground mb-6 uppercase tracking-[0.1em] font-medium">
-                  Need a matching patio/outdoor porcelain tile for indoor/outdoors?
-                </p>
-              )}
 
               {/* Postcode Checker */}
               <div className="mb-8">
