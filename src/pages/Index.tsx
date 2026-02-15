@@ -247,11 +247,11 @@ const Index = () => {
                 <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">
                   Performance & Material Data
                 </h2>
-                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
-                  Show details <ChevronDown className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
+                  Show <ChevronDown className="h-3 w-3" />
                 </span>
-                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
-                  Hide details <ChevronUp className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
+                  Hide <ChevronUp className="h-3 w-3" />
                 </span>
               </div>
             </CollapsibleTrigger>
@@ -334,11 +334,11 @@ const Index = () => {
                 <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">
                   FAQ
                 </h2>
-                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
-                  Show <ChevronDown className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">
+                  Show <ChevronDown className="h-3 w-3" />
                 </span>
-                <span className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
-                  Hide <ChevronUp className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground hidden group-data-[state=open]:flex">
+                  Hide <ChevronUp className="h-3 w-3" />
                 </span>
               </div>
             </CollapsibleTrigger>
