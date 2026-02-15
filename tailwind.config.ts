@@ -20,8 +20,8 @@ export default {
       fontSize: {
         'h1': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
         'h1-lg': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'h2': ['1.75rem', { lineHeight: '1.3' }],
-        'h2-lg': ['2rem', { lineHeight: '1.3' }],
+        'h2': ['1.25rem', { lineHeight: '1.3' }],
+        'h2-lg': ['1.4rem', { lineHeight: '1.3' }],
       },
       colors: {
         border: "hsl(var(--border))",
