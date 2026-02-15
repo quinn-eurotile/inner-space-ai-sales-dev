@@ -313,7 +313,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       <form onSubmit={handleShowTerms} className={cn("space-y-5", showTerms && "hidden")}>
         <div className="py-4 border-y border-border">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Reservations are linked to confirmed sample requests. Minimum {MIN_ORDER_SQM} sq.m. Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} sq.m per order).
+            Reservations are linked to confirmed sample requests. Minimum {MIN_ORDER_SQM} sq.m.
           </p>
         </div>
 
