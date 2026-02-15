@@ -17,6 +17,12 @@ export default {
         serif: ["Playfair Display", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
       },
+      fontSize: {
+        'h1': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'h1-lg': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'h2': ['1.75rem', { lineHeight: '1.3' }],
+        'h2-lg': ['2rem', { lineHeight: '1.3' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -51,17 +57,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // InniSpace custom colors
-        stone: {
-          DEFAULT: "hsl(var(--stone))",
-          light: "hsl(var(--stone-light))",
-        },
-        charcoal: "hsl(var(--charcoal))",
-        cream: "hsl(var(--cream))",
-        "warm-gray": "hsl(var(--warm-gray))",
-        copper: "hsl(var(--copper))",
         success: "hsl(var(--success))",
-        warning: "hsl(var(--warning))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -104,9 +100,7 @@ export default {
         "stock-decrease": "stock-decrease 0.5s ease-out",
       },
       boxShadow: {
-        'premium': '0 4px 20px -2px hsl(30 10% 15% / 0.08)',
-        'premium-lg': '0 8px 30px -4px hsl(30 10% 15% / 0.12)',
-        'inner-soft': 'inset 0 2px 4px 0 hsl(30 10% 15% / 0.04)',
+        'none': 'none',
       },
     },
   },

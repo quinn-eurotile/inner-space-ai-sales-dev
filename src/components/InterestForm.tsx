@@ -52,7 +52,6 @@ export function InterestForm({ onSuccess }: InterestFormProps) {
     
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -62,11 +61,9 @@ export function InterestForm({ onSuccess }: InterestFormProps) {
 
   if (isSuccess) {
     return (
-      <div className="text-center py-6 animate-fade-in">
-        <div className="w-14 h-14 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
-          <Check className="h-6 w-6 text-success" />
-        </div>
-        <h3 className="text-lg font-serif font-semibold mb-2">You're on the list</h3>
+      <div className="text-center py-8 animate-fade-in">
+        <Check className="h-5 w-5 text-foreground mx-auto mb-4" />
+        <h3 className="font-serif text-lg font-light text-foreground mb-2">You're on the list</h3>
         <p className="text-sm text-muted-foreground">
           We'll notify you when the next allocation opens.
         </p>
@@ -75,54 +72,44 @@ export function InterestForm({ onSuccess }: InterestFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-          <Bell className="h-5 w-5 text-accent-foreground" />
-        </div>
-        <div>
-          <h3 className="font-medium">Register Interest</h3>
-          <p className="text-sm text-muted-foreground">For future allocation releases</p>
-        </div>
-      </div>
-      
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="interest-name">Name</Label>
+        <Label htmlFor="interest-name" className="text-xs tracking-wide uppercase text-muted-foreground">Name</Label>
         <Input
           id="interest-name"
           type="text"
           placeholder="Your name"
           value={formData.name}
           onChange={handleChange('name')}
-          className={errors.name ? 'border-destructive' : ''}
+          className={`h-11 ${errors.name ? 'border-muted-foreground' : ''}`}
         />
-        {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+        {errors.name && <p className="text-xs text-muted-foreground">{errors.name}</p>}
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="interest-email">Email</Label>
+        <Label htmlFor="interest-email" className="text-xs tracking-wide uppercase text-muted-foreground">Email</Label>
         <Input
           id="interest-email"
           type="email"
           placeholder="you@example.com"
           value={formData.email}
           onChange={handleChange('email')}
-          className={errors.email ? 'border-destructive' : ''}
+          className={`h-11 ${errors.email ? 'border-muted-foreground' : ''}`}
         />
-        {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+        {errors.email && <p className="text-xs text-muted-foreground">{errors.email}</p>}
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="interest-postcode">Postcode</Label>
+        <Label htmlFor="interest-postcode" className="text-xs tracking-wide uppercase text-muted-foreground">Postcode</Label>
         <Input
           id="interest-postcode"
           type="text"
           placeholder="SW1A 1AA"
           value={formData.postcode}
           onChange={handleChange('postcode')}
-          className={errors.postcode ? 'border-destructive' : ''}
+          className={`h-11 ${errors.postcode ? 'border-muted-foreground' : ''}`}
         />
-        {errors.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
+        {errors.postcode && <p className="text-xs text-muted-foreground">{errors.postcode}</p>}
       </div>
       
       <Button 
@@ -131,7 +118,7 @@ export function InterestForm({ onSuccess }: InterestFormProps) {
         className="w-full h-11"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Registering...' : 'Notify Me'}
+        {isSubmitting ? 'Registering…' : 'Notify Me'}
       </Button>
     </form>
   );

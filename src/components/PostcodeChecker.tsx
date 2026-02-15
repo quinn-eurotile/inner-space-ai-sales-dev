@@ -26,10 +26,9 @@ interface PostcodeCheckerProps {
 
 function extractPostcodeParts(postcode: string) {
   const normalized = postcode.toUpperCase().replace(/\s/g, '');
-  // UK postcode: outward code = everything except last 3 chars
   const outward = normalized.length > 3 ? normalized.slice(0, -3) : normalized;
   const area = outward.match(/^[A-Z]+/)?.[0] || '';
-  const district = outward; // e.g. SW6, EC1, W1
+  const district = outward;
   return { normalized, area, district };
 }
 
@@ -44,7 +43,6 @@ function getUtmParams() {
   };
 }
 
-// Placeholder tracking function
 function trackEvent(eventName: string, data?: Record<string, unknown>) {
   console.log(`[Track] ${eventName}`, data);
 }
@@ -67,7 +65,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
     const utms = getUtmParams();
 
     try {
-      // Fetch all active rules with their zones
       const { data: rules, error: rulesError } = await supabase
         .from('postcode_rules')
         .select('id, match_type, pattern, zone_id, priority')
@@ -76,10 +73,8 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
 
       if (rulesError) throw rulesError;
 
-      // Match: DISTRICT first, then AREA, by priority (already sorted desc)
       let matchedRule: typeof rules[0] | null = null;
 
-      // Try district match first
       for (const rule of rules || []) {
         if (rule.match_type === 'DISTRICT' && rule.pattern === district) {
           matchedRule = rule;
@@ -87,7 +82,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
         }
       }
 
-      // Then area match
       if (!matchedRule) {
         for (const rule of rules || []) {
           if (rule.match_type === 'AREA' && rule.pattern === area) {
@@ -97,7 +91,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
         }
       }
 
-      // Get zone - either matched or default to Tier S
       let zone: DeliveryZone;
       if (matchedRule) {
         const { data: zoneData } = await supabase
@@ -107,7 +100,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
           .single();
         zone = zoneData!;
       } else {
-        // Default to Tier S
         const { data: defaultZone } = await supabase
           .from('delivery_zones')
           .select('*')
@@ -124,7 +116,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
       setResult(postcodeResult);
       onResult?.(postcodeResult);
 
-      // Log the check
       await supabase.from('postcode_checks').insert({
         raw_postcode_input: postcode,
         normalized_postcode: normalized,
@@ -135,9 +126,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
         ...utms,
       });
 
-      // Track events
       trackEvent('postcode_check_success', { tier: zone.tier_code, postcode: normalized });
-      trackEvent(`postcode_check_tier_${zone.tier_code}`, { postcode: normalized });
 
     } catch (err) {
       console.error('Postcode check error:', err);
@@ -166,7 +155,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Enter your postcode (e.g. SW6 2AB)"
+            placeholder="Enter your postcode"
             value={postcode}
             onChange={(e) => {
               setPostcode(e.target.value);
@@ -175,43 +164,43 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
               onResult?.(null);
             }}
             onKeyDown={handleKeyDown}
-            className="pl-10 h-12 text-base bg-background border-border focus:border-primary"
+            className="pl-10 h-11"
           />
         </div>
         <Button
           onClick={checkPostcode}
           disabled={!postcode.trim() || isChecking}
-          className="h-12 px-6"
+          variant="outline"
+          className="h-11 px-5"
         >
-          {isChecking ? 'Checking...' : 'Check Delivery'}
+          {isChecking ? 'Checking…' : 'Check'}
         </Button>
       </div>
 
       {error && (
-        <div className="mt-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2 animate-fade-in">
-          <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
-          <p className="text-sm text-destructive">{error}</p>
+        <div className="mt-3 flex items-center gap-2 animate-fade-in">
+          <AlertTriangle className="h-4 w-4 text-muted-foreground shrink-0" />
+          <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       )}
 
       {zone && (
         <div className="mt-4 animate-fade-in">
-          {/* Tier result card */}
-          <div className={`p-4 rounded-lg border ${isTierS ? 'bg-success/10 border-success/20' : isTierQ ? 'bg-primary/10 border-primary/20' : 'bg-secondary/50 border-border'}`}>
+          <div className="py-4 border-t border-border">
             <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isTierS ? 'bg-success/20' : isTierQ ? 'bg-primary/20' : 'bg-secondary'}`}>
+              <div className="mt-0.5">
                 {isTierS ? (
-                  <Check className="h-4 w-4 text-success" />
+                  <Check className="h-4 w-4 text-foreground" />
                 ) : (
                   <Truck className="h-4 w-4 text-muted-foreground" />
                 )}
               </div>
-              <div className="flex-1">
-                <p className={`font-semibold text-sm ${isTierS ? 'text-success' : 'text-foreground'}`}>
+              <div>
+                <p className="text-sm text-foreground">
                   {zone.tier_label}
                 </p>
                 {hasSurcharge && (
-                  <p className="text-lg font-bold text-foreground mt-1">
+                  <p className="text-sm text-foreground mt-1">
                     +£{Number(zone.surcharge_per_sqm).toFixed(2)} per m²
                   </p>
                 )}
@@ -222,20 +211,19 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
             </div>
           </div>
 
-          {/* Estimated cost calculator for surcharge tiers */}
           {hasSurcharge && (
-            <div className="mt-3 p-3 bg-secondary/30 border border-border rounded-lg">
+            <div className="py-3 border-t border-border">
               <button
                 type="button"
                 onClick={() => setShowEstimator(!showEstimator)}
-                className="text-xs font-medium text-primary hover:underline underline-offset-2"
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
               >
-                {showEstimator ? 'Hide' : 'Show'} estimated delivery surcharge
+                {showEstimator ? 'Hide' : 'Estimate'} delivery surcharge
               </button>
               {showEstimator && (
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-muted-foreground whitespace-nowrap">Estimated m²:</label>
+                    <label className="text-xs text-muted-foreground whitespace-nowrap">m²:</label>
                     <Input
                       type="number"
                       min={1}
@@ -244,11 +232,8 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
                       className="h-8 w-24 text-sm"
                     />
                   </div>
-                  <p className="text-sm font-medium text-foreground">
-                    {estimatedSqm} m² × £{Number(zone.surcharge_per_sqm).toFixed(2)} ={' '}
-                    <span className="text-primary font-bold">
-                      £{(estimatedSqm * Number(zone.surcharge_per_sqm)).toFixed(2)}
-                    </span>
+                  <p className="text-sm text-foreground">
+                    {estimatedSqm} m² × £{Number(zone.surcharge_per_sqm).toFixed(2)} = £{(estimatedSqm * Number(zone.surcharge_per_sqm)).toFixed(2)}
                   </p>
                 </div>
               )}
@@ -257,7 +242,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground mt-3 text-center">
+      <p className="text-xs text-muted-foreground mt-3">
         Delivery tariffs are pass-through logistics costs based on your delivery postcode.
       </p>
     </div>

@@ -26,32 +26,25 @@ export function ActionCard({
   buttonText,
   buttonVariant = 'default',
   children,
-  highlight = false,
 }: ActionCardProps) {
   return (
-    <div 
-      className={`p-6 rounded-lg border transition-all ${
-        highlight 
-          ? 'bg-primary/5 border-primary/20 shadow-premium' 
-          : 'bg-card border-border hover:border-primary/30 hover:shadow-premium'
-      }`}
-    >
-      <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-4">
-        <Icon className="h-6 w-6 text-foreground" />
+    <div>
+      <div className="mb-4">
+        <Icon className="h-5 w-5 text-muted-foreground" />
       </div>
       
-      <h3 className="text-lg font-bold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground mb-6">{description}</p>
+      <h3 className="font-serif text-lg font-light text-foreground mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{description}</p>
       
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={buttonVariant} className="w-full">
+          <Button variant={buttonVariant} className="text-sm tracking-wide">
             {buttonText}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-bold">{title}</DialogTitle>
+            <DialogTitle className="font-serif font-light text-xl">{title}</DialogTitle>
           </DialogHeader>
           {children}
         </DialogContent>
