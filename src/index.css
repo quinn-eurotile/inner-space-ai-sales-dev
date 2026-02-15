@@ -88,9 +88,9 @@
     @apply max-w-[1180px] mx-auto px-6 sm:px-8 lg:px-10;
   }
   .section-label {
-    @apply text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-10 relative;
+    @apply text-[13px] tracking-[0.12em] uppercase text-muted-foreground mb-4 relative;
     font-variant: all-small-caps;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.12em;
   }
   .section-label::before {
     content: '';
@@ -98,7 +98,10 @@
     width: 24px;
     height: 1px;
     background-color: hsl(var(--brand-accent));
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+  }
+  .section-label--center {
+    @apply text-center;
   }
   .section-label--center::before {
     margin-left: auto;

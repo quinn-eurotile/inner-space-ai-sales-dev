@@ -71,7 +71,7 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
 
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
-      <span className="font-serif text-2xl sm:text-3xl font-light text-foreground tabular-nums">
+      <span className="font-serif text-xl sm:text-2xl font-light text-foreground tabular-nums">
         {value.toString().padStart(2, '0')}
       </span>
       <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground mt-1">
@@ -81,22 +81,19 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
   );
 
   return (
-    <div>
-      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
-        Allocation closes on
+    <div className="text-center lg:text-left">
+      <p className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-1">
+        Allocation closes {format(endDate, "d MMMM yyyy")}
       </p>
-      <p className="text-xs text-muted-foreground mb-4">
-        {format(endDate, "d MMMM yyyy")}
-      </p>
-      <div className="flex gap-5 sm:gap-6">
+      <div className="flex gap-4 sm:gap-5 justify-center lg:justify-start mt-3">
         <TimeBlock value={timeLeft.days} label="Days" />
-        <span className="font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
-        <TimeBlock value={timeLeft.hours} label="Hours" />
-        <span className="font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
-        <TimeBlock value={timeLeft.minutes} label="Mins" />
-        <span className="hidden sm:inline font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
+        <span className="font-serif text-xl sm:text-2xl font-light text-muted-foreground/40">:</span>
+        <TimeBlock value={timeLeft.hours} label="Hrs" />
+        <span className="font-serif text-xl sm:text-2xl font-light text-muted-foreground/40">:</span>
+        <TimeBlock value={timeLeft.minutes} label="Min" />
+        <span className="hidden sm:inline font-serif text-xl sm:text-2xl font-light text-muted-foreground/40">:</span>
         <div className="hidden sm:block">
-          <TimeBlock value={timeLeft.seconds} label="Secs" />
+          <TimeBlock value={timeLeft.seconds} label="Sec" />
         </div>
       </div>
     </div>

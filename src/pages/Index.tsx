@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ProductStockIndicator } from '@/components/ProductStockIndicator';
-import { ActionCard } from '@/components/ActionCard';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
@@ -11,7 +10,7 @@ import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { ShareButtons } from '@/components/ShareButtons';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
-import { Package, Bell, Download, FileText } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 import heroImage from '@/assets/hero-tiles.jpg';
@@ -105,15 +104,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="py-6 sm:py-8">
+      <header className="py-5 sm:py-6">
         <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 sm:h-10 w-auto"
+            className="h-10 sm:h-12 w-auto"
           />
-          <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-            Minimum order: 57 sq.m
+          <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+            Min. order 57 sq.m
           </span>
         </div>
       </header>
@@ -121,30 +120,32 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Allocation Notice */}
-      <div className="py-5">
-        <div className="section-container">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground text-center">
+      <div className="py-4">
+        <div className="section-container text-center">
+          <p className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground">
             Limited Factory Allocation
           </p>
         </div>
       </div>
 
+      <div className="section-container"><div className="section-divider" /></div>
+
       {/* Hero Section */}
-      <section className="pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24">
+      <section className="pt-10 pb-14 sm:pt-14 sm:pb-16 lg:pt-16 lg:pb-20">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             {/* Left: Text */}
-            <div className="order-2 lg:order-1">
-              <h1 className="font-serif text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
+            <div className="order-2 lg:order-1 text-center lg:text-left">
+              <h1 className="font-serif text-[40px] sm:text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
                 Miami Grande Bianco
               </h1>
-              <div className="w-16 h-[2px] bg-brand-accent mb-4" />
+              <div className="w-16 h-[2px] bg-brand-accent mb-5 mx-auto lg:mx-0" />
               <p className="text-muted-foreground text-base mb-1">120×120cm — Made in Italy</p>
-              <p className="text-muted-foreground text-sm mb-8">
+              <p className="text-muted-foreground text-sm mb-6">
                 Including nationwide kerbside delivery
               </p>
 
-              <div className="flex items-baseline gap-3 mb-6">
+              <div className="flex items-baseline gap-3 mb-5 justify-center lg:justify-start">
                 <span className="font-serif text-3xl lg:text-4xl font-light text-foreground">
                   £{product?.price_per_sqm?.toFixed(2) || '36.00'}
                 </span>
@@ -158,23 +159,23 @@ const Index = () => {
               </div>
 
               {/* Editorial paragraph */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md mx-auto lg:mx-0">
                 This allocation has been secured directly from production and is available in confirmed pallet quantities only. Suitable for ground floor renovations and indoor–outdoor architectural continuity.
               </p>
 
               {product?.matching_outdoor_option && (
-                <p className="text-sm text-muted-foreground mb-8">
+                <p className="text-sm text-muted-foreground mb-6">
                   Matching outdoor anti-slip option available
                 </p>
               )}
 
               {/* Postcode Checker */}
-              <div className="mb-10">
+              <div className="mb-8">
                 <PostcodeChecker compact />
               </div>
 
               {/* Countdown */}
-              <div className="mb-10">
+              <div className="mb-8">
                 <CountdownTimer onExpired={() => setIsExpired(true)} />
               </div>
 
@@ -190,13 +191,13 @@ const Index = () => {
               </div>
 
               {/* Data Sheet & Downloads */}
-              <div className="mt-10 pt-8 border-t border-border space-y-3">
+              <div className="mt-8 pt-6 border-t border-border space-y-3">
                 {product?.google_drive_link && (
                   <a 
                     href={product.google_drive_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start"
                   >
                     <Download className="h-4 w-4" />
                     <span>Download high-res images</span>
@@ -207,7 +208,7 @@ const Index = () => {
                     href={product.data_sheet_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start"
                   >
                     <FileText className="h-4 w-4" />
                     <span>Tile performance data sheet</span>
@@ -216,7 +217,7 @@ const Index = () => {
               </div>
 
               {/* Share */}
-              <div className="mt-8 pt-8 border-t border-border">
+              <div className="mt-6 pt-6 border-t border-border">
                 <ShareButtons />
               </div>
             </div>
@@ -232,13 +233,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Divider with spacing */}
-      <div className="py-[60px]">
-        <div className="section-container"><div className="section-divider" /></div>
-      </div>
+      {/* Divider */}
+      <div className="section-container"><div className="section-divider" /></div>
 
       {/* Stock Allocation */}
-      <section className="pb-20 sm:pb-28">
+      <section className="py-14 sm:py-16">
         <div className="section-container">
           {product && (
             <ProductStockIndicator 
@@ -250,13 +249,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Divider with spacing */}
-      <div className="py-[60px]">
-        <div className="section-container"><div className="section-divider" /></div>
-      </div>
+      {/* Divider */}
+      <div className="section-container"><div className="section-divider" /></div>
 
       {/* Technical Specifications */}
-      <section className="pb-20 sm:pb-28">
+      <section className="py-14 sm:py-16">
         <div className="section-container">
           {product && (
             <TechnicalSpecs 
@@ -292,11 +289,14 @@ const Index = () => {
       </section>
 
       {/* Project Suitability - alt bg */}
-      <section className="section-alt py-20 sm:py-28">
+      <section className="section-alt py-14 sm:py-16">
         <div className="section-container">
           <p className="section-label">Project Suitability</p>
+          <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-5">
+            Recommended Applications
+          </h2>
           <div className="max-w-2xl">
-            <ul className="space-y-4 text-sm text-foreground leading-relaxed">
+            <ul className="space-y-3 text-sm text-foreground leading-relaxed">
               <li className="flex items-start gap-3">
                 <span className="text-muted-foreground mt-0.5">·</span>
                 <span>Ground floor renovations and open-plan living spaces</span>
@@ -314,89 +314,58 @@ const Index = () => {
                 <span>Residential and commercial projects requiring first-quality Italian porcelain</span>
               </li>
             </ul>
-            <p className="text-xs text-muted-foreground mt-8">
+            <p className="text-xs text-muted-foreground mt-6">
               Due to pallet quantities, this allocation is generally unsuitable for small bathroom installations.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Divider with spacing */}
-      <div className="py-[60px]">
-        <div className="section-container"><div className="section-divider" /></div>
-      </div>
-
       {/* Reservation Section */}
-      <section id="reservation" className="section-alt py-20 sm:py-28">
+      <section id="reservation" className="section-alt py-14 sm:py-16">
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
             <p className="section-label">Reservation Process</p>
-            <div className="mb-10">
-              <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-4">
+            <div className="mb-8">
+              <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
                 Request Reservation
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Reservations are linked to confirmed sample requests. Minimum 57 sq.m.
               </p>
             </div>
-            <div className="border border-border bg-background p-8 sm:p-10">
+            <div className="border border-border bg-background p-6 sm:p-8">
               {product && <ReservationRequestForm productId={product.id} />}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Divider with spacing */}
-      <div className="py-[60px]">
-        <div className="section-container"><div className="section-divider" /></div>
-      </div>
+      {/* Divider */}
+      <div className="section-container"><div className="section-divider" /></div>
 
-      {/* Other Options */}
-      <section id="actions" className="pb-20 sm:pb-28">
+      {/* Next Steps strip */}
+      <section className="py-14 sm:py-16">
         <div className="section-container">
-          <p className="section-label">Delivery &amp; Terms</p>
-          <div className="mb-10">
-            <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
-              Additional Options
-            </h2>
-          </div>
-          
-          <div className="grid sm:grid-cols-2 gap-12 max-w-3xl">
+          <p className="section-label">Next Steps</p>
+          <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
             <SampleOrderDialog productId={product?.id}>
-              <div className="cursor-pointer group">
-                <div className="mb-4">
-                  <Package className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <h3 className="font-serif text-lg font-light text-foreground mb-2">Order a Sample</h3>
-                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                  20×15cm sample tile — £7 to cover postage and packaging.
-                </p>
-                <Button variant="secondary" className="text-sm tracking-[0.05em]">
-                  Order Sample
-                </Button>
-              </div>
+              <Button variant="secondary" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1">
+                Order Sample — £7
+              </Button>
             </SampleOrderDialog>
-            
-            <ActionCard
-              icon={Bell}
-              title="Register Interest"
-              description="Receive notification when the next allocation opens."
-              buttonText="Register"
-              buttonVariant="secondary"
-            >
-              <InterestForm />
-            </ActionCard>
+            <Button variant="outline" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1" asChild>
+              <a href="#reservation">Request Reservation</a>
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Divider with spacing */}
-      <div className="py-[60px]">
-        <div className="section-container"><div className="section-divider" /></div>
-      </div>
+      {/* Divider */}
+      <div className="section-container"><div className="section-divider" /></div>
 
       {/* FAQ Section */}
-      <section className="pb-20 sm:pb-28">
+      <section className="py-14 sm:py-16">
         <div className="section-container">
           <FAQ />
         </div>
@@ -404,7 +373,7 @@ const Index = () => {
 
       {/* Pre-footer divider + tagline */}
       <div className="section-container"><div className="section-divider" /></div>
-      <div className="py-12 text-center">
+      <div className="py-8 text-center">
         <p className="font-serif text-sm text-muted-foreground tracking-[0.05em]">
           Supplying premium porcelain to designers and contractors across the UK.
         </p>
@@ -412,18 +381,16 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Footer */}
-      <footer className="py-16 sm:py-20">
+      <footer className="py-10 sm:py-12">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-7 w-auto mx-auto mb-6"
+            className="h-8 w-auto mx-auto mb-4"
           />
-          <div className="mt-8">
-            <p className="text-xs text-muted-foreground tracking-[0.05em]">
-              © {new Date().getFullYear()} Inner Space. All rights reserved.
-            </p>
-          </div>
+          <p className="text-xs text-muted-foreground tracking-[0.05em]">
+            © {new Date().getFullYear()} Inner Space. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
@@ -433,25 +400,25 @@ const Index = () => {
 function AllocationClosed() {
   return (
     <>
-      <header className="py-6 sm:py-8">
+      <header className="py-5 sm:py-6">
         <div className="section-container">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 sm:h-10 w-auto"
+            className="h-10 sm:h-12 w-auto"
           />
         </div>
       </header>
       
       <div className="section-container"><div className="section-divider" /></div>
       
-      <section className="py-24 lg:py-32">
+      <section className="py-20 lg:py-24">
         <div className="section-container text-center">
           <div className="max-w-xl mx-auto">
             <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-4">
               This allocation has now closed
             </h2>
-            <p className="text-base text-muted-foreground mb-12">
+            <p className="text-base text-muted-foreground mb-10">
               The allocated stock release has ended. Register below to be notified when the next allocation opens.
             </p>
             
@@ -464,12 +431,12 @@ function AllocationClosed() {
       
       <div className="section-container"><div className="section-divider" /></div>
       
-      <footer className="py-16">
+      <footer className="py-10">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-7 w-auto mx-auto mb-3"
+            className="h-8 w-auto mx-auto mb-3"
           />
           <p className="font-serif text-sm text-muted-foreground tracking-[0.05em]">
             Supplying premium porcelain to designers and contractors across the UK.
