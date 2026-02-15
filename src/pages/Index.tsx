@@ -109,7 +109,7 @@ const Index = () => {
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-14 sm:h-16 w-auto"
+            className="h-24 sm:h-28 w-auto"
           />
           <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
             Min. order 57 sq.m
