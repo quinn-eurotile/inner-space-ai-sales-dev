@@ -1,1 +1,16 @@
 project_id = "thxyqtvpzelhwnpvmrhu"
+
+[functions.send-reservation-email]
+verify_jwt = false
+
+[functions.send-sample-confirmation]
+verify_jwt = false
+
+[functions.send-sample-dispatched]
+verify_jwt = false
+
+[functions.send-order-confirmed]
+verify_jwt = false
+
+[functions.send-reservation-reminders]
+verify_jwt = false

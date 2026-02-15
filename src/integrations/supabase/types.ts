@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      email_events: {
+        Row: {
+          created_at: string
+          email_type: string
+          id: string
+          metadata: Json | null
+          recipient_email: string
+          recipient_name: string | null
+          related_id: string | null
+          related_table: string | null
+          resend_id: string | null
+          status: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_type: string
+          id?: string
+          metadata?: Json | null
+          recipient_email: string
+          recipient_name?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          resend_id?: string | null
+          status?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_type?: string
+          id?: string
+          metadata?: Json | null
+          recipient_email?: string
+          recipient_name?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          resend_id?: string | null
+          status?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       postcode_checks: {
         Row: {
           created_at: string
@@ -393,6 +444,7 @@ export type Database = {
         Row: {
           address: string
           created_at: string
+          dispatched_at: string | null
           email: string
           id: string
           name: string
@@ -400,11 +452,13 @@ export type Database = {
           postcode: string
           product_id: string | null
           status: string
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
           address: string
           created_at?: string
+          dispatched_at?: string | null
           email: string
           id?: string
           name: string
@@ -412,11 +466,13 @@ export type Database = {
           postcode: string
           product_id?: string | null
           status?: string
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
           address?: string
           created_at?: string
+          dispatched_at?: string | null
           email?: string
           id?: string
           name?: string
@@ -424,6 +480,7 @@ export type Database = {
           postcode?: string
           product_id?: string | null
           status?: string
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: [
