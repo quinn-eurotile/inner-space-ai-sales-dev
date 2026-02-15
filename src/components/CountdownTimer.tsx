@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 
 interface TimeLeft {
   days: number;
@@ -70,10 +71,10 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
 
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
-      <span className="font-serif text-3xl sm:text-4xl font-light text-foreground tabular-nums">
+      <span className="font-serif text-2xl sm:text-3xl font-light text-foreground tabular-nums">
         {value.toString().padStart(2, '0')}
       </span>
-      <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mt-1">
+      <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground mt-1">
         {label}
       </span>
     </div>
@@ -81,16 +82,19 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
 
   return (
     <div>
-      <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground mb-4">
-        Allocation closes in
+      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-1">
+        Allocation closes on
       </p>
-      <div className="flex gap-6 sm:gap-8">
+      <p className="text-xs text-muted-foreground mb-4">
+        {format(endDate, "d MMMM yyyy")}
+      </p>
+      <div className="flex gap-5 sm:gap-6">
         <TimeBlock value={timeLeft.days} label="Days" />
-        <span className="font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
+        <span className="font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
         <TimeBlock value={timeLeft.hours} label="Hours" />
-        <span className="font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
+        <span className="font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
         <TimeBlock value={timeLeft.minutes} label="Mins" />
-        <span className="hidden sm:inline font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
+        <span className="hidden sm:inline font-serif text-2xl sm:text-3xl font-light text-muted-foreground/40">:</span>
         <div className="hidden sm:block">
           <TimeBlock value={timeLeft.seconds} label="Secs" />
         </div>

@@ -14,7 +14,7 @@ To preserve this price, orders must meet pallet quantities and structured delive
 
 This is first-quality Italian porcelain. It is not clearance, surplus, or graded stock.
 
-Once the 2,000 m² allocation is exhausted, pricing returns to standard showroom levels.`
+Once the allocation is exhausted, pricing returns to standard showroom levels.`
   },
   {
     question: "What is the minimum order?",
@@ -37,11 +37,11 @@ Reservations are held for 7 days pending payment.`
   },
   {
     question: "What if I require more than 200 m²?",
-    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 m² and a sales representative will contact you to facilitate the remainder of your order."
+    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 m² and a representative will contact you to coordinate the remainder of your order."
   },
   {
     question: "Why is full payment required upfront?",
-    answer: `Allocation stock is secured specifically against confirmed orders at this special price.
+    answer: `Allocation stock is secured specifically against confirmed orders at this price.
 
 Full payment is required prior to delivery. We do not operate deposit or staged payment terms on allocation releases.`
   },
@@ -79,10 +79,10 @@ Drivers are not responsible for moving goods beyond kerbside.`
 
 Where applicable, a per m² delivery tariff will apply in line with the Delivery Tier shown at checkout.
 
-Please confirm your postcode prior to purchase.`
+Please confirm your postcode prior to placing your order.`
   },
   {
-    question: "How much extra should I order?",
+    question: "How much additional material should I order?",
     answer: `We recommend allowing 10–15% additional material above your contractor's requirement to account for:
 • Installation waste
 • Cutting
@@ -145,15 +145,11 @@ Due to pallet quantities, it is generally unsuitable for small bathroom installa
 export function FAQ() {
   return (
     <div>
-      <div className="mb-10">
-        <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
-          Frequently Asked Questions
-        </h2>
-      </div>
+      <p className="section-label">Frequently Asked Questions</p>
       <div className="max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="border-border">
+            <AccordionItem key={index} value={`item-${index}`} className="border-border/60">
               <AccordionTrigger className="text-left text-sm font-normal hover:no-underline py-5">
                 {faq.question}
               </AccordionTrigger>

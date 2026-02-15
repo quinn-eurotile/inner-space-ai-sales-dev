@@ -10,8 +10,8 @@ interface ShareButtonsProps {
 }
 
 export function ShareButtons({ 
-  title = "Miami Grande Bianco 120x120cm - Limited Factory Allocation",
-  text = "Check out this amazing tile deal! Limited factory allocation at £36/sqm.",
+  title = "Miami Grande Bianco 120x120cm — Limited Factory Allocation",
+  text = "Limited factory allocation: Italian porcelain at £36/sqm. Confirmed pallet quantities only.",
   url = typeof window !== 'undefined' ? window.location.href : ''
 }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
