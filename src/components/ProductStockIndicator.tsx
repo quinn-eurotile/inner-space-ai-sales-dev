@@ -67,7 +67,7 @@ export function ProductStockIndicator({
     <div className="w-full max-w-xl mx-auto text-center">
       <p className="section-label section-label--center">Allocation Overview</p>
       
-      <div className="flex justify-center gap-16 sm:gap-24">
+      <div className="flex justify-center gap-14 sm:gap-20">
         <div>
           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
             Initial Allocation
@@ -87,7 +87,7 @@ export function ProductStockIndicator({
         </div>
       </div>
       
-      <p className="text-xs text-muted-foreground mt-8">
+      <p className="text-xs text-muted-foreground mt-6">
         Updated in real time based on confirmed reservations.
       </p>
     </div>

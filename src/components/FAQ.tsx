@@ -150,11 +150,11 @@ export function FAQ() {
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`} className="border-border/60">
-              <AccordionTrigger className="text-left text-sm font-normal hover:no-underline py-5">
+              <AccordionTrigger className="text-left text-[15px] font-normal hover:no-underline py-4">
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground whitespace-pre-line text-sm leading-relaxed pb-2">
+                <p className="text-muted-foreground whitespace-pre-line text-sm leading-relaxed pb-1">
                   {faq.answer}
                 </p>
               </AccordionContent>
