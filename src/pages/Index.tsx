@@ -238,7 +238,7 @@ const Index = () => {
       </section>
 
       {/* Technical Specifications - Collapsible */}
-      <section className="pb-5 sm:pb-10">
+      <section className="pb-6 sm:pb-12">
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
@@ -304,7 +304,7 @@ const Index = () => {
 
 
       {/* Reservation Section */}
-      <section id="reservation" className="section-alt py-8 sm:py-14">
+      <section id="reservation" className="section-alt py-10 sm:py-18">
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
             <p className="section-label">Reservation Process</p>
@@ -325,7 +325,7 @@ const Index = () => {
 
 
       {/* FAQ Section */}
-      <section className="py-8 sm:py-14">
+      <section className="py-10 sm:py-18">
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
