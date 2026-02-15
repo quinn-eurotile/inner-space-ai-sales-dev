@@ -243,7 +243,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
       )}
 
       <p className="text-xs text-muted-foreground mt-3">
-        Delivery tariffs are pass-through logistics costs based on your delivery postcode.
+        Certain locations are subject to additional carrier charges based on delivery postcode.
       </p>
     </div>
   );
