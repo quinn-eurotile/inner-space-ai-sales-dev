@@ -109,7 +109,7 @@ const Index = () => {
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-10 sm:h-12 w-auto"
+            className="h-14 sm:h-16 w-auto"
           />
           <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
             Min. order 57 sq.m
@@ -180,11 +180,11 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button size="lg" variant="outline" className="h-12 text-sm tracking-[0.05em] w-full" asChild>
+                <Button size="lg" className="h-12 text-sm tracking-[0.05em] w-full" asChild>
                   <a href="#reservation">Request Reservation</a>
                 </Button>
                 <SampleOrderDialog productId={product?.id}>
-                  <Button size="lg" variant="secondary" className="h-12 text-sm tracking-[0.05em] w-full">
+                  <Button size="lg" variant="secondary" className="h-12 text-sm tracking-[0.05em] w-full hover:bg-brand-accent hover:text-white hover:border-brand-accent">
                     Order Sample — £7
                   </Button>
                 </SampleOrderDialog>
@@ -285,6 +285,17 @@ const Index = () => {
               }}
             />
           )}
+          {product?.data_sheet_url && (
+            <a
+              href={product.data_sheet_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline mt-8"
+            >
+              <FileText className="h-4 w-4" />
+              <span>Download performance data (PDF)</span>
+            </a>
+          )}
         </div>
       </section>
 
@@ -314,9 +325,6 @@ const Index = () => {
                 <span>Residential and commercial projects requiring first-quality Italian porcelain</span>
               </li>
             </ul>
-            <p className="text-xs text-muted-foreground mt-6">
-              Due to pallet quantities, this allocation is generally unsuitable for small bathroom installations.
-            </p>
           </div>
         </div>
       </section>
@@ -350,11 +358,11 @@ const Index = () => {
           <p className="section-label">Next Steps</p>
           <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
             <SampleOrderDialog productId={product?.id}>
-              <Button variant="secondary" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1">
+              <Button variant="secondary" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1 hover:bg-brand-accent hover:text-white hover:border-brand-accent">
                 Order Sample — £7
               </Button>
             </SampleOrderDialog>
-            <Button variant="outline" className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1" asChild>
+            <Button className="h-11 text-sm tracking-[0.05em] w-full sm:flex-1" asChild>
               <a href="#reservation">Request Reservation</a>
             </Button>
           </div>
@@ -386,7 +394,7 @@ const Index = () => {
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 w-auto mx-auto mb-4"
+            className="h-10 w-auto mx-auto mb-4"
           />
           <p className="text-xs text-muted-foreground tracking-[0.05em]">
             © {new Date().getFullYear()} Inner Space. All rights reserved.
