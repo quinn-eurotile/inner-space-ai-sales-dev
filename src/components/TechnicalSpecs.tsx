@@ -70,17 +70,21 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
 
   return (
     <div>
-      <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-8">
-        Technical Specification
+      <p className="section-label">Technical Specification</p>
+      <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
+        Professional Data &amp; Compliance
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12">
+      <p className="text-sm text-muted-foreground mb-10">
+        Full specification for professional assessment.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-16">
         {specItems.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between items-center py-3 border-b border-border gap-4"
+            className="flex justify-between items-center py-3.5 border-b border-border/60 gap-4"
           >
             <span className="text-sm text-muted-foreground">{item.label}</span>
-            <span className="text-sm text-foreground flex items-center">
+            <span className="text-sm text-foreground flex items-center tabular-nums">
               {renderValue(item.value)}
             </span>
           </div>

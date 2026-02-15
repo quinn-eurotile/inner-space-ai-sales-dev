@@ -65,31 +65,29 @@ export function ProductStockIndicator({
 
   return (
     <div className="w-full max-w-xl mx-auto text-center">
-      <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground mb-6">
-        Allocation Status
-      </p>
+      <p className="section-label">Allocation Overview</p>
       
       <div className="flex justify-center gap-16 sm:gap-24">
         <div>
-          <p className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
             Initial Allocation
           </p>
-          <p className="font-serif text-2xl font-light text-foreground">
+          <p className="font-serif text-xl font-light text-muted-foreground tabular-nums">
             {Math.round(totalSqm).toLocaleString()} sq.m
           </p>
         </div>
         <div>
-          <p className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
             Remaining
           </p>
-          <p className="font-serif text-2xl font-light text-foreground">
+          <p className="font-serif text-3xl font-light text-foreground tabular-nums">
             {Math.round(remainingSqm).toLocaleString()} sq.m
           </p>
         </div>
       </div>
       
-      <p className="text-xs text-muted-foreground mt-6">
-        Updated in real time
+      <p className="text-xs text-muted-foreground mt-8">
+        Updated in real time based on confirmed reservations.
       </p>
     </div>
   );

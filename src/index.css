@@ -8,6 +8,7 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 10%;
+    --surface: 0 0% 98%;
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
@@ -37,7 +38,7 @@
     --success: 142 50% 40%;
     --success-foreground: 0 0% 100%;
 
-    --radius: 0.2rem;
+    --radius: 0.25rem;
   }
 
   .dark {
@@ -83,6 +84,17 @@
 @layer components {
   .section-container {
     @apply max-w-[1180px] mx-auto px-6 sm:px-8 lg:px-10;
+  }
+  .section-label {
+    @apply text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-10;
+    font-variant: all-small-caps;
+    letter-spacing: 0.2em;
+  }
+  .section-divider {
+    @apply border-t border-border;
+  }
+  .section-alt {
+    background-color: hsl(var(--surface));
   }
 }
 
