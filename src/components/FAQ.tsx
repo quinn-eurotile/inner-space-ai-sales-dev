@@ -145,23 +145,20 @@ Due to pallet quantities, it is generally unsuitable for small bathroom installa
 export function FAQ() {
   return (
     <div>
-      <div className="text-center mb-6 sm:mb-10">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3">
+      <div className="mb-10">
+        <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
           Frequently Asked Questions
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Everything you need to know about this allocation
-        </p>
       </div>
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-left text-sm sm:text-base">
+            <AccordionItem key={index} value={`item-${index}`} className="border-border">
+              <AccordionTrigger className="text-left text-sm font-normal hover:no-underline py-5">
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-muted-foreground whitespace-pre-line text-xs sm:text-sm">
+                <p className="text-muted-foreground whitespace-pre-line text-sm leading-relaxed pb-2">
                   {faq.answer}
                 </p>
               </AccordionContent>

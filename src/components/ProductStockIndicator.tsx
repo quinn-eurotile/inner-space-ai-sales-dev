@@ -16,7 +16,6 @@ export function ProductStockIndicator({
   const [stockSold, setStockSold] = useState(initialSold);
   
   useEffect(() => {
-    // Fetch current stock from database
     const fetchStock = async () => {
       const { data, error } = await supabase
         .from('products')
@@ -32,7 +31,6 @@ export function ProductStockIndicator({
 
     fetchStock();
 
-    // Subscribe to real-time updates
     const channel = supabase
       .channel('product-stock')
       .on(
@@ -60,45 +58,38 @@ export function ProductStockIndicator({
     };
   }, [productId, initialAllocation, initialSold]);
 
-  // Convert pallets to sq.m (assuming ~39.42 sqm per pallet based on product spec)
   const SQM_PER_PALLET = 39.42;
   const totalSqm = stockAllocation * SQM_PER_PALLET;
   const soldSqm = stockSold * SQM_PER_PALLET;
   const remainingSqm = totalSqm - soldSqm;
-  
-  const percentageRemaining = totalSqm > 0 ? (remainingSqm / totalSqm) * 100 : 0;
-  const isLowStock = remainingSqm <= 400;
-  const isCriticalStock = remainingSqm <= 200;
 
   return (
-    <div className="w-full max-w-xl mx-auto">
-      <div className="flex justify-between items-baseline mb-3">
+    <div className="w-full max-w-xl mx-auto text-center">
+      <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground mb-6">
+        Allocation Status
+      </p>
+      
+      <div className="flex justify-center gap-16 sm:gap-24">
         <div>
-          <span className="text-sm text-muted-foreground">Initial allocation: </span>
-          <span className="font-medium">{Math.round(totalSqm).toLocaleString()} SQ.M</span>
+          <p className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
+            Initial Allocation
+          </p>
+          <p className="font-serif text-2xl font-light text-foreground">
+            {Math.round(totalSqm).toLocaleString()} sq.m
+          </p>
         </div>
-        <div className={`text-2xl font-bold ${
-          isCriticalStock ? 'text-destructive' : isLowStock ? 'text-primary' : 'text-foreground'
-        }`}>
-          {Math.round(remainingSqm).toLocaleString()} SQ.M remaining
+        <div>
+          <p className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-2">
+            Remaining
+          </p>
+          <p className="font-serif text-2xl font-light text-foreground">
+            {Math.round(remainingSqm).toLocaleString()} sq.m
+          </p>
         </div>
       </div>
       
-      <div className="relative h-3 bg-secondary rounded-full overflow-hidden">
-        <div 
-          className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out rounded-full ${
-            isCriticalStock 
-              ? 'bg-destructive' 
-              : isLowStock 
-                ? 'bg-primary' 
-                : 'bg-primary'
-          }`}
-          style={{ width: `${percentageRemaining}%` }}
-        />
-      </div>
-      
-      <p className="text-xs text-muted-foreground mt-2 text-center">
-        Remaining allocation updates in real time
+      <p className="text-xs text-muted-foreground mt-6">
+        Updated in real time
       </p>
     </div>
   );

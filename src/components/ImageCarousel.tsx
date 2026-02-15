@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 
 interface ImageCarouselProps {
@@ -23,8 +22,8 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
 
   if (allImages.length === 0) {
     return (
-      <div className="aspect-square bg-secondary flex items-center justify-center rounded-lg">
-        <span className="text-muted-foreground">No images available</span>
+      <div className="aspect-square bg-muted flex items-center justify-center">
+        <span className="text-muted-foreground text-sm">No images available</span>
       </div>
     );
   }
@@ -32,63 +31,49 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
   return (
     <>
       <div className="relative w-full">
-        {/* Main Image Display */}
         <div 
-          className="aspect-square relative overflow-hidden rounded-lg cursor-pointer group"
+          className="aspect-square relative overflow-hidden cursor-pointer group"
           onClick={() => setLightboxOpen(true)}
         >
           <img
             src={allImages[currentIndex]}
             alt={`Product image ${currentIndex + 1}`}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover"
           />
           
-          {/* Zoom indicator */}
-          <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors flex items-center justify-center">
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 rounded-full p-3">
-              <ZoomIn className="h-6 w-6 text-foreground" />
+          <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <ZoomIn className="h-5 w-5 text-foreground/60" />
             </div>
           </div>
           
-          {/* Navigation Arrows */}
           {allImages.length > 1 && (
             <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrevious();
-                }}
+              <button
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); goToPrevious(); }}
               >
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNext();
-                }}
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); goToNext(); }}
               >
-                <ChevronRight className="h-6 w-6" />
-              </Button>
+                <ChevronRight className="h-4 w-4" />
+              </button>
             </>
           )}
         </div>
         
-        {/* Thumbnail Strip */}
         {allImages.length > 1 && (
-          <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+          <div className="flex gap-2 mt-3">
             {allImages.map((image, index) => (
               <button
                 key={index}
-                className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
+                className={`flex-shrink-0 w-14 h-14 overflow-hidden border transition-colors ${
                   index === currentIndex 
-                    ? 'border-primary' 
-                    : 'border-transparent hover:border-muted-foreground/50'
+                    ? 'border-foreground' 
+                    : 'border-border hover:border-muted-foreground'
                 }`}
                 onClick={() => setCurrentIndex(index)}
               >
@@ -101,80 +86,36 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             ))}
           </div>
         )}
-        
-        {/* Dot Indicators */}
-        {allImages.length > 1 && (
-          <div className="flex justify-center gap-2 mt-3">
-            {allImages.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-primary' : 'bg-muted-foreground/30'
-                }`}
-                onClick={() => setCurrentIndex(index)}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Lightbox Dialog */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-background/95 border-none">
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            <DialogClose className="absolute top-4 right-4 z-10 rounded-full bg-background/80 p-2 hover:bg-background transition-colors">
-              <X className="h-6 w-6" />
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-background border-border">
+          <div className="relative w-full h-full flex items-center justify-center p-6">
+            <DialogClose className="absolute top-4 right-4 z-10 h-8 w-8 flex items-center justify-center bg-background border border-border hover:bg-muted transition-colors">
+              <X className="h-4 w-4" />
             </DialogClose>
             
             <img
               src={allImages[currentIndex]}
               alt={`Product image ${currentIndex + 1} - enlarged`}
-              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              className="max-w-full max-h-[85vh] object-contain"
             />
             
-            {/* Lightbox Navigation */}
             {allImages.length > 1 && (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 h-12 w-12"
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center bg-background border border-border hover:bg-muted transition-colors"
                   onClick={goToPrevious}
                 >
-                  <ChevronLeft className="h-8 w-8" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background/90 h-12 w-12"
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center bg-background border border-border hover:bg-muted transition-colors"
                   onClick={goToNext}
                 >
-                  <ChevronRight className="h-8 w-8" />
-                </Button>
+                  <ChevronRight className="h-5 w-5" />
+                </button>
               </>
-            )}
-            
-            {/* Lightbox Thumbnails */}
-            {allImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 p-2 rounded-lg">
-                {allImages.map((image, index) => (
-                  <button
-                    key={index}
-                    className={`flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
-                      index === currentIndex 
-                        ? 'border-primary' 
-                        : 'border-transparent hover:border-muted-foreground/50'
-                    }`}
-                    onClick={() => setCurrentIndex(index)}
-                  >
-                    <img
-                      src={image}
-                      alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
             )}
           </div>
         </DialogContent>

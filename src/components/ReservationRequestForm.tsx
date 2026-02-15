@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, Clock, AlertCircle, CalendarIcon, ShieldCheck, Info, CircleAlert } from 'lucide-react';
+import { Check, Clock, AlertCircle, CalendarIcon, Info, CircleAlert } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { supabase } from '@/integrations/supabase/client';
@@ -111,7 +111,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     setIsCheckingEligibility(true);
 
     try {
-      // Check if the email has a confirmed sample order
       const { data: sampleOrders, error: sampleError } = await supabase
         .from('sample_orders')
         .select('id')
@@ -130,7 +129,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
       setIsCheckingEligibility(false);
 
-      // Check existing reservations for this email
       const { data: existingReservations } = await supabase
         .from('reservations')
         .select('required_quantity_sqm')
@@ -141,7 +139,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       const remainingAllowance = MAX_RESERVATION_SQM - existingTotal;
 
       if (remainingAllowance <= 0) {
-        setSubmitError(`You have already reserved the maximum of ${MAX_RESERVATION_SQM} SQ.M with this email address. A representative will contact you if you need additional stock.`);
+        setSubmitError(`You have already reserved the maximum of ${MAX_RESERVATION_SQM} SQ.M with this email address.`);
         setIsSubmitting(false);
         return;
       }
@@ -171,7 +169,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
       if (error) throw error;
 
-      // Try to send email notification (non-blocking)
       try {
         await supabase.functions.invoke('send-reservation-email', {
           body: {
@@ -208,36 +205,25 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   if (isSuccess && heldUntil) {
     const reservedQty = Math.min(requestedQuantity, MAX_RESERVATION_SQM);
     return (
-      <div className="text-center py-8 animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
-          <Check className="h-8 w-8 text-success" />
-        </div>
-        <h3 className="text-xl font-bold mb-2">Reservation Request Sent</h3>
+      <div className="text-center py-10 animate-fade-in">
+        <Check className="h-5 w-5 text-foreground mx-auto mb-4" />
+        <h3 className="font-serif text-xl font-light mb-3">Reservation Request Sent</h3>
         
         {exceededMax && (
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4 text-left">
-            <div className="flex items-start gap-2">
-              <Info className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-foreground mb-1">
-                  Maximum reservation limit reached
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  You requested {requestedQuantity} SQ.M, but the maximum per sample order is {MAX_RESERVATION_SQM} SQ.M. 
-                  We've reserved {reservedQty} SQ.M for you. An Inner Space representative will contact you shortly about your additional requirements.
-                </p>
-              </div>
-            </div>
+          <div className="border-t border-border pt-4 mb-4 text-left">
+            <p className="text-sm text-muted-foreground">
+              You requested {requestedQuantity} sq.m — the maximum per order is {MAX_RESERVATION_SQM} sq.m. 
+              We've reserved {reservedQty} sq.m. A representative will contact you about your additional requirements.
+            </p>
           </div>
         )}
 
-        <div className="bg-secondary/50 rounded-lg p-4 mb-4">
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
-            <Clock className="h-4 w-4" />
-            <span>Provisionally held until:</span>
-          </div>
-          <p className="text-lg font-semibold text-primary">
-            {format(heldUntil, "EEEE, d MMMM yyyy 'at' HH:mm")}
+        <div className="py-4 border-y border-border mb-4">
+          <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mb-2">
+            Provisionally held until
+          </p>
+          <p className="font-serif text-lg font-light text-foreground">
+            {format(heldUntil, "EEEE, d MMMM yyyy")}
           </p>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -249,9 +235,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
   return (
     <div className="space-y-6">
-      {/* Postcode Checker for Reservation */}
-      <div className="bg-secondary/20 border border-border rounded-lg p-4">
-        <h4 className="font-medium text-sm mb-3">Check Delivery Tariff for Your Postcode</h4>
+      {/* Postcode Checker */}
+      <div className="py-5 border-y border-border">
+        <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mb-4">Check Delivery Tariff</p>
         <PostcodeChecker
           compact
           defaultSqm={formData.requiredQuantitySqm || 57}
@@ -260,281 +246,262 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       </div>
 
       {deliveryResult && deliveryResult.zone.surcharge_type !== 'none' && (
-        <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-start gap-2">
-          <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <p className="text-sm text-muted-foreground">
-            {deliveryResult.zone.surcharge_type === 'quote_required'
-              ? 'A delivery quotation will be included with your reservation request.'
-              : `An additional delivery surcharge of +£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)} per m² applies and will be included with your reservation request.`}
-          </p>
+        <p className="text-sm text-muted-foreground">
+          {deliveryResult.zone.surcharge_type === 'quote_required'
+            ? 'A delivery quotation will be included with your reservation request.'
+            : `An additional delivery surcharge of +£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)} per m² applies.`}
+        </p>
+      )}
+
+      {showTerms && (
+        <div className="border-t border-border pt-6 space-y-5 animate-fade-in">
+          <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Allocation Conditions</p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            {[
+              `Minimum ${MIN_ORDER_SQM} m² applies`,
+              '£36 per m² + VAT',
+              'Full payment required prior to delivery',
+              'Kerbside HGV delivery',
+              '10–15% overage recommended',
+              'Additional quantities not batch guaranteed',
+              'Delivery tariff may apply',
+              'Qualifying damage credited (no replacements)',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-0.5">·</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-start gap-3 pt-4 border-t border-border">
+            <Checkbox
+              id="terms-accept"
+              checked={termsAccepted}
+              onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+            />
+            <Label htmlFor="terms-accept" className="font-normal cursor-pointer text-sm leading-relaxed text-muted-foreground">
+              I confirm I have reviewed and understand the allocation terms
+            </Label>
+          </div>
+
+          {submitError && (
+            <p className="text-sm text-muted-foreground">{submitError}</p>
+          )}
+
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowTerms(false)}
+              className="flex-1 h-11"
+            >
+              Back
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 h-11"
+              disabled={!termsAccepted || isSubmitting}
+              onClick={handleSubmit}
+            >
+              {isCheckingEligibility ? 'Verifying…' : isSubmitting ? 'Processing…' : 'Complete Reservation'}
+            </Button>
+          </div>
         </div>
       )}
 
-    {showTerms && (
-      <div className="bg-secondary/30 border border-border rounded-lg p-5 space-y-4 animate-fade-in">
-        <div className="flex items-start gap-3">
-          <CircleAlert className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-          <h4 className="font-semibold text-foreground">Important Allocation Conditions</h4>
-        </div>
-        <ul className="space-y-2 text-sm text-muted-foreground pl-2">
-          {[
-            `Minimum ${MIN_ORDER_SQM} m² applies`,
-            '£36 per m² + VAT',
-            'Full payment required prior to delivery',
-            'Kerbside HGV delivery',
-            '10–15% overage recommended',
-            'Additional quantities not batch guaranteed',
-            'Delivery tariff may apply',
-            'Qualifying damage credited (no replacements)',
-          ].map((item) => (
-            <li key={item} className="flex items-start gap-2">
-              <span className="text-primary mt-0.5">•</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="flex items-start gap-3 pt-2 border-t border-border">
-          <Checkbox
-            id="terms-accept"
-            checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-          />
-          <Label htmlFor="terms-accept" className="font-normal cursor-pointer text-sm leading-relaxed">
-            I confirm I have reviewed and understand the allocation terms
-          </Label>
+      <form onSubmit={handleShowTerms} className={cn("space-y-5", showTerms && "hidden")}>
+        <div className="py-4 border-y border-border">
+          <p className="text-sm text-muted-foreground leading-relaxed mb-2">
+            Reservations require a prior sample order. Your reservation will be linked to the email address used for your sample order.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} sq.m per order).
+          </p>
         </div>
 
-        {submitError && (
-          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-            <p className="text-sm text-destructive">{submitError}</p>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setShowTerms(false)}
-            className="flex-1"
-          >
-            Back
-          </Button>
-          <Button
-            type="button"
-            className="flex-1 h-12 text-base"
-            disabled={!termsAccepted || isSubmitting}
-            onClick={handleSubmit}
-          >
-            {isCheckingEligibility ? 'Verifying eligibility...' : isSubmitting ? 'Processing...' : 'Complete Reservation Request'}
-          </Button>
-        </div>
-      </div>
-    )}
-
-    <form onSubmit={handleShowTerms} className={cn("space-y-4", showTerms && "hidden")}>
-      <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-2">
-        <div className="flex items-start gap-3">
-          <ShieldCheck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-          <div>
-            <p className="text-sm text-foreground leading-relaxed mb-2">
-              <strong>Sample order required:</strong> To ensure our limited stock goes to genuinely interested customers, 
-              reservations are only available after a sample has been ordered. Your reservation will be linked to the email address used for your sample order.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Reservations are held provisionally for 7 days (max {MAX_RESERVATION_SQM} SQ.M per order). 
-              During this time, an Inner Space representative will contact you to finalise details.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="name">Full Name *</Label>
-        <Input
-          id="name"
-          type="text"
-          placeholder="Your full name"
-          value={formData.name}
-          onChange={handleChange('name')}
-          className={errors.name ? 'border-destructive' : ''}
-        />
-        {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address *</Label>
+          <Label htmlFor="name" className="text-xs tracking-wide uppercase text-muted-foreground">Full Name</Label>
           <Input
-            id="email"
-            type="email"
-            placeholder="Same email used for sample order"
-            value={formData.email}
-            onChange={handleChange('email')}
-            className={errors.email ? 'border-destructive' : ''}
+            id="name"
+            type="text"
+            placeholder="Your full name"
+            value={formData.name}
+            onChange={handleChange('name')}
+            className={`h-11 ${errors.name ? 'border-muted-foreground' : ''}`}
           />
-          <p className="text-xs text-muted-foreground">Must match your sample order email</p>
-          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          {errors.name && <p className="text-xs text-muted-foreground">{errors.name}</p>}
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number *</Label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="07XXX XXXXXX"
-            value={formData.phone}
-            onChange={handleChange('phone')}
-            className={errors.phone ? 'border-destructive' : ''}
-          />
-          {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="requiredQuantitySqm">Required Quantity (SQ.M) *</Label>
-          <Input
-            id="requiredQuantitySqm"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="e.g. 57.12"
-            value={formData.requiredQuantitySqm || ''}
-            onChange={handleChange('requiredQuantitySqm')}
-            className={errors.requiredQuantitySqm ? 'border-destructive' : ''}
-          />
-          {errors.requiredQuantitySqm && <p className="text-xs text-destructive">{errors.requiredQuantitySqm}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label>Need Matching Outdoor/Patio Tile? *</Label>
-          <RadioGroup
-            value={formData.needOutdoorTile || ''}
-            onValueChange={handleOutdoorChange}
-            className="flex gap-4 pt-2"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="yes" id="outdoor-yes" />
-              <Label htmlFor="outdoor-yes" className="font-normal cursor-pointer">Yes</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="no" id="outdoor-no" />
-              <Label htmlFor="outdoor-no" className="font-normal cursor-pointer">No</Label>
-            </div>
-          </RadioGroup>
-          {errors.needOutdoorTile && <p className="text-xs text-destructive">{errors.needOutdoorTile}</p>}
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Delivery Address</h4>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-2">
-            <Label htmlFor="deliveryDoorHouse">Door/House Number *</Label>
+            <Label htmlFor="email" className="text-xs tracking-wide uppercase text-muted-foreground">Email Address</Label>
             <Input
-              id="deliveryDoorHouse"
-              type="text"
-              placeholder="e.g. 42"
-              value={formData.deliveryDoorHouse}
-              onChange={handleChange('deliveryDoorHouse')}
-              className={errors.deliveryDoorHouse ? 'border-destructive' : ''}
+              id="email"
+              type="email"
+              placeholder="Same email used for sample order"
+              value={formData.email}
+              onChange={handleChange('email')}
+              className={`h-11 ${errors.email ? 'border-muted-foreground' : ''}`}
             />
-            {errors.deliveryDoorHouse && <p className="text-xs text-destructive">{errors.deliveryDoorHouse}</p>}
+            <p className="text-xs text-muted-foreground">Must match your sample order email</p>
+            {errors.email && <p className="text-xs text-muted-foreground">{errors.email}</p>}
           </div>
-
+          
           <div className="space-y-2">
-            <Label htmlFor="deliveryStreet">Street Name *</Label>
+            <Label htmlFor="phone" className="text-xs tracking-wide uppercase text-muted-foreground">Phone Number</Label>
             <Input
-              id="deliveryStreet"
-              type="text"
-              placeholder="e.g. High Street"
-              value={formData.deliveryStreet}
-              onChange={handleChange('deliveryStreet')}
-              className={errors.deliveryStreet ? 'border-destructive' : ''}
+              id="phone"
+              type="tel"
+              placeholder="07XXX XXXXXX"
+              value={formData.phone}
+              onChange={handleChange('phone')}
+              className={`h-11 ${errors.phone ? 'border-muted-foreground' : ''}`}
             />
-            {errors.deliveryStreet && <p className="text-xs text-destructive">{errors.deliveryStreet}</p>}
+            {errors.phone && <p className="text-xs text-muted-foreground">{errors.phone}</p>}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-2">
-            <Label htmlFor="deliveryCity">City *</Label>
+            <Label htmlFor="requiredQuantitySqm" className="text-xs tracking-wide uppercase text-muted-foreground">Required Quantity (sq.m)</Label>
             <Input
-              id="deliveryCity"
-              type="text"
-              placeholder="e.g. London"
-              value={formData.deliveryCity}
-              onChange={handleChange('deliveryCity')}
-              className={errors.deliveryCity ? 'border-destructive' : ''}
+              id="requiredQuantitySqm"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="e.g. 57.12"
+              value={formData.requiredQuantitySqm || ''}
+              onChange={handleChange('requiredQuantitySqm')}
+              className={`h-11 ${errors.requiredQuantitySqm ? 'border-muted-foreground' : ''}`}
             />
-            {errors.deliveryCity && <p className="text-xs text-destructive">{errors.deliveryCity}</p>}
+            {errors.requiredQuantitySqm && <p className="text-xs text-muted-foreground">{errors.requiredQuantitySqm}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="deliveryPostcode">Postcode *</Label>
-            <Input
-              id="deliveryPostcode"
-              type="text"
-              placeholder="e.g. SW1A 1AA"
-              value={formData.deliveryPostcode}
-              onChange={handleChange('deliveryPostcode')}
-              className={errors.deliveryPostcode ? 'border-destructive' : ''}
-            />
-            {errors.deliveryPostcode && <p className="text-xs text-destructive">{errors.deliveryPostcode}</p>}
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Required Delivery Date *</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !formData.requiredDeliveryDate && "text-muted-foreground",
-                errors.requiredDeliveryDate && "border-destructive"
-              )}
+            <Label className="text-xs tracking-wide uppercase text-muted-foreground">Matching Outdoor Tile?</Label>
+            <RadioGroup
+              value={formData.needOutdoorTile || ''}
+              onValueChange={handleOutdoorChange}
+              className="flex gap-6 pt-2"
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={formData.requiredDeliveryDate}
-              onSelect={(date) => {
-                setFormData(prev => ({ ...prev, requiredDeliveryDate: date }));
-                if (errors.requiredDeliveryDate) {
-                  setErrors(prev => ({ ...prev, requiredDeliveryDate: undefined }));
-                }
-              }}
-              disabled={(date) => date < new Date()}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-            />
-          </PopoverContent>
-        </Popover>
-        <p className="text-xs text-muted-foreground">
-          Please confirm your preferred delivery date. We provide 7 days complimentary storage from this date. Thereafter, storage is charged at £10 per pallet, per week.
-        </p>
-        {errors.requiredDeliveryDate && <p className="text-xs text-destructive">{errors.requiredDeliveryDate}</p>}
-      </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="yes" id="outdoor-yes" />
+                <Label htmlFor="outdoor-yes" className="font-normal cursor-pointer text-sm">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="no" id="outdoor-no" />
+                <Label htmlFor="outdoor-no" className="font-normal cursor-pointer text-sm">No</Label>
+              </div>
+            </RadioGroup>
+            {errors.needOutdoorTile && <p className="text-xs text-muted-foreground">{errors.needOutdoorTile}</p>}
+          </div>
+        </div>
 
-      <div className="pt-2">
-        <Button 
-          type="submit" 
-          className="w-full h-12 text-base"
-        >
-          Request Reservation
-        </Button>
-      </div>
-    </form>
+        <div className="space-y-5">
+          <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Delivery Address</p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label htmlFor="deliveryDoorHouse" className="text-xs tracking-wide uppercase text-muted-foreground">Door / House No.</Label>
+              <Input
+                id="deliveryDoorHouse"
+                type="text"
+                placeholder="e.g. 42"
+                value={formData.deliveryDoorHouse}
+                onChange={handleChange('deliveryDoorHouse')}
+                className={`h-11 ${errors.deliveryDoorHouse ? 'border-muted-foreground' : ''}`}
+              />
+              {errors.deliveryDoorHouse && <p className="text-xs text-muted-foreground">{errors.deliveryDoorHouse}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="deliveryStreet" className="text-xs tracking-wide uppercase text-muted-foreground">Street</Label>
+              <Input
+                id="deliveryStreet"
+                type="text"
+                placeholder="e.g. High Street"
+                value={formData.deliveryStreet}
+                onChange={handleChange('deliveryStreet')}
+                className={`h-11 ${errors.deliveryStreet ? 'border-muted-foreground' : ''}`}
+              />
+              {errors.deliveryStreet && <p className="text-xs text-muted-foreground">{errors.deliveryStreet}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label htmlFor="deliveryCity" className="text-xs tracking-wide uppercase text-muted-foreground">City</Label>
+              <Input
+                id="deliveryCity"
+                type="text"
+                placeholder="e.g. London"
+                value={formData.deliveryCity}
+                onChange={handleChange('deliveryCity')}
+                className={`h-11 ${errors.deliveryCity ? 'border-muted-foreground' : ''}`}
+              />
+              {errors.deliveryCity && <p className="text-xs text-muted-foreground">{errors.deliveryCity}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="deliveryPostcode" className="text-xs tracking-wide uppercase text-muted-foreground">Postcode</Label>
+              <Input
+                id="deliveryPostcode"
+                type="text"
+                placeholder="e.g. SW1A 1AA"
+                value={formData.deliveryPostcode}
+                onChange={handleChange('deliveryPostcode')}
+                className={`h-11 ${errors.deliveryPostcode ? 'border-muted-foreground' : ''}`}
+              />
+              {errors.deliveryPostcode && <p className="text-xs text-muted-foreground">{errors.deliveryPostcode}</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs tracking-wide uppercase text-muted-foreground">Required Delivery Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal h-11",
+                  !formData.requiredDeliveryDate && "text-muted-foreground",
+                  errors.requiredDeliveryDate && "border-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={formData.requiredDeliveryDate}
+                onSelect={(date) => {
+                  setFormData(prev => ({ ...prev, requiredDeliveryDate: date }));
+                  if (errors.requiredDeliveryDate) {
+                    setErrors(prev => ({ ...prev, requiredDeliveryDate: undefined }));
+                  }
+                }}
+                disabled={(date) => date < new Date()}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <p className="text-xs text-muted-foreground">
+            7 days complimentary storage from this date. Thereafter £10 per pallet per week.
+          </p>
+          {errors.requiredDeliveryDate && <p className="text-xs text-muted-foreground">{errors.requiredDeliveryDate}</p>}
+        </div>
+
+        <div className="pt-2">
+          <Button type="submit" className="w-full h-11">
+            Request Reservation
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

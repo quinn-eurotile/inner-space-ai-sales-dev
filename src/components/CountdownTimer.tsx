@@ -61,7 +61,7 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
   if (!timeLeft) {
     return (
       <div className="text-center">
-        <p className="text-lg font-medium text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           This allocation has now closed
         </p>
       </div>
@@ -70,29 +70,27 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
 
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
-      <div className="bg-primary text-primary-foreground min-w-[4rem] sm:min-w-[5rem] py-3 sm:py-4 px-3 sm:px-4 rounded shadow-premium">
-        <span className="text-2xl sm:text-4xl font-serif font-semibold tabular-nums">
-          {value.toString().padStart(2, '0')}
-        </span>
-      </div>
-      <span className="text-xs sm:text-sm text-muted-foreground mt-2 uppercase tracking-wider font-medium">
+      <span className="font-serif text-3xl sm:text-4xl font-light text-foreground tabular-nums">
+        {value.toString().padStart(2, '0')}
+      </span>
+      <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mt-1">
         {label}
       </span>
     </div>
   );
 
   return (
-    <div className="text-center">
-      <p className="text-sm uppercase tracking-widest text-muted-foreground mb-4 font-medium">
+    <div>
+      <p className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground mb-4">
         Allocation closes in
       </p>
-      <div className="flex justify-center gap-2 sm:gap-4">
+      <div className="flex gap-6 sm:gap-8">
         <TimeBlock value={timeLeft.days} label="Days" />
-        <div className="flex items-start pt-3 sm:pt-4 text-2xl sm:text-4xl font-light text-muted-foreground">:</div>
+        <span className="font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
         <TimeBlock value={timeLeft.hours} label="Hours" />
-        <div className="flex items-start pt-3 sm:pt-4 text-2xl sm:text-4xl font-light text-muted-foreground">:</div>
+        <span className="font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
         <TimeBlock value={timeLeft.minutes} label="Mins" />
-        <div className="hidden sm:flex items-start pt-3 sm:pt-4 text-2xl sm:text-4xl font-light text-muted-foreground">:</div>
+        <span className="hidden sm:inline font-serif text-3xl sm:text-4xl font-light text-muted-foreground">:</span>
         <div className="hidden sm:block">
           <TimeBlock value={timeLeft.seconds} label="Secs" />
         </div>

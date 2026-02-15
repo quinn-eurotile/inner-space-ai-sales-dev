@@ -33,12 +33,12 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
   const renderValue = (value: boolean | string | number | undefined) => {
     if (typeof value === 'boolean') {
       return value ? (
-        <Check className="h-4 w-4 text-success" />
+        <Check className="h-4 w-4 text-foreground" />
       ) : (
         <X className="h-4 w-4 text-muted-foreground" />
       );
     }
-    return value ?? '-';
+    return value ?? '—';
   };
 
   const specItems = [
@@ -69,18 +69,18 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
   ];
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6">
-      <h3 className="text-xl font-bold mb-6 text-primary">
+    <div>
+      <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-8">
         Technical Specification
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12">
         {specItems.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between items-center py-2 border-b border-border/50 last:border-0 gap-4"
+            className="flex justify-between items-center py-3 border-b border-border gap-4"
           >
-            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
-            <span className="text-sm font-medium text-foreground flex items-center text-right">
+            <span className="text-sm text-muted-foreground">{item.label}</span>
+            <span className="text-sm text-foreground flex items-center">
               {renderValue(item.value)}
             </span>
           </div>

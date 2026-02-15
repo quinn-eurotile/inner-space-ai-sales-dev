@@ -13,7 +13,7 @@ import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
 import { Package, Bell, Download, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import innerSpaceLogo from '@/assets/inner-space-logo-white.png';
+import innerSpaceLogo from '@/assets/inner-space-logo.png';
 import heroImage from '@/assets/hero-tiles.jpg';
 
 interface Product {
@@ -70,7 +70,6 @@ const Index = () => {
       if (products && !error) {
         setProduct(products);
         
-        // Fetch product images
         const { data: images } = await supabase
           .from('product_images')
           .select('image_url')
@@ -90,7 +89,7 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground text-sm tracking-widest uppercase">Loading</div>
       </div>
     );
   }
@@ -105,132 +104,136 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header - Compact for mobile */}
-      <header className="py-3 sm:py-6 border-b border-border">
-        <div className="section-container flex items-center justify-between gap-2">
+      {/* Header */}
+      <header className="py-6 sm:py-8">
+        <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-10 sm:h-14 w-auto"
+            className="h-8 sm:h-10 w-auto"
           />
-          <div className="bg-primary/20 border border-primary/40 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
-            <span className="text-primary font-bold text-xs sm:text-sm">
-              MIN ORDER: 57 SQ.M
-            </span>
-          </div>
+          <span className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground">
+            Minimum order: 57 sq.m
+          </span>
         </div>
       </header>
 
-      {/* Factory Allocation Banner */}
-      <div className="bg-primary py-2 sm:py-3">
-        <div className="section-container text-center">
-          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-primary-foreground tracking-wide">
-            LIMITED FACTORY ALLOCATION
-          </span>
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
+      {/* Allocation Notice */}
+      <div className="py-6">
+        <div className="section-container">
+          <p className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground text-center">
+            Limited Factory Allocation
+          </p>
         </div>
       </div>
 
-      {/* Hero Section - Mobile optimized */}
-      <section className="py-4 sm:py-8 lg:py-12">
+      {/* Hero Section */}
+      <section className="py-8 sm:py-12 lg:py-16">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
-            {/* Image Carousel */}
-            <div>
-              <ImageCarousel 
-                images={productImages} 
-                heroImage={heroImage}
-              />
-              
-              {/* Download Link */}
-              <a 
-                href={product?.google_drive_link || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 mt-3 sm:mt-4 py-2.5 sm:py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                <span className="text-xs sm:text-sm font-bold">Download High-Res Images</span>
-              </a>
-            </div>
-
-            <div className="flex flex-col">
-              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-1">
-                Miami Grande Bianco 120x120cm
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            {/* Left: Text */}
+            <div className="order-2 lg:order-1">
+              <h1 className="font-serif text-h1 lg:text-h1-lg font-light text-foreground mb-4">
+                Miami Grande Bianco
               </h1>
-              
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2 sm:mb-3">Made in Italy</p>
-              
-              <p className="text-foreground font-medium text-sm sm:text-base mb-0.5 sm:mb-1">
-                Including Nationwide Kerbside Delivery
-              </p>
-              <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4">
-                Some addresses may incur additional delivery charges
+              <p className="text-muted-foreground text-base mb-1">120×120cm — Made in Italy</p>
+              <p className="text-muted-foreground text-sm mb-8">
+                Including nationwide kerbside delivery
               </p>
 
-              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2 mb-4 sm:mb-6">
-                <span className="text-3xl sm:text-4xl font-bold text-primary">
+              <div className="flex items-baseline gap-3 mb-10">
+                <span className="font-serif text-4xl lg:text-5xl font-light text-foreground">
                   £{product?.price_per_sqm?.toFixed(2) || '36.00'}
                 </span>
-                <span className="text-base sm:text-lg text-muted-foreground">per SQ.M</span>
+                <span className="text-sm text-muted-foreground">per sq.m</span>
                 {product?.price_per_tile && (
-                  <span className="text-xs sm:text-sm text-muted-foreground">
-                    (£{product.price_per_tile.toFixed(2)} per tile)
+                  <span className="text-sm text-muted-foreground">
+                    / £{product.price_per_tile.toFixed(2)} per tile
                   </span>
                 )}
-                <span className="text-xs sm:text-sm text-muted-foreground ml-1 sm:ml-2">EX.VAT</span>
+                <span className="text-xs text-muted-foreground tracking-wider uppercase">ex. vat</span>
               </div>
 
               {product?.matching_outdoor_option && (
-                <div className="inline-flex items-center gap-2 bg-success/10 text-success border border-success/20 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6 w-fit">
-                  <span className="font-medium text-xs sm:text-sm">✓ Matching Outdoor Anti-Slip Option Available</span>
-                </div>
+                <p className="text-sm text-muted-foreground mb-8">
+                  Matching outdoor anti-slip option available
+                </p>
               )}
 
               {/* Postcode Checker */}
-              <div className="mb-4 sm:mb-6">
+              <div className="mb-10">
                 <PostcodeChecker compact />
               </div>
 
-              {/* Countdown Timer */}
-              <div className="mb-4 sm:mb-8">
+              {/* Countdown */}
+              <div className="mb-10">
                 <CountdownTimer onExpired={() => setIsExpired(true)} />
               </div>
 
-              <div className="flex flex-col gap-2 sm:gap-4">
-                <Button size="lg" className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full" asChild>
+              <div className="flex flex-col gap-3">
+                <Button size="lg" className="h-12 text-sm tracking-wide w-full" asChild>
                   <a href="#reservation">Request Reservation</a>
                 </Button>
                 <SampleOrderDialog productId={product?.id}>
-                  <Button size="lg" variant="secondary" className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full">
-                    Order Sample – £7
+                  <Button size="lg" variant="outline" className="h-12 text-sm tracking-wide w-full">
+                    Order Sample — £7
                   </Button>
                 </SampleOrderDialog>
               </div>
 
-              {/* Tile Performance Data Sheet */}
-              {product?.data_sheet_url && (
-                <a
-                  href={product.data_sheet_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 mt-4 sm:mt-6 py-2.5 px-4 bg-secondary hover:bg-secondary/80 border border-border rounded-lg transition-colors w-fit"
-                >
-                  <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-xs sm:text-sm font-medium">Tile Performance Data Sheet</span>
-                </a>
-              )}
+              {/* Data Sheet & Downloads */}
+              <div className="mt-8 pt-8 border-t border-border space-y-3">
+                {product?.google_drive_link && (
+                  <a 
+                    href={product.google_drive_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Download high-res images</span>
+                  </a>
+                )}
+                {product?.data_sheet_url && (
+                  <a
+                    href={product.data_sheet_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Tile performance data sheet</span>
+                  </a>
+                )}
+              </div>
 
-              {/* Share Buttons */}
-              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
+              {/* Share */}
+              <div className="mt-8 pt-8 border-t border-border">
                 <ShareButtons />
               </div>
+            </div>
+
+            {/* Right: Image */}
+            <div className="order-1 lg:order-2">
+              <ImageCarousel 
+                images={productImages} 
+                heroImage={heroImage}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stock Indicator Section */}
-      <section className="py-6 sm:py-12 bg-secondary/30 border-y border-border">
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
+      {/* Stock Allocation */}
+      <section className="py-16 sm:py-24">
         <div className="section-container">
           {product && (
             <ProductStockIndicator 
@@ -242,8 +245,12 @@ const Index = () => {
         </div>
       </section>
 
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
       {/* Technical Specifications */}
-      <section className="py-6 sm:py-12 lg:py-16">
+      <section className="py-16 sm:py-24">
         <div className="section-container">
           {product && (
             <TechnicalSpecs 
@@ -278,16 +285,20 @@ const Index = () => {
         </div>
       </section>
 
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
       {/* Reservation Section */}
-      <section id="reservation" className="py-6 sm:py-12 lg:py-16 bg-card border-y border-border">
+      <section id="reservation" className="py-16 sm:py-24">
         <div className="section-container">
           <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-4 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 text-primary">
+            <div className="mb-10">
+              <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
                 Request Reservation
               </h2>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Secure your allocation with a reservation request (minimum 57 SQ.M)
+              <p className="text-muted-foreground text-sm">
+                Secure your allocation with a reservation request. Minimum 57 sq.m.
               </p>
             </div>
             {product && <ReservationRequestForm productId={product.id} />}
@@ -295,28 +306,31 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Actions Section */}
-      <section id="actions" className="py-6 sm:py-12 lg:py-16">
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
+      {/* Other Options */}
+      <section id="actions" className="py-16 sm:py-24">
         <div className="section-container">
-          <div className="text-center mb-6 sm:mb-12">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3">
+          <div className="mb-10">
+            <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">
               Other Options
-            </h3>
-            <p className="text-muted-foreground text-sm sm:text-base">Choose the option that suits your needs</p>
+            </h2>
           </div>
           
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-8 max-w-3xl">
             <SampleOrderDialog productId={product?.id}>
-              <div className="bg-card border border-border rounded-lg p-4 sm:p-6 hover:border-primary/30 hover:shadow-premium transition-all cursor-pointer">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-secondary flex items-center justify-center mb-3 sm:mb-4">
-                  <Package className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
+              <div className="cursor-pointer group">
+                <div className="mb-4">
+                  <Package className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <h4 className="font-bold text-base sm:text-lg mb-1.5 sm:mb-2">Order a Sample</h4>
-                <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-6">
-                  Get a 20×15cm sample tile for £7. Charged to cover postage and packaging.
+                <h3 className="font-serif text-lg font-light text-foreground mb-2">Order a Sample</h3>
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  20×15cm sample tile — £7 to cover postage and packaging.
                 </p>
-                <Button variant="secondary" className="w-full h-10 sm:h-11 text-sm">
-                  Order Sample – £7
+                <Button variant="outline" className="text-sm tracking-wide">
+                  Order Sample
                 </Button>
               </div>
             </SampleOrderDialog>
@@ -324,7 +338,7 @@ const Index = () => {
             <ActionCard
               icon={Bell}
               title="Register Interest"
-              description="Not ready now? Get notified for future allocation releases."
+              description="Get notified when the next allocation opens."
               buttonText="Notify Me"
               buttonVariant="outline"
             >
@@ -334,26 +348,34 @@ const Index = () => {
         </div>
       </section>
 
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
       {/* FAQ Section */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-secondary/30 border-y border-border">
+      <section className="py-16 sm:py-24">
         <div className="section-container">
           <FAQ />
         </div>
       </section>
 
+      <div className="section-container">
+        <div className="border-t border-border" />
+      </div>
+
       {/* Footer */}
-      <footer className="py-8 sm:py-12 bg-card border-t border-border">
+      <footer className="py-16 sm:py-20">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-10 sm:h-12 w-auto mx-auto mb-3 sm:mb-4"
+            className="h-8 w-auto mx-auto mb-4"
           />
-          <p className="text-muted-foreground/80 max-w-md mx-auto text-xs sm:text-sm">
+          <p className="text-muted-foreground text-sm max-w-md mx-auto">
             Supplying premium porcelain to designers and contractors across the UK.
           </p>
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground/60">
+          <div className="mt-8">
+            <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Inner Space. All rights reserved.
             </p>
           </div>
@@ -366,43 +388,43 @@ const Index = () => {
 function AllocationClosed() {
   return (
     <>
-      <header className="py-4 border-b border-border">
+      <header className="py-6 sm:py-8">
         <div className="section-container">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-10 sm:h-12 w-auto"
+            className="h-8 sm:h-10 w-auto"
           />
         </div>
       </header>
       
+      <div className="section-container"><div className="border-t border-border" /></div>
+      
       <section className="py-24 lg:py-32">
         <div className="section-container text-center">
           <div className="max-w-xl mx-auto">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-8">
-              <Package className="h-10 w-10 text-muted-foreground" />
-            </div>
-            
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold mb-4">
+            <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-4">
               This allocation has now closed
             </h2>
-            <p className="text-lg text-muted-foreground mb-10">
+            <p className="text-base text-muted-foreground mb-12">
               The allocated stock release has ended. Register below to be notified when the next allocation opens.
             </p>
             
-            <div className="bg-card border border-border rounded-lg p-8 max-w-md mx-auto">
+            <div className="max-w-md mx-auto">
               <InterestForm />
             </div>
           </div>
         </div>
       </section>
       
-      <footer className="py-12 bg-card border-t border-border">
+      <div className="section-container"><div className="border-t border-border" /></div>
+      
+      <footer className="py-16">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-8 w-auto mx-auto mb-2"
+            className="h-7 w-auto mx-auto mb-3"
           />
           <p className="text-sm text-muted-foreground">
             Supplying premium porcelain to designers and contractors across the UK.
