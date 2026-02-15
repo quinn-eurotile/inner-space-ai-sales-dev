@@ -105,14 +105,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header - Fixed on mobile */}
-      <header className="py-3 sm:py-6 sticky top-0 z-50 bg-background/95 backdrop-blur-sm">
+      <header className="py-3 sm:py-6">
         <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
-            className="h-6 sm:h-10 w-auto"
+            className="h-5 sm:h-10 w-auto"
           />
-          <span className="text-[10px] sm:text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+          <span className="text-[9px] sm:text-[11px] tracking-[0.12em] sm:tracking-[0.15em] uppercase text-muted-foreground">
             Min. order 57 sq.m
           </span>
         </div>
