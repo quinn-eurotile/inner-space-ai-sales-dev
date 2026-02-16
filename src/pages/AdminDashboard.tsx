@@ -44,6 +44,7 @@ interface Product {
   price_per_tile: number | null;
   stock_allocation: number | null;
   stock_sold: number | null;
+  stock_reserved_manual: number | null;
   google_drive_link: string | null;
   data_sheet_url: string | null;
   is_active: boolean | null;
@@ -1055,17 +1056,19 @@ export default function AdminDashboard() {
                 {selectedProduct ? (() => {
                   const totalSqm = selectedProduct.stock_allocation || 0;
                   const soldSqm = selectedProduct.stock_sold || 0;
+                  const manualReservedSqm = selectedProduct.stock_reserved_manual || 0;
 
                   // Auto-calculate reserved from active reservations
-                  const reservedSqm = reservations
+                  const onlineReservedSqm = reservations
                     .filter(r => r.status === 'pending' || r.status === 'confirmed')
                     .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
 
-                  const remainingSqm = totalSqm - reservedSqm - soldSqm;
+                  const totalReservedSqm = onlineReservedSqm + manualReservedSqm;
+                  const remainingSqm = totalSqm - totalReservedSqm - soldSqm;
 
                   return (
                     <div className="space-y-4">
-                      <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="grid sm:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <Label>Total Allocation (sq.m)</Label>
                           <Input
@@ -1075,6 +1078,17 @@ export default function AdminDashboard() {
                           />
                         </div>
                         <div className="space-y-2">
+                          <Label>Manual Reserved (sq.m)</Label>
+                          <Input
+                            type="number"
+                            value={manualReservedSqm}
+                            onChange={(e) => updateProduct({ stock_reserved_manual: parseFloat(e.target.value) || 0 } as any)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Offline reservations
+                          </p>
+                        </div>
+                        <div className="space-y-2">
                           <Label>Sold (sq.m)</Label>
                           <Input
                             type="number"
@@ -1082,7 +1096,7 @@ export default function AdminDashboard() {
                             onChange={(e) => updateProduct({ stock_sold: parseInt(e.target.value) || 0 })}
                           />
                           <p className="text-xs text-muted-foreground">
-                            Editable for offline sales
+                            Offline sales
                           </p>
                         </div>
                       </div>
@@ -1091,7 +1105,8 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-3 gap-4 p-4 bg-secondary/30 rounded-lg text-center">
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Reserved</p>
-                          <p className="text-lg font-medium tabular-nums">{Math.round(reservedSqm).toLocaleString()} sq.m</p>
+                          <p className="text-lg font-medium tabular-nums">{Math.round(totalReservedSqm).toLocaleString()} sq.m</p>
+                          <p className="text-[10px] text-muted-foreground">{Math.round(onlineReservedSqm)} online + {Math.round(manualReservedSqm)} manual</p>
                         </div>
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Sold</p>
@@ -1105,7 +1120,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Reserved is auto-calculated from pending &amp; confirmed reservations. Adjust "Sold" for offline orders.
+                        Online reserved is auto-calculated from pending &amp; confirmed reservations. Use manual fields for offline orders.
                       </p>
                     </div>
                   );

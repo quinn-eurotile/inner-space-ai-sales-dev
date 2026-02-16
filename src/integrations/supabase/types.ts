@@ -257,6 +257,7 @@ export type Database = {
           sqm_per_pallet: number | null
           sqm_per_tile: number | null
           stock_allocation: number | null
+          stock_reserved_manual: number | null
           stock_sold: number | null
           suitability: string | null
           thickness_mm: number | null
@@ -295,6 +296,7 @@ export type Database = {
           sqm_per_pallet?: number | null
           sqm_per_tile?: number | null
           stock_allocation?: number | null
+          stock_reserved_manual?: number | null
           stock_sold?: number | null
           suitability?: string | null
           thickness_mm?: number | null
@@ -333,6 +335,7 @@ export type Database = {
           sqm_per_pallet?: number | null
           sqm_per_tile?: number | null
           stock_allocation?: number | null
+          stock_reserved_manual?: number | null
           stock_sold?: number | null
           suitability?: string | null
           thickness_mm?: number | null
