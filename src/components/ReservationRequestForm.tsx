@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, Clock, AlertCircle, CalendarIcon, Info, CircleAlert, CreditCard } from 'lucide-react';
+import { Check, Clock, AlertCircle, CalendarIcon, Info, CircleAlert } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
@@ -64,10 +64,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   } | null>(null);
   const [showTerms, setShowTerms] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvc, setCardCvc] = useState('');
-  const [cardError, setCardError] = useState<string | null>(null);
   const [sampleVerified, setSampleVerified] = useState<boolean | null>(null);
   const [isVerifyingSample, setIsVerifyingSample] = useState(false);
 
@@ -131,13 +127,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
   const handleSubmit = async () => {
     if (sampleVerified !== true) return;
-    
-    // Mock card validation — accepts any non-empty values
-    if (!cardNumber.trim() || !cardExpiry.trim() || !cardCvc.trim()) {
-      setCardError('Please enter card details to proceed.');
-      return;
-    }
-    setCardError(null);
     
     setSubmitError(null);
     setIsSubmitting(true);
@@ -304,56 +293,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
           {sampleVerified === true && !isVerifyingSample && (
             <>
-              {/* Mock Payment Section */}
-              <div className="pt-4 border-t border-border space-y-4">
-                <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground flex items-center gap-2">
-                  <CreditCard className="h-3.5 w-3.5" />
-                  Payment Details
-                </p>
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="card-number" className="text-xs tracking-wide uppercase text-muted-foreground">Card Number</Label>
-                    <Input
-                      id="card-number"
-                      type="text"
-                      placeholder="4242 4242 4242 4242"
-                      value={cardNumber}
-                      onChange={(e) => { setCardNumber(e.target.value); setCardError(null); }}
-                      className="h-11"
-                      maxLength={19}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="card-expiry" className="text-xs tracking-wide uppercase text-muted-foreground">Expiry</Label>
-                      <Input
-                        id="card-expiry"
-                        type="text"
-                        placeholder="MM / YY"
-                        value={cardExpiry}
-                        onChange={(e) => { setCardExpiry(e.target.value); setCardError(null); }}
-                        className="h-11"
-                        maxLength={7}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="card-cvc" className="text-xs tracking-wide uppercase text-muted-foreground">CVC</Label>
-                      <Input
-                        id="card-cvc"
-                        type="text"
-                        placeholder="123"
-                        value={cardCvc}
-                        onChange={(e) => { setCardCvc(e.target.value); setCardError(null); }}
-                        className="h-11"
-                        maxLength={4}
-                      />
-                    </div>
-                  </div>
-                  {cardError && <p className="text-xs text-destructive">{cardError}</p>}
-                  <p className="text-xs text-muted-foreground italic">Test mode — any card number accepted</p>
-                </div>
-              </div>
-
               {submitError && (
                 <p className="text-sm text-destructive">{submitError}</p>
               )}
