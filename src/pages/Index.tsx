@@ -57,6 +57,7 @@ const Index = () => {
   const [isExpired, setIsExpired] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
+  const [dbHeroImage, setDbHeroImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { settings, loading: settingsLoading } = useSiteSettings();
 
@@ -74,12 +75,14 @@ const Index = () => {
         
         const { data: images } = await supabase
           .from('product_images')
-          .select('image_url')
+          .select('image_url, image_type')
           .eq('product_id', products.id)
           .order('display_order');
         
         if (images) {
-          setProductImages(images.map(img => img.image_url));
+          const hero = images.find(img => img.image_type === 'hero');
+          if (hero) setDbHeroImage(hero.image_url);
+          setProductImages(images.filter(img => img.image_type !== 'hero').map(img => img.image_url));
         }
       }
       setLoading(false);
@@ -222,7 +225,7 @@ const Index = () => {
             <div className="order-1 lg:order-2">
               <ImageCarousel 
                 images={productImages} 
-                heroImage={heroImage}
+                heroImage={dbHeroImage || heroImage}
               />
             </div>
           </div>
