@@ -5,27 +5,31 @@ interface ProductStockIndicatorProps {
   productId: string;
   initialAllocation?: number;
   initialSold?: number;
+  initialReservedManual?: number;
 }
 
 export function ProductStockIndicator({ 
   productId, 
-  initialAllocation = 38, 
-  initialSold = 0 
+  initialAllocation = 1498, 
+  initialSold = 0,
+  initialReservedManual = 0
 }: ProductStockIndicatorProps) {
   const [stockAllocation, setStockAllocation] = useState(initialAllocation);
   const [stockSold, setStockSold] = useState(initialSold);
+  const [stockReservedManual, setStockReservedManual] = useState(initialReservedManual);
   
   useEffect(() => {
     const fetchStock = async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('stock_allocation, stock_sold')
+        .select('stock_allocation, stock_sold, stock_reserved_manual')
         .eq('id', productId)
         .single();
       
       if (data && !error) {
         setStockAllocation(data.stock_allocation || initialAllocation);
         setStockSold(data.stock_sold || initialSold);
+        setStockReservedManual((data as any).stock_reserved_manual || initialReservedManual);
       }
     };
 
@@ -49,6 +53,9 @@ export function ProductStockIndicator({
           if (newData.stock_sold !== undefined) {
             setStockSold(newData.stock_sold);
           }
+          if ((newData as any).stock_reserved_manual !== undefined) {
+            setStockReservedManual((newData as any).stock_reserved_manual);
+          }
         }
       )
       .subscribe();
@@ -59,7 +66,7 @@ export function ProductStockIndicator({
   }, [productId, initialAllocation, initialSold]);
 
   const totalSqm = stockAllocation;
-  const soldSqm = stockSold;
+  const soldSqm = stockSold + stockReservedManual;
   const remainingSqm = totalSqm - soldSqm;
 
   return (

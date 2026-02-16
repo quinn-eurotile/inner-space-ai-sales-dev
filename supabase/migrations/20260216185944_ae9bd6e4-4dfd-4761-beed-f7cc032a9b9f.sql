@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN stock_reserved_manual numeric DEFAULT 0;
