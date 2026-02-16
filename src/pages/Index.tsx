@@ -205,7 +205,7 @@ const Index = () => {
                 )}
                 {product?.data_sheet_url && (
                   <a
-                    href={product.data_sheet_url}
+                    href={`${product.data_sheet_url}?download=`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start"
@@ -293,7 +293,7 @@ const Index = () => {
               )}
               {product?.data_sheet_url && (
                 <a
-                  href={product.data_sheet_url}
+                  href={`${product.data_sheet_url}?download=`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline mt-8"
