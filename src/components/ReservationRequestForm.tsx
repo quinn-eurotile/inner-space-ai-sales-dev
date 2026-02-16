@@ -275,7 +275,21 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
           {sampleVerified === false && !isVerifyingSample && (
             <div className="pt-4 border-t border-border">
-              <SampleOrderDialog productId={productId}>
+              <SampleOrderDialog productId={productId} onOrderComplete={async () => {
+                setIsVerifyingSample(true);
+                try {
+                  const { data: sampleOrders, error: sampleError } = await supabase
+                    .from('sample_orders')
+                    .select('id')
+                    .eq('email', formData.email.trim().toLowerCase())
+                    .eq('status', 'confirmed')
+                    .limit(1);
+                  if (!sampleError && sampleOrders && sampleOrders.length > 0) {
+                    setSampleVerified(true);
+                  }
+                } catch {}
+                setIsVerifyingSample(false);
+              }}>
                 <button type="button" className="w-full text-left border border-destructive bg-destructive/5 p-4 rounded cursor-pointer hover:bg-destructive/10 transition-colors">
                   <div className="flex items-start gap-3">
                     <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
