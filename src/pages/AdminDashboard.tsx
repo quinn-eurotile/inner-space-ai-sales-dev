@@ -1049,6 +1049,41 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* Stock Allocation */}
+              <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Stock Allocation</h3>
+                {selectedProduct ? (
+                  <div className="space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Total Allocation (Pallets)</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.stock_allocation || 0}
+                          onChange={(e) => updateProduct({ stock_allocation: parseInt(e.target.value) })}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          ≈ {((selectedProduct.stock_allocation || 0) * (selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42)).toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m total
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Stock Sold (Pallets)</Label>
+                        <Input
+                          type="number"
+                          value={selectedProduct.stock_sold || 0}
+                          onChange={(e) => updateProduct({ stock_sold: parseInt(e.target.value) })}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          ≈ {((selectedProduct.stock_sold || 0) * (selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42)).toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m sold
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No product selected.</p>
+                )}
+              </div>
+
               {/* Landing Page Text */}
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-semibold">Landing Page Content</h3>
