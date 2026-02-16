@@ -184,6 +184,10 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
         </div>
       )}
 
+      <p className="text-xs text-muted-foreground mt-3">
+        Certain locations are subject to additional carrier charges based on delivery postcode.
+      </p>
+
       {zone && (
         <div className="mt-4 animate-fade-in">
           <div className="py-4 border-t border-border">
@@ -201,7 +205,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
                 </p>
                 {hasSurcharge && (
                   <p className="text-sm text-foreground mt-1">
-                    +£{Number(zone.surcharge_per_sqm).toFixed(2)} per m²
+                    +£{Number(zone.surcharge_per_sqm).toFixed(2)} per sq.m
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -223,7 +227,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
               {showEstimator && (
                 <div className="mt-3 space-y-2">
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-muted-foreground whitespace-nowrap">m²:</label>
+                    <label className="text-xs text-muted-foreground whitespace-nowrap">sq.m:</label>
                     <Input
                       type="number"
                       min={1}
@@ -233,7 +237,7 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
                     />
                   </div>
                   <p className="text-sm text-foreground">
-                    {estimatedSqm} m² × £{Number(zone.surcharge_per_sqm).toFixed(2)} = £{(estimatedSqm * Number(zone.surcharge_per_sqm)).toFixed(2)}
+                    {estimatedSqm} sq.m × £{Number(zone.surcharge_per_sqm).toFixed(2)} = £{(estimatedSqm * Number(zone.surcharge_per_sqm)).toFixed(2)}
                   </p>
                 </div>
               )}
@@ -241,10 +245,6 @@ export function PostcodeChecker({ defaultSqm = 57, onResult, compact = false }: 
           )}
         </div>
       )}
-
-      <p className="text-xs text-muted-foreground mt-3">
-        Certain locations are subject to additional carrier charges based on delivery postcode.
-      </p>
     </div>
   );
 }

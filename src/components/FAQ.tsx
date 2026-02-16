@@ -7,7 +7,7 @@ import {
 
 const faqs = [
   {
-    question: "Why is this tile £36 per m²?",
+    question: "Why is this tile £36 per sq.m?",
     answer: `This is a limited factory allocation secured at export pricing.
 
 To preserve this price, orders must meet pallet quantities and structured delivery terms.
@@ -18,7 +18,7 @@ Once the allocation is exhausted, pricing returns to standard showroom levels.`
   },
   {
     question: "What is the minimum order?",
-    answer: `The allocation price applies to 57 m² and above (full pallet quantity).
+    answer: `The allocation price applies to 57 sq.m and above (full pallet quantity).
 
 Smaller quantities are available at standard retail pricing.`
   },
@@ -30,14 +30,14 @@ Smaller quantities are available at standard retail pricing.`
     question: "How do I secure the allocation price?",
     answer: `1. Order a sample
 2. Check delivery eligibility
-3. Reserve your required m² (maximum 200 m² per project)
+3. Reserve your required sq.m (maximum 200 sq.m per project)
 4. Full payment secures dispatch
 
 Reservations are held for 7 days pending payment.`
   },
   {
-    question: "What if I require more than 200 m²?",
-    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 m² and a representative will contact you to coordinate the remainder of your order."
+    question: "What if I require more than 200 sq.m?",
+    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 sq.m and a representative will contact you to coordinate the remainder of your order."
   },
   {
     question: "Why is full payment required upfront?",
@@ -77,7 +77,7 @@ Drivers are not responsible for moving goods beyond kerbside.`
     question: "What are Delivery Tiers?",
     answer: `Some locations incur additional carrier tariffs due to routing and handling controls.
 
-Where applicable, a per m² delivery tariff will apply in line with the Delivery Tier shown at checkout.
+Where applicable, a per sq.m delivery tariff will apply in line with the Delivery Tier shown at checkout.
 
 Please confirm your postcode prior to placing your order.`
   },
@@ -89,13 +89,13 @@ Please confirm your postcode prior to placing your order.`
 • Breakages
 • Future spares
 
-Example: If advised to purchase 100 m², we recommend ordering 110–115 m².`
+Example: If advised to purchase 100 sq.m, we recommend ordering 110–115 sq.m.`
   },
   {
     question: "What if I need more tiles later?",
     answer: `Additional quantities cannot be supplied at the allocation price.
 
-Top-up orders will be charged at standard showroom pricing (£75 per m² + VAT) and shade or batch matching cannot be guaranteed.
+Top-up orders will be charged at standard showroom pricing (£75 per sq.m + VAT) and shade or batch matching cannot be guaranteed.
 
 We strongly recommend securing your full project quantity at the outset.`
   },
