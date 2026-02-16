@@ -9,30 +9,31 @@ const corsHeaders = {
 
 const FROM_EMAIL = "Inner Space <support@innerspace.co.uk>";
 const REPLY_TO = "support@innerspace.co.uk";
+const LOGO_URL = "https://thxyqtvpzelhwnpvmrhu.supabase.co/storage/v1/object/public/product-images/email%2Finner-space-logo.png";
 
 function emailLayout(content: string): string {
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-  body{margin:0;padding:0;background:#f7f7f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a}
+  body{margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a}
   .wrapper{max-width:600px;margin:0 auto;background:#ffffff}
-  .header{padding:32px 40px;border-bottom:1px solid #e8e6e3;text-align:center}
-  .header h1{font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:400;letter-spacing:0.08em;margin:0;color:#1a1a1a}
+  .header{padding:32px 40px;border-bottom:1px solid #e8e8e8;text-align:center}
+  .header img{height:28px;width:auto}
   .body{padding:40px}
-  .body h2{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:400;margin:0 0 16px;color:#1a1a1a}
+  .body h2{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:300;letter-spacing:0.04em;margin:0 0 20px;color:#1a1a1a}
   .body p{font-size:14px;line-height:1.7;margin:0 0 12px;color:#4a4a4a}
-  .highlight-box{background:#f7f7f5;border-left:3px solid #1a1a1a;padding:16px 20px;margin:24px 0}
-  .highlight-box p{margin:0;font-size:14px}
-  .cta-btn{display:inline-block;background:#1a1a1a;color:#ffffff;padding:12px 32px;text-decoration:none;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;margin:16px 0}
-  .footer{padding:24px 40px;border-top:1px solid #e8e6e3;text-align:center}
-  .footer p{font-size:11px;color:#8a8a8a;margin:0 0 4px}
+  .highlight-box{background:#fafafa;border-left:2px solid #EEA743;padding:16px 20px;margin:24px 0}
+  .highlight-box p{margin:0 0 8px;font-size:14px}
+  .highlight-box p:last-child{margin:0}
+  .footer{padding:24px 40px;border-top:1px solid #e8e8e8;text-align:center}
+  .footer p{font-size:11px;color:#8a8a8a;margin:0 0 4px;letter-spacing:0.04em}
   table.details{width:100%;border-collapse:collapse;margin:16px 0}
-  table.details td{padding:8px 0;border-bottom:1px solid #f0eeeb;font-size:14px;vertical-align:top}
-  table.details td:first-child{font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#8a8a8a;width:180px}
+  table.details td{padding:10px 0;border-bottom:1px solid #f0eeeb;font-size:14px;vertical-align:top}
+  table.details td:first-child{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#8a8a8a;width:180px}
 </style></head><body><div class="wrapper">
-  <div class="header"><h1>INNER SPACE</h1></div>
+  <div class="header"><img src="${LOGO_URL}" alt="Inner Space" /></div>
   <div class="body">${content}</div>
-  <div class="footer"><p>Inner Space | Premium Tiles</p><p>support@innerspace.co.uk</p></div>
+  <div class="footer"><p>Inner Space — Premium Tiles</p><p>support@innerspace.co.uk</p></div>
 </div></body></html>`;
 }
 
