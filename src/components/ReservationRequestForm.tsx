@@ -130,7 +130,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   };
 
   const handleSubmit = async () => {
-    if (!termsAccepted || sampleVerified !== true) return;
+    if (sampleVerified !== true) return;
     
     // Mock card validation — accepts any non-empty values
     if (!cardNumber.trim() || !cardExpiry.trim() || !cardCvc.trim()) {
@@ -268,36 +268,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
       {showTerms && (
         <div className="border-t border-border pt-6 space-y-5 animate-fade-in">
-          <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Allocation Conditions</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            {[
-              `Minimum ${MIN_ORDER_SQM} m² applies`,
-              '£36 per m² + VAT',
-              'Full payment required prior to delivery',
-              'Kerbside HGV delivery',
-              '10–15% overage recommended',
-              'Additional quantities not batch guaranteed',
-              'Delivery tariff may apply',
-              'Qualifying damage credited (no replacements)',
-            ].map((item) => (
-              <li key={item} className="flex items-start gap-2">
-                <span className="text-muted-foreground mt-0.5">·</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex items-start gap-3 pt-4 border-t border-border">
-            <Checkbox
-              id="terms-accept"
-              checked={termsAccepted}
-              onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-            />
-            <Label htmlFor="terms-accept" className="font-normal cursor-pointer text-sm leading-relaxed text-muted-foreground">
-              I confirm I have reviewed and understand the allocation terms
-            </Label>
-          </div>
-
           {/* Sample eligibility check */}
           {isVerifyingSample && (
             <p className="text-sm text-muted-foreground">Verifying sample order…</p>
@@ -386,7 +356,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
                 <Button
                   type="button"
                   className="flex-1 h-11"
-                  disabled={!termsAccepted || isSubmitting}
+                  disabled={isSubmitting}
                   onClick={handleSubmit}
                 >
                   {isSubmitting ? 'Processing…' : 'Complete Reservation'}
