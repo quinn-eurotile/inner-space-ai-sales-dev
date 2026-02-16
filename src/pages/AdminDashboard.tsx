@@ -1053,45 +1053,36 @@ export default function AdminDashboard() {
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-semibold">Stock Allocation</h3>
                 {selectedProduct ? (() => {
-                  const sqmPerPallet = selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42;
-                  const totalPallets = selectedProduct.stock_allocation || 0;
-                  const totalSqm = totalPallets * sqmPerPallet;
+                  const totalSqm = selectedProduct.stock_allocation || 0;
+                  const soldSqm = selectedProduct.stock_sold || 0;
 
                   // Auto-calculate reserved from active reservations
                   const reservedSqm = reservations
                     .filter(r => r.status === 'pending' || r.status === 'confirmed')
                     .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
-                  const reservedPallets = reservedSqm / sqmPerPallet;
-
-                  const soldPallets = selectedProduct.stock_sold || 0;
-                  const soldSqm = soldPallets * sqmPerPallet;
 
                   const remainingSqm = totalSqm - reservedSqm - soldSqm;
-                  const remainingPallets = remainingSqm / sqmPerPallet;
 
                   return (
                     <div className="space-y-4">
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Total Allocation (Pallets)</Label>
+                          <Label>Total Allocation (sq.m)</Label>
                           <Input
                             type="number"
-                            value={totalPallets}
+                            value={totalSqm}
                             onChange={(e) => updateProduct({ stock_allocation: parseInt(e.target.value) || 0 })}
                           />
-                          <p className="text-xs text-muted-foreground">
-                            ≈ {totalSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m
-                          </p>
                         </div>
                         <div className="space-y-2">
-                          <Label>Sold (Pallets)</Label>
+                          <Label>Sold (sq.m)</Label>
                           <Input
                             type="number"
-                            value={soldPallets}
+                            value={soldSqm}
                             onChange={(e) => updateProduct({ stock_sold: parseInt(e.target.value) || 0 })}
                           />
                           <p className="text-xs text-muted-foreground">
-                            ≈ {soldSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m — editable for offline sales
+                            Editable for offline sales
                           </p>
                         </div>
                       </div>
@@ -1100,20 +1091,17 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-3 gap-4 p-4 bg-secondary/30 rounded-lg text-center">
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Reserved</p>
-                          <p className="text-lg font-medium tabular-nums">{reservedPallets.toFixed(1)} pallets</p>
-                          <p className="text-xs text-muted-foreground">{reservedSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
+                          <p className="text-lg font-medium tabular-nums">{Math.round(reservedSqm).toLocaleString()} sq.m</p>
                         </div>
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Sold</p>
-                          <p className="text-lg font-medium tabular-nums">{soldPallets} pallets</p>
-                          <p className="text-xs text-muted-foreground">{soldSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
+                          <p className="text-lg font-medium tabular-nums">{Math.round(soldSqm).toLocaleString()} sq.m</p>
                         </div>
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Remaining</p>
                           <p className={cn("text-lg font-medium tabular-nums", remainingSqm < 0 && "text-destructive")}>
-                            {remainingPallets.toFixed(1)} pallets
+                            {Math.round(remainingSqm).toLocaleString()} sq.m
                           </p>
-                          <p className="text-xs text-muted-foreground">{remainingSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
