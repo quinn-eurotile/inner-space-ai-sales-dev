@@ -163,7 +163,7 @@ export function SampleOrderDialog({ children, productId }: SampleOrderDialogProp
             <DialogHeader>
               <DialogTitle className="font-serif text-xl font-light">Order a Sample</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
-                20×15cm sample tile — £7 to cover postage and packaging.
+                You will receive a 20x15cm sample tile. The £7.00 fee covers handling, packaging and delivery. Please use the same email address for both sample requests and reservation submissions.
               </DialogDescription>
             </DialogHeader>
             
