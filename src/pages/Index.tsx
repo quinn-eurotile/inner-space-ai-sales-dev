@@ -235,7 +235,7 @@ const Index = () => {
           {product && (
             <ProductStockIndicator
               productId={product.id}
-              initialAllocation={product.stock_allocation || 38}
+              initialAllocation={product.stock_allocation || 1498}
               initialSold={product.stock_sold || 0}
             />
           )}

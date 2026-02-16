@@ -58,9 +58,8 @@ export function ProductStockIndicator({
     };
   }, [productId, initialAllocation, initialSold]);
 
-  const SQM_PER_PALLET = 39.42;
-  const totalSqm = stockAllocation * SQM_PER_PALLET;
-  const soldSqm = stockSold * SQM_PER_PALLET;
+  const totalSqm = stockAllocation;
+  const soldSqm = stockSold;
   const remainingSqm = totalSqm - soldSqm;
 
   return (
