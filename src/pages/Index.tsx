@@ -313,7 +313,7 @@ const Index = () => {
                 Request Reservation
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <strong>Reservations are held provisionally for 7 days (max 200 sq.m per order).</strong>
+                Reservations are held provisionally for 7 days (max 200 sq.m per order).
               </p>
             </div>
             <div className="border border-border bg-background p-6 sm:p-8">
