@@ -9,38 +9,36 @@ const corsHeaders = {
 
 const FROM_EMAIL = "Inner Space <support@innerspace.co.uk>";
 const REPLY_TO = "support@innerspace.co.uk";
+const LOGO_URL = "https://thxyqtvpzelhwnpvmrhu.supabase.co/storage/v1/object/public/product-images/email%2Finner-space-logo.png";
 
 function emailLayout(content: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-  body{margin:0;padding:0;background:#f7f7f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a}
+  body{margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a}
   .wrapper{max-width:600px;margin:0 auto;background:#ffffff}
-  .header{padding:32px 40px;border-bottom:1px solid #e8e6e3;text-align:center}
-  .header h1{font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:400;letter-spacing:0.08em;margin:0;color:#1a1a1a}
+  .header{padding:32px 40px;border-bottom:1px solid #e8e8e8;text-align:center}
+  .header img{height:28px;width:auto}
   .body{padding:40px}
-  .body h2{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:400;margin:0 0 16px;color:#1a1a1a}
+  .body h2{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:300;letter-spacing:0.04em;margin:0 0 20px;color:#1a1a1a}
   .body p{font-size:14px;line-height:1.7;margin:0 0 12px;color:#4a4a4a}
-  .detail-row{display:flex;padding:8px 0;border-bottom:1px solid #f0eeeb}
-  .detail-label{font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#8a8a8a;width:180px;min-width:180px}
-  .detail-value{font-size:14px;color:#1a1a1a}
-  .highlight-box{background:#f7f7f5;border-left:3px solid #1a1a1a;padding:16px 20px;margin:24px 0}
-  .highlight-box p{margin:0;font-size:14px}
-  .cta-btn{display:inline-block;background:#1a1a1a;color:#ffffff;padding:12px 32px;text-decoration:none;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;margin:16px 0}
-  .footer{padding:24px 40px;border-top:1px solid #e8e6e3;text-align:center}
-  .footer p{font-size:11px;color:#8a8a8a;margin:0 0 4px}
+  .highlight-box{background:#fafafa;border-left:2px solid #EEA743;padding:16px 20px;margin:24px 0}
+  .highlight-box p{margin:0 0 8px;font-size:14px}
+  .highlight-box p:last-child{margin:0}
+  .footer{padding:24px 40px;border-top:1px solid #e8e8e8;text-align:center}
+  .footer p{font-size:11px;color:#8a8a8a;margin:0 0 4px;letter-spacing:0.04em}
   table.details{width:100%;border-collapse:collapse;margin:16px 0}
-  table.details td{padding:8px 0;border-bottom:1px solid #f0eeeb;font-size:14px;vertical-align:top}
-  table.details td:first-child{font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#8a8a8a;width:180px}
+  table.details td{padding:10px 0;border-bottom:1px solid #f0eeeb;font-size:14px;vertical-align:top}
+  table.details td:first-child{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#8a8a8a;width:180px}
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <div class="header"><h1>INNER SPACE</h1></div>
+  <div class="header"><img src="${LOGO_URL}" alt="Inner Space" /></div>
   <div class="body">${content}</div>
   <div class="footer">
-    <p>Inner Space | Premium Tiles</p>
+    <p>Inner Space — Premium Tiles</p>
     <p>support@innerspace.co.uk</p>
   </div>
 </div>
@@ -53,11 +51,9 @@ interface ReservationData {
   email: string;
   phone: string;
   requiredQuantitySqm: number;
+  originalQuantitySqm?: number;
   needOutdoorTile: boolean;
-  deliveryDoorHouse?: string;
-  deliveryStreet?: string;
-  deliveryCity?: string;
-  deliveryPostcode: string;
+  deliveryAddress: string;
   requiredDeliveryDate?: string;
   heldUntil: string;
   productName?: string;
@@ -88,7 +84,23 @@ const handler = async (req: Request): Promise<Response> => {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
 
-    const deliveryAddress = [reservation.deliveryDoorHouse, reservation.deliveryStreet, reservation.deliveryCity, reservation.deliveryPostcode].filter(Boolean).join(', ');
+    const formattedDeliveryDate = reservation.requiredDeliveryDate
+      ? new Date(reservation.requiredDeliveryDate).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+      : null;
+
+    const didExceed = reservation.originalQuantitySqm && reservation.originalQuantitySqm > reservation.requiredQuantitySqm;
+
+    const quantityHtml = didExceed
+      ? `<tr><td>Required</td><td>${reservation.originalQuantitySqm} sq.m</td></tr>
+         <tr><td>Reserved</td><td>${reservation.requiredQuantitySqm} sq.m</td></tr>`
+      : `<tr><td>Quantity</td><td>${reservation.requiredQuantitySqm} sq.m</td></tr>`;
+
+    const exceedNote = didExceed
+      ? `<div class="highlight-box">
+          <p>Your order exceeds the maximum reservation of 200 sq.m per order. We have reserved ${reservation.requiredQuantitySqm} sq.m for you.</p>
+          <p><strong>A sales representative will be in touch to facilitate the remainder of your order.</strong></p>
+        </div>`
+      : '';
 
     // Admin email
     const adminHtml = emailLayout(`
@@ -98,12 +110,13 @@ const handler = async (req: Request): Promise<Response> => {
         <tr><td>Name</td><td>${reservation.name}</td></tr>
         <tr><td>Email</td><td>${reservation.email}</td></tr>
         <tr><td>Phone</td><td>${reservation.phone}</td></tr>
-        <tr><td>Quantity</td><td>${reservation.requiredQuantitySqm} SQ.M</td></tr>
+        ${quantityHtml}
         <tr><td>Outdoor Tile</td><td>${reservation.needOutdoorTile ? 'Yes' : 'No'}</td></tr>
-        <tr><td>Delivery Address</td><td>${deliveryAddress}</td></tr>
-        ${reservation.requiredDeliveryDate ? `<tr><td>Delivery Date</td><td>${reservation.requiredDeliveryDate}</td></tr>` : ''}
+        <tr><td>Delivery Address</td><td>${reservation.deliveryAddress}</td></tr>
+        ${formattedDeliveryDate ? `<tr><td>Delivery Date</td><td>${formattedDeliveryDate}</td></tr>` : ''}
         <tr><td>Held Until</td><td>${formattedDate}</td></tr>
       </table>
+      ${exceedNote}
       <div class="highlight-box">
         <p><strong>Action Required:</strong> Contact customer within 7 days to confirm reservation.</p>
       </div>
@@ -115,11 +128,12 @@ const handler = async (req: Request): Promise<Response> => {
       <p>Dear ${reservation.name},</p>
       <p>Thank you for your reservation request${reservation.productName ? ` for ${reservation.productName}` : ''}.</p>
       <table class="details">
-        <tr><td>Quantity</td><td>${reservation.requiredQuantitySqm} SQ.M</td></tr>
+        ${quantityHtml}
         <tr><td>Outdoor Tile</td><td>${reservation.needOutdoorTile ? 'Yes' : 'No'}</td></tr>
-        <tr><td>Delivery Address</td><td>${deliveryAddress}</td></tr>
-        ${reservation.requiredDeliveryDate ? `<tr><td>Preferred Delivery</td><td>${reservation.requiredDeliveryDate}</td></tr>` : ''}
+        <tr><td>Delivery Address</td><td>${reservation.deliveryAddress}</td></tr>
+        ${formattedDeliveryDate ? `<tr><td>Preferred Delivery</td><td>${formattedDeliveryDate}</td></tr>` : ''}
       </table>
+      ${exceedNote}
       <div class="highlight-box">
         <p>Your reservation is <strong>provisionally held until ${formattedDate}</strong>.</p>
         <p>An Inner Space representative will contact you shortly to finalise details.</p>
@@ -130,7 +144,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailPromises = [];
 
-    // Send to admin (support@)
     emailPromises.push(
       fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -143,7 +156,6 @@ const handler = async (req: Request): Promise<Response> => {
       })
     );
 
-    // Send to customer
     emailPromises.push(
       fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -163,7 +175,6 @@ const handler = async (req: Request): Promise<Response> => {
       if (d.id) resendIds.push(d.id);
     }
 
-    // Log email events
     const baseUtm = {
       utm_source: utm?.utm_source || 'transactional',
       utm_medium: utm?.utm_medium || 'email',

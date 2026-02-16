@@ -180,7 +180,7 @@ const Index = () => {
                 </Button>
                 <SampleOrderDialog productId={product?.id}>
                   <Button size="lg" variant="secondary" className="h-12 text-sm tracking-[0.05em] w-full hover:bg-brand-accent hover:text-white hover:border-brand-accent">
-                    Order Sample — £7
+                    Order Sample — £7.00
                   </Button>
                 </SampleOrderDialog>
               </div>
