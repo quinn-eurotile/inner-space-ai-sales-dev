@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Check, Clock, AlertCircle, CalendarIcon, Info, CircleAlert, CreditCard } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
+import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -67,6 +68,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvc, setCardCvc] = useState('');
   const [cardError, setCardError] = useState<string | null>(null);
+  const [sampleVerified, setSampleVerified] = useState<boolean | null>(null);
+  const [isVerifyingSample, setIsVerifyingSample] = useState(false);
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -88,7 +91,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     }
   };
 
-  const handleShowTerms = (e: React.FormEvent) => {
+  const handleShowTerms = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
     
@@ -104,12 +107,30 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       return;
     }
     
+    // Check sample eligibility upfront
+    setIsVerifyingSample(true);
+    setSampleVerified(null);
+    try {
+      const { data: sampleOrders, error: sampleError } = await supabase
+        .from('sample_orders')
+        .select('id')
+        .eq('email', formData.email.trim().toLowerCase())
+        .eq('status', 'confirmed')
+        .limit(1);
+
+      if (sampleError) throw sampleError;
+      setSampleVerified(sampleOrders && sampleOrders.length > 0);
+    } catch {
+      setSampleVerified(false);
+    }
+    setIsVerifyingSample(false);
+    
     setShowTerms(true);
     setTermsAccepted(false);
   };
 
   const handleSubmit = async () => {
-    if (!termsAccepted) return;
+    if (!termsAccepted || sampleVerified !== true) return;
     
     // Mock card validation — accepts any non-empty values
     if (!cardNumber.trim() || !cardExpiry.trim() || !cardCvc.trim()) {
@@ -120,27 +141,8 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
     
     setSubmitError(null);
     setIsSubmitting(true);
-    setIsCheckingEligibility(true);
 
     try {
-      const { data: sampleOrders, error: sampleError } = await supabase
-        .from('sample_orders')
-        .select('id')
-        .eq('email', formData.email.trim().toLowerCase())
-        .eq('status', 'confirmed')
-        .limit(1);
-
-      if (sampleError) throw sampleError;
-
-      if (!sampleOrders || sampleOrders.length === 0) {
-        setSubmitError('A sample order is required before reserving stock. Please order a sample first — your reservation will be linked to the same email address.');
-        setIsSubmitting(false);
-        setIsCheckingEligibility(false);
-        return;
-      }
-
-      setIsCheckingEligibility(false);
-
       const { data: existingReservations } = await supabase
         .from('reservations')
         .select('required_quantity_sqm')
@@ -210,7 +212,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       console.error('Reservation error:', error);
       setSubmitError('Failed to submit reservation. Please try again.');
       setIsSubmitting(false);
-      setIsCheckingEligibility(false);
     }
   };
 
@@ -297,78 +298,115 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
             </Label>
           </div>
 
-          {/* Mock Payment Section */}
-          <div className="pt-4 border-t border-border space-y-4">
-            <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground flex items-center gap-2">
-              <CreditCard className="h-3.5 w-3.5" />
-              Payment Details
-            </p>
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="card-number" className="text-xs tracking-wide uppercase text-muted-foreground">Card Number</Label>
-                <Input
-                  id="card-number"
-                  type="text"
-                  placeholder="4242 4242 4242 4242"
-                  value={cardNumber}
-                  onChange={(e) => { setCardNumber(e.target.value); setCardError(null); }}
-                  className="h-11"
-                  maxLength={19}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="card-expiry" className="text-xs tracking-wide uppercase text-muted-foreground">Expiry</Label>
-                  <Input
-                    id="card-expiry"
-                    type="text"
-                    placeholder="MM / YY"
-                    value={cardExpiry}
-                    onChange={(e) => { setCardExpiry(e.target.value); setCardError(null); }}
-                    className="h-11"
-                    maxLength={7}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="card-cvc" className="text-xs tracking-wide uppercase text-muted-foreground">CVC</Label>
-                  <Input
-                    id="card-cvc"
-                    type="text"
-                    placeholder="123"
-                    value={cardCvc}
-                    onChange={(e) => { setCardCvc(e.target.value); setCardError(null); }}
-                    className="h-11"
-                    maxLength={4}
-                  />
-                </div>
-              </div>
-              {cardError && <p className="text-xs text-destructive">{cardError}</p>}
-              <p className="text-xs text-muted-foreground italic">Test mode — any card number accepted</p>
-            </div>
-          </div>
-
-          {submitError && (
-            <p className="text-sm text-destructive">{submitError}</p>
+          {/* Sample eligibility check */}
+          {isVerifyingSample && (
+            <p className="text-sm text-muted-foreground">Verifying sample order…</p>
           )}
 
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowTerms(false)}
-              className="flex-1 h-11"
-            >
-              Back
-            </Button>
-            <Button
-              type="button"
-              className="flex-1 h-11"
-              disabled={!termsAccepted || isSubmitting}
-              onClick={handleSubmit}
-            >
-              {isCheckingEligibility ? 'Verifying…' : isSubmitting ? 'Processing…' : 'Complete Reservation'}
-            </Button>
-          </div>
+          {sampleVerified === false && !isVerifyingSample && (
+            <div className="pt-4 border-t border-border">
+              <SampleOrderDialog productId={productId}>
+                <button type="button" className="w-full text-left border border-destructive bg-destructive/5 p-4 rounded cursor-pointer hover:bg-destructive/10 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-destructive leading-relaxed">
+                      To preserve the integrity of reservations from allocated stock, you must order a £7.00 sample prior to making your reservation. <span className="underline font-medium">Please click here to order your sample.</span>
+                    </p>
+                  </div>
+                </button>
+              </SampleOrderDialog>
+            </div>
+          )}
+
+          {sampleVerified === true && !isVerifyingSample && (
+            <>
+              {/* Mock Payment Section */}
+              <div className="pt-4 border-t border-border space-y-4">
+                <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground flex items-center gap-2">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  Payment Details
+                </p>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="card-number" className="text-xs tracking-wide uppercase text-muted-foreground">Card Number</Label>
+                    <Input
+                      id="card-number"
+                      type="text"
+                      placeholder="4242 4242 4242 4242"
+                      value={cardNumber}
+                      onChange={(e) => { setCardNumber(e.target.value); setCardError(null); }}
+                      className="h-11"
+                      maxLength={19}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="card-expiry" className="text-xs tracking-wide uppercase text-muted-foreground">Expiry</Label>
+                      <Input
+                        id="card-expiry"
+                        type="text"
+                        placeholder="MM / YY"
+                        value={cardExpiry}
+                        onChange={(e) => { setCardExpiry(e.target.value); setCardError(null); }}
+                        className="h-11"
+                        maxLength={7}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="card-cvc" className="text-xs tracking-wide uppercase text-muted-foreground">CVC</Label>
+                      <Input
+                        id="card-cvc"
+                        type="text"
+                        placeholder="123"
+                        value={cardCvc}
+                        onChange={(e) => { setCardCvc(e.target.value); setCardError(null); }}
+                        className="h-11"
+                        maxLength={4}
+                      />
+                    </div>
+                  </div>
+                  {cardError && <p className="text-xs text-destructive">{cardError}</p>}
+                  <p className="text-xs text-muted-foreground italic">Test mode — any card number accepted</p>
+                </div>
+              </div>
+
+              {submitError && (
+                <p className="text-sm text-destructive">{submitError}</p>
+              )}
+
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowTerms(false)}
+                  className="flex-1 h-11"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="button"
+                  className="flex-1 h-11"
+                  disabled={!termsAccepted || isSubmitting}
+                  onClick={handleSubmit}
+                >
+                  {isSubmitting ? 'Processing…' : 'Complete Reservation'}
+                </Button>
+              </div>
+            </>
+          )}
+
+          {sampleVerified === false && !isVerifyingSample && (
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowTerms(false)}
+                className="flex-1 h-11"
+              >
+                Back
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
