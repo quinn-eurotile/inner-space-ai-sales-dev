@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 
@@ -11,6 +11,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
   const allImages = heroImage ? [heroImage, ...images] : images;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const thumbRef = useRef<HTMLDivElement>(null);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
@@ -66,24 +67,50 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
         </div>
         
         {allImages.length > 1 && (
-          <div className="flex gap-2 mt-3">
-            {allImages.map((image, index) => (
-              <button
-                key={index}
-                className={`flex-shrink-0 w-14 h-14 overflow-hidden border transition-colors ${
-                  index === currentIndex 
-                    ? 'border-foreground' 
-                    : 'border-border hover:border-muted-foreground'
-                }`}
-                onClick={() => setCurrentIndex(index)}
-              >
-                <img
-                  src={image}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
+          <div className="relative flex items-center gap-2 mt-3">
+            <button
+              className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
+              onClick={() => {
+                if (thumbRef.current) {
+                  thumbRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+                }
+              }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div
+              ref={thumbRef}
+              className="flex gap-2 overflow-x-auto scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {allImages.map((image, index) => (
+                <button
+                  key={index}
+                  className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-colors ${
+                    index === currentIndex 
+                      ? 'border-foreground' 
+                      : 'border-border hover:border-muted-foreground'
+                  }`}
+                  onClick={() => setCurrentIndex(index)}
+                >
+                  <img
+                    src={image}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+            <button
+              className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
+              onClick={() => {
+                if (thumbRef.current) {
+                  thumbRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+                }
+              }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>
