@@ -159,9 +159,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                   placeholder="Your full name"
                   value={formData.name}
                   onChange={handleChange('name')}
-                  className={`h-11 ${errors.name ? 'border-muted-foreground' : ''}`}
+                  className={`h-11 ${errors.name ? 'border-destructive ring-1 ring-destructive' : ''}`}
                 />
-                {errors.name && <p className="text-xs text-muted-foreground">{errors.name}</p>}
+                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -173,9 +173,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={handleChange('email')}
-                    className={`h-11 ${errors.email ? 'border-muted-foreground' : ''}`}
+                    className={`h-11 ${errors.email ? 'border-destructive ring-1 ring-destructive' : ''}`}
                   />
-                  {errors.email && <p className="text-xs text-muted-foreground">{errors.email}</p>}
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
                 
                 <div className="space-y-2">
@@ -186,9 +186,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                     placeholder="07XXX XXXXXX"
                     value={formData.phone}
                     onChange={handleChange('phone')}
-                    className={`h-11 ${errors.phone ? 'border-muted-foreground' : ''}`}
+                    className={`h-11 ${errors.phone ? 'border-destructive ring-1 ring-destructive' : ''}`}
                   />
-                  {errors.phone && <p className="text-xs text-muted-foreground">{errors.phone}</p>}
+                  {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
                 </div>
               </div>
               
@@ -199,9 +199,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                   placeholder="Full delivery address"
                   value={formData.address}
                   onChange={handleChange('address')}
-                  className={`min-h-[80px] ${errors.address ? 'border-muted-foreground' : ''}`}
+                  className={`min-h-[80px] ${errors.address ? 'border-destructive ring-1 ring-destructive' : ''}`}
                 />
-                {errors.address && <p className="text-xs text-muted-foreground">{errors.address}</p>}
+                {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
               </div>
               
               <div className="space-y-2">
@@ -212,9 +212,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                   placeholder="SW1A 1AA"
                   value={formData.postcode}
                   onChange={handleChange('postcode')}
-                  className={`h-11 ${errors.postcode ? 'border-muted-foreground' : ''}`}
+                  className={`h-11 ${errors.postcode ? 'border-destructive ring-1 ring-destructive' : ''}`}
                 />
-                {errors.postcode && <p className="text-xs text-muted-foreground">{errors.postcode}</p>}
+                {errors.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
               </div>
               
               <div className="py-3 border-y border-border flex justify-between items-center">
