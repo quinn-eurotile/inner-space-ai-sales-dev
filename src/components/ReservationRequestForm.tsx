@@ -167,7 +167,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         required_delivery_date: formData.requiredDeliveryDate ? format(formData.requiredDeliveryDate, 'yyyy-MM-dd') : null,
         held_until: heldUntilDate.toISOString(),
         status: 'pending',
-        admin_notes: deliveryResult ? `Delivery: ${deliveryResult.zone.tier_label}${deliveryResult.zone.surcharge_type === 'per_sqm' ? ` (+£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)}/m²)` : deliveryResult.zone.surcharge_type === 'quote_required' ? ' (Quote required)' : ''}` : null,
+        admin_notes: deliveryResult ? `Delivery: ${deliveryResult.zone.tier_label}${deliveryResult.zone.surcharge_type === 'per_sqm' ? ` (+£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)}/sq.m)` : deliveryResult.zone.surcharge_type === 'quote_required' ? ' (Quote required)' : ''}` : null,
       }]);
 
       if (error) throw error;
@@ -248,11 +248,9 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         />
       </div>
 
-      {deliveryResult && deliveryResult.zone.surcharge_type !== 'none' && (
+      {deliveryResult && deliveryResult.zone.surcharge_type === 'quote_required' && (
         <p className="text-sm text-muted-foreground">
-          {deliveryResult.zone.surcharge_type === 'quote_required'
-            ? 'A delivery quotation will be included with your reservation request.'
-            : `An additional delivery surcharge of +£${Number(deliveryResult.zone.surcharge_per_sqm).toFixed(2)} per m² applies.`}
+          A delivery quotation will be included with your reservation request.
         </p>
       )}
 
@@ -337,7 +335,7 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       <form onSubmit={handleShowTerms} className={cn("space-y-5", showTerms && "hidden")}>
         <div className="py-4 border-y border-border">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Reservations are linked to confirmed sample requests. Minimum {MIN_ORDER_SQM} sq.m.
+            <strong>Reservations are linked to confirmed sample requests by your email. Minimum reservation quantity: {MIN_ORDER_SQM} sq.m</strong>
           </p>
         </div>
 

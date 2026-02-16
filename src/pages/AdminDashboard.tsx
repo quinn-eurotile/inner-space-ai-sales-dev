@@ -751,7 +751,7 @@ export default function AdminDashboard() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
-                    <TableHead>Qty (m²)</TableHead>
+                    <TableHead>Qty (sq.m)</TableHead>
                     <TableHead>Outdoor</TableHead>
                     <TableHead>Delivery Address</TableHead>
                     <TableHead>Delivery Date</TableHead>
