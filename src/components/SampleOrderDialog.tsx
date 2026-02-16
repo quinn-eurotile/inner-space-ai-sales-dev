@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Package, CreditCard } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
@@ -44,7 +44,28 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
+
+  // Check URL params for successful payment return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sampleSuccess = params.get('sample_success');
+    if (sampleSuccess) {
+      // Update order status to confirmed
+      supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).then(() => {
+        onOrderComplete?.();
+      });
+      setIsSuccess(true);
+      setOpen(true);
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    const sampleCancelled = params.get('sample_cancelled');
+    if (sampleCancelled) {
+      // Delete the pending order
+      supabase.from('sample_orders').delete().eq('id', sampleCancelled).eq('status', 'pending');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [onOrderComplete]);
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -55,7 +76,7 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = sampleSchema.safeParse(formData);
     if (!result.success) {
@@ -67,25 +88,26 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
       setErrors(fieldErrors);
       return;
     }
-    setShowPayment(true);
-  };
 
-  const handlePayment = async () => {
     setIsSubmitting(true);
     try {
-      await supabase.from('sample_orders').insert([{
-        product_id: productId || null,
-        name: formData.name,
-        email: formData.email.trim().toLowerCase(),
-        phone: formData.phone,
-        address: formData.address,
-        postcode: formData.postcode,
-        status: 'confirmed',
-      }]);
-      setIsSubmitting(false);
-      setIsSuccess(true);
+      const { data, error } = await supabase.functions.invoke('create-sample-checkout', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          postcode: formData.postcode,
+          productId: productId || null,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (error) {
-      console.error('Sample order error:', error);
+      console.error('Checkout error:', error);
       setIsSubmitting(false);
     }
   };
@@ -94,7 +116,6 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
     setFormData({ name: '', email: '', phone: '', address: '', postcode: '' });
     setErrors({});
     setIsSuccess(false);
-    setShowPayment(false);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -120,48 +141,6 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
               Close
             </Button>
           </div>
-        ) : showPayment ? (
-          <>
-            <DialogHeader>
-              <DialogTitle className="font-serif text-xl font-light">Payment</DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground">
-                Complete your sample order
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 py-2">
-              <div className="py-4 border-y border-border">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-foreground">Tile Sample (20×15cm)</p>
-                    <p className="text-xs text-muted-foreground">Including P&P</p>
-                  </div>
-                  <p className="font-serif text-xl font-light text-foreground">£7.00</p>
-                </div>
-              </div>
-              
-              <div className="text-center text-sm text-muted-foreground">
-                <p>Payment integration coming soon.</p>
-                <p className="mt-1">Click below to complete your request.</p>
-              </div>
-              
-              <Button 
-                onClick={handlePayment}
-                className="w-full h-11"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Processing…' : 'Pay £7.00'}
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                onClick={() => setShowPayment(false)}
-                className="w-full text-sm"
-              >
-                Back to details
-              </Button>
-            </div>
-          </>
         ) : (
           <>
             <DialogHeader>
@@ -243,8 +222,8 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                 <span className="text-sm text-foreground">£7.00</span>
               </div>
               
-              <Button type="submit" className="w-full h-11">
-                Continue to Payment
+              <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
+                {isSubmitting ? 'Redirecting to payment…' : 'Continue to Payment'}
               </Button>
             </form>
           </>
