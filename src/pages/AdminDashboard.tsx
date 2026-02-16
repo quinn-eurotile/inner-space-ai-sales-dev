@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Table, 
@@ -15,6 +16,9 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { 
   LogOut, 
   Package, 
@@ -23,10 +27,13 @@ import {
   Upload,
   Trash2,
   FileText,
-  ShoppingBag
+  ShoppingBag,
+  Settings,
+  CalendarIcon
 } from 'lucide-react';
 import { format } from 'date-fns';
 import innerSpaceLogo from '@/assets/inner-space-logo.png';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 interface Product {
   id: string;
@@ -113,7 +120,8 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
-
+  const { settings, updateSetting } = useSiteSettings();
+  const [settingsSaving, setSettingsSaving] = useState<string | null>(null);
   useEffect(() => {
     checkAuth();
     fetchData();
@@ -356,6 +364,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="images" className="gap-2">
               <ImageIcon className="h-4 w-4" />
               Images
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -975,6 +987,120 @@ export default function AdminDashboard() {
               </div>
             )}
           </TabsContent>
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <div className="max-w-2xl space-y-8">
+              {/* Allocation Timer */}
+              <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Allocation Timer</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                    <div>
+                      <Label className="text-sm font-medium">Allocation Open</Label>
+                      <p className="text-xs text-muted-foreground">Toggle the allocation on or off manually</p>
+                    </div>
+                    <Switch
+                      checked={settings.allocation_open === 'true'}
+                      onCheckedChange={async (checked) => {
+                        setSettingsSaving('allocation_open');
+                        await updateSetting('allocation_open', checked ? 'true' : 'false');
+                        setSettingsSaving(null);
+                      }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Allocation End Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !settings.allocation_end_date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {settings.allocation_end_date
+                            ? format(new Date(settings.allocation_end_date), 'PPP')
+                            : 'Pick a date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={new Date(settings.allocation_end_date)}
+                          onSelect={async (date) => {
+                            if (date) {
+                              setSettingsSaving('allocation_end_date');
+                              await updateSetting('allocation_end_date', date.toISOString());
+                              setSettingsSaving(null);
+                            }
+                          }}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-xs text-muted-foreground">
+                      The countdown timer on the landing page will count down to this date.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Landing Page Text */}
+              <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Landing Page Content</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Allocation Notice Banner</Label>
+                    <Input
+                      value={settings.allocation_notice}
+                      onBlur={(e) => updateSetting('allocation_notice', e.target.value)}
+                      onChange={(e) => {
+                        // Local state update handled by the hook
+                      }}
+                      defaultValue={settings.allocation_notice}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Min Order Label</Label>
+                    <Input
+                      defaultValue={settings.min_order_label}
+                      onBlur={(e) => updateSetting('min_order_label', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Hero Heading</Label>
+                    <Input
+                      defaultValue={settings.hero_heading}
+                      onBlur={(e) => updateSetting('hero_heading', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Hero Subheading</Label>
+                    <Input
+                      defaultValue={settings.hero_subheading}
+                      onBlur={(e) => updateSetting('hero_subheading', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Product Description</Label>
+                    <Textarea
+                      defaultValue={settings.hero_description}
+                      onBlur={(e) => updateSetting('hero_description', e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Changes save automatically when you leave each field.
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+
         </Tabs>
       </main>
     </div>

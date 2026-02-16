@@ -8,20 +8,6 @@ interface TimeLeft {
   seconds: number;
 }
 
-const ALLOCATION_DURATION_DAYS = 14;
-const STORAGE_KEY = 'innispace_allocation_end';
-
-const getEndDate = (): Date => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    return new Date(stored);
-  }
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() + ALLOCATION_DURATION_DAYS);
-  localStorage.setItem(STORAGE_KEY, endDate.toISOString());
-  return endDate;
-};
-
 const calculateTimeLeft = (endDate: Date): TimeLeft | null => {
   const difference = endDate.getTime() - new Date().getTime();
   
@@ -38,11 +24,12 @@ const calculateTimeLeft = (endDate: Date): TimeLeft | null => {
 };
 
 interface CountdownTimerProps {
+  endDate?: string;
   onExpired?: () => void;
 }
 
-export function CountdownTimer({ onExpired }: CountdownTimerProps) {
-  const [endDate] = useState<Date>(getEndDate);
+export function CountdownTimer({ endDate: endDateStr, onExpired }: CountdownTimerProps) {
+  const endDate = endDateStr ? new Date(endDateStr) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(calculateTimeLeft(endDate));
 
   useEffect(() => {
@@ -57,7 +44,7 @@ export function CountdownTimer({ onExpired }: CountdownTimerProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endDate, onExpired]);
+  }, [endDate.getTime(), onExpired]);
 
   if (!timeLeft) {
     return (
