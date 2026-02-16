@@ -29,9 +29,10 @@ type FormErrors = Partial<Record<keyof FormData, string>>;
 interface SampleOrderDialogProps {
   children: React.ReactNode;
   productId?: string;
+  onOrderComplete?: () => void;
 }
 
-export function SampleOrderDialog({ children, productId }: SampleOrderDialogProps) {
+export function SampleOrderDialog({ children, productId, onOrderComplete }: SampleOrderDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -97,6 +98,9 @@ export function SampleOrderDialog({ children, productId }: SampleOrderDialogProp
   };
 
   const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && isSuccess) {
+      onOrderComplete?.();
+    }
     setOpen(newOpen);
     if (!newOpen) resetForm();
   };
