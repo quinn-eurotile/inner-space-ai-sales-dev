@@ -15,6 +15,7 @@ import { Download, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 import heroImage from '@/assets/hero-tiles.jpg';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 interface Product {
   id: string;
@@ -57,6 +58,7 @@ const Index = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const { settings, loading: settingsLoading } = useSiteSettings();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -86,7 +88,7 @@ const Index = () => {
     fetchProduct();
   }, []);
 
-  if (loading) {
+  if (loading || settingsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-muted-foreground text-sm tracking-widest uppercase">Loading</div>
@@ -94,7 +96,10 @@ const Index = () => {
     );
   }
 
-  if (isExpired) {
+  // Check if allocation is manually closed or timer expired
+  const allocationClosed = settings.allocation_open === 'false' || isExpired;
+
+  if (allocationClosed) {
     return (
       <div className="min-h-screen bg-background">
         <AllocationClosed />
@@ -113,7 +118,7 @@ const Index = () => {
             className="h-5 sm:h-10 w-auto"
           />
           <span className="text-[9px] sm:text-[11px] tracking-[0.12em] sm:tracking-[0.15em] uppercase text-muted-foreground">
-            Min. order 57 sq.m
+            {settings.min_order_label}
           </span>
         </div>
       </header>
@@ -124,7 +129,7 @@ const Index = () => {
       <div className="py-3 sm:py-4">
         <div className="section-container text-center">
           <p className="text-[15.6px] tracking-[0.15em] uppercase text-muted-foreground">
-            Limited Factory Allocation
+            {settings.allocation_notice}
           </p>
         </div>
       </div>
@@ -138,10 +143,10 @@ const Index = () => {
             {/* Left: Text */}
             <div className="order-2 lg:order-1 text-center lg:text-left">
               <h1 className="font-serif text-[40px] sm:text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
-                Miami Grande Bianco
+                {settings.hero_heading}
               </h1>
               <div className="w-16 h-[2px] bg-brand-accent mb-4 mx-auto lg:mx-0" />
-              <p className="text-muted-foreground text-base mb-1">120×120cm — Made in Italy</p>
+              <p className="text-muted-foreground text-base mb-1">{settings.hero_subheading}</p>
               <p className="text-muted-foreground text-sm mb-4">
                 Including nationwide kerbside delivery
               </p>
@@ -161,7 +166,7 @@ const Index = () => {
 
               {/* Editorial paragraph */}
               <p className="text-sm text-muted-foreground leading-relaxed mb-5 max-w-md mx-auto lg:mx-0">
-                This allocation has been secured directly from production and is available in confirmed bulk quantities (over 57 sq.m only). Suitable for walls and floors, with matching 20mm outdoor option.
+                {settings.hero_description}
               </p>
 
               {/* Postcode Checker */}
@@ -171,7 +176,7 @@ const Index = () => {
 
               {/* Countdown */}
               <div className="mb-5">
-                <CountdownTimer onExpired={() => setIsExpired(true)} />
+                <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
               </div>
 
               <div className="flex flex-col gap-3">
