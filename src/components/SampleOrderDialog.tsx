@@ -106,10 +106,10 @@ export function SampleOrderDialog({ children, productId }: SampleOrderDialogProp
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         {isSuccess ? (
-          <div className="text-center py-10 animate-fade-in">
-            <Check className="h-5 w-5 text-foreground mx-auto mb-4" />
-            <h3 className="font-serif text-xl font-light mb-2">Sample Order Confirmed</h3>
-            <p className="text-sm text-muted-foreground mb-6">
+          <div className="text-center py-6 animate-fade-in">
+            <Check className="h-5 w-5 text-foreground mx-auto mb-3" />
+            <h3 className="font-serif text-xl font-light mb-1">Sample Order Confirmed</h3>
+            <p className="text-sm text-muted-foreground mb-4">
               Your 20×15cm sample will be dispatched within 24–48 hours.
             </p>
             <Button variant="outline" onClick={() => handleOpenChange(false)} className="w-full">
@@ -125,7 +125,7 @@ export function SampleOrderDialog({ children, productId }: SampleOrderDialogProp
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-6 py-4">
+            <div className="space-y-4 py-2">
               <div className="py-4 border-y border-border">
                 <div className="flex justify-between items-center">
                   <div>
@@ -167,7 +167,7 @@ export function SampleOrderDialog({ children, productId }: SampleOrderDialogProp
               </DialogDescription>
             </DialogHeader>
             
-            <form onSubmit={handleSubmit} className="space-y-5 py-4">
+            <form onSubmit={handleSubmit} className="space-y-3 py-2">
               <div className="space-y-2">
                 <Label htmlFor="sample-name" className="text-xs tracking-wide uppercase text-muted-foreground">Full Name</Label>
                 <Input
