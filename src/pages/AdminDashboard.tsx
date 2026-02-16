@@ -1052,39 +1052,79 @@ export default function AdminDashboard() {
               {/* Stock Allocation */}
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-semibold">Stock Allocation</h3>
-                {selectedProduct ? (
-                  <div className="space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Total Allocation (Pallets)</Label>
-                        <Input
-                          type="number"
-                          value={selectedProduct.stock_allocation || 0}
-                          onChange={(e) => updateProduct({ stock_allocation: parseInt(e.target.value) })}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          ≈ {((selectedProduct.stock_allocation || 0) * (selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42)).toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m total
-                        </p>
+                {selectedProduct ? (() => {
+                  const sqmPerPallet = selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42;
+                  const totalPallets = selectedProduct.stock_allocation || 0;
+                  const totalSqm = totalPallets * sqmPerPallet;
+
+                  // Auto-calculate reserved from active reservations
+                  const reservedSqm = reservations
+                    .filter(r => r.status === 'pending' || r.status === 'confirmed')
+                    .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
+                  const reservedPallets = reservedSqm / sqmPerPallet;
+
+                  const soldPallets = selectedProduct.stock_sold || 0;
+                  const soldSqm = soldPallets * sqmPerPallet;
+
+                  const remainingSqm = totalSqm - reservedSqm - soldSqm;
+                  const remainingPallets = remainingSqm / sqmPerPallet;
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Total Allocation (Pallets)</Label>
+                          <Input
+                            type="number"
+                            value={totalPallets}
+                            onChange={(e) => updateProduct({ stock_allocation: parseInt(e.target.value) || 0 })}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            ≈ {totalSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Sold (Pallets)</Label>
+                          <Input
+                            type="number"
+                            value={soldPallets}
+                            onChange={(e) => updateProduct({ stock_sold: parseInt(e.target.value) || 0 })}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            ≈ {soldSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m — editable for offline sales
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label>Stock Sold (Pallets)</Label>
-                        <Input
-                          type="number"
-                          value={selectedProduct.stock_sold || 0}
-                          onChange={(e) => updateProduct({ stock_sold: parseInt(e.target.value) })}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          ≈ {((selectedProduct.stock_sold || 0) * (selectedProduct.sqm_per_pallet ? Number(selectedProduct.sqm_per_pallet) : 39.42)).toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m sold
-                        </p>
+
+                      {/* Summary row */}
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-secondary/30 rounded-lg text-center">
+                        <div>
+                          <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Reserved</p>
+                          <p className="text-lg font-medium tabular-nums">{reservedPallets.toFixed(1)} pallets</p>
+                          <p className="text-xs text-muted-foreground">{reservedSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Sold</p>
+                          <p className="text-lg font-medium tabular-nums">{soldPallets} pallets</p>
+                          <p className="text-xs text-muted-foreground">{soldSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Remaining</p>
+                          <p className={cn("text-lg font-medium tabular-nums", remainingSqm < 0 && "text-destructive")}>
+                            {remainingPallets.toFixed(1)} pallets
+                          </p>
+                          <p className="text-xs text-muted-foreground">{remainingSqm.toLocaleString(undefined, { maximumFractionDigits: 0 })} sq.m</p>
+                        </div>
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        Reserved is auto-calculated from pending &amp; confirmed reservations. Adjust "Sold" for offline orders.
+                      </p>
                     </div>
-                  </div>
-                ) : (
+                  );
+                })() : (
                   <p className="text-sm text-muted-foreground">No product selected.</p>
                 )}
               </div>
-
-              {/* Landing Page Text */}
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-semibold">Landing Page Content</h3>
                 <div className="space-y-4">
