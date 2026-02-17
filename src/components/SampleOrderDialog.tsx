@@ -53,10 +53,17 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
       // Fire Meta Pixel Purchase event on confirmed Stripe payment
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'Purchase', { value: 7.00, currency: 'GBP' });
+        console.log('[Meta Pixel] Purchase event fired', { value: 7.00, currency: 'GBP' });
+      } else {
+        console.warn('[Meta Pixel] fbq not available - Purchase event NOT fired');
       }
       // Update order status to confirmed, then send confirmation emails
-      supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).select().single().then(async ({ data: order }) => {
+      supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).select().single().then(async ({ data: order, error: updateError }) => {
+        if (updateError) {
+          console.error('[Sample Order] Failed to update status:', updateError);
+        }
         if (order) {
+          console.log('[Sample Order] Status updated to confirmed, sending emails...');
           await supabase.functions.invoke('send-sample-confirmation', {
             body: {
               sampleOrder: {
@@ -69,6 +76,8 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
               },
             },
           });
+        } else {
+          console.error('[Sample Order] No order data returned after update - RLS may be blocking');
         }
         onOrderComplete?.();
       });
