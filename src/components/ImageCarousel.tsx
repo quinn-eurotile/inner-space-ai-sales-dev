@@ -67,7 +67,8 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
         </div>
         
         {allImages.length > 1 && (
-          <div className="relative inline-flex items-center gap-2 mt-3 mx-auto">
+          <div className="flex justify-center mt-3">
+          <div className="inline-flex items-center gap-2">
             <button
               className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
               onClick={() => {
@@ -111,6 +112,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             >
               <ChevronRight className="h-4 w-4" />
             </button>
+          </div>
           </div>
         )}
       </div>
