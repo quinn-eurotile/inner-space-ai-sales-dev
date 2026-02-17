@@ -33,7 +33,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
     <>
       <div className="relative w-full overflow-hidden">
         <div 
-          className="aspect-[4/3] sm:aspect-square relative overflow-hidden cursor-pointer group"
+          className="aspect-square relative overflow-hidden cursor-pointer group"
           onClick={() => setLightboxOpen(true)}
         >
           <img
