@@ -33,7 +33,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
     <>
       <div className="relative w-full overflow-hidden">
         <div 
-          className="aspect-square relative overflow-hidden cursor-pointer group"
+          className="aspect-[4/3] sm:aspect-square relative overflow-hidden cursor-pointer group"
           onClick={() => setLightboxOpen(true)}
         >
           <img
@@ -80,7 +80,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             </button>
             <div
               ref={thumbRef}
-              className="flex gap-2 overflow-x-auto scrollbar-hide"
+              className="flex gap-2 overflow-x-auto scrollbar-hide max-w-[272px]"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {allImages.map((image, index) => (
