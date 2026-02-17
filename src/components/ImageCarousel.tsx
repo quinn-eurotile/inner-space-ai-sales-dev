@@ -67,12 +67,12 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
         </div>
         
         {allImages.length > 1 && (
-          <div className="relative flex items-center gap-2 mt-3">
+          <div className="relative flex items-center gap-2 mt-3 justify-center">
             <button
               className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
               onClick={() => {
                 if (thumbRef.current) {
-                  thumbRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+                  thumbRef.current.scrollBy({ left: -88, behavior: 'smooth' });
                 }
               }}
             >
@@ -80,8 +80,8 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             </button>
             <div
               ref={thumbRef}
-              className="flex gap-2 overflow-x-auto scrollbar-hide max-w-[272px]"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="flex gap-2 overflow-x-auto scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxWidth: `${Math.min(allImages.length, 3) * 80 + (Math.min(allImages.length, 3) - 1) * 8}px` }}
             >
               {allImages.map((image, index) => (
                 <button
@@ -105,7 +105,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
               className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
               onClick={() => {
                 if (thumbRef.current) {
-                  thumbRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+                  thumbRef.current.scrollBy({ left: 88, behavior: 'smooth' });
                 }
               }}
             >
