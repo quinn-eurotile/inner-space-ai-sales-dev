@@ -54,8 +54,22 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'Purchase', { value: 7.00, currency: 'GBP' });
       }
-      // Update order status to confirmed
-      supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).then(() => {
+      // Update order status to confirmed, then send confirmation emails
+      supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).select().single().then(async ({ data: order }) => {
+        if (order) {
+          await supabase.functions.invoke('send-sample-confirmation', {
+            body: {
+              sampleOrder: {
+                id: order.id,
+                name: order.name,
+                email: order.email,
+                phone: order.phone,
+                address: order.address,
+                postcode: order.postcode,
+              },
+            },
+          });
+        }
         onOrderComplete?.();
       });
       setIsSuccess(true);
