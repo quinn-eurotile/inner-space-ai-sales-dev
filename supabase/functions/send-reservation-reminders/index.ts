@@ -17,7 +17,7 @@ function emailLayout(content: string): string {
 <style>
   body{margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a}
   .wrapper{max-width:600px;margin:0 auto;background:#ffffff}
-  .header{padding:32px 40px;border-bottom:1px solid #e8e8e8;text-align:center}
+  .header{padding:32px 40px;border-bottom:1px solid #e8e8e8;text-align:center;background:#1a1a1a}
   .header img{height:28px;width:auto}
   .body{padding:40px}
   .body h2{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:300;letter-spacing:0.04em;margin:0 0 20px;color:#1a1a1a}
