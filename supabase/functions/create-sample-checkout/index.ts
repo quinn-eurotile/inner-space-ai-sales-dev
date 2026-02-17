@@ -60,7 +60,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : email.trim().toLowerCase(),
       line_items: [
         {
-          price: "price_1T1VKJB07EIKmLFjJIaKrNUA",
+          price: "price_1T1iDRB07EIKmLFjxEmYGFWl",
           quantity: 1,
         },
       ],
