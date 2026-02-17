@@ -10,6 +10,7 @@ interface ImageCarouselProps {
 export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
   const allImages = heroImage ? [heroImage, ...images] : images;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [thumbStartIndex, setThumbStartIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const thumbRef = useRef<HTMLDivElement>(null);
 
@@ -72,8 +73,10 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             <button
               className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
               onClick={() => {
+                const newStart = Math.max(0, thumbStartIndex - 1);
+                setThumbStartIndex(newStart);
                 if (thumbRef.current) {
-                  thumbRef.current.scrollBy({ left: -88, behavior: 'smooth' });
+                  thumbRef.current.scrollTo({ left: newStart * 88, behavior: 'smooth' });
                 }
               }}
             >
@@ -105,8 +108,11 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             <button
               className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-muted hover:bg-accent transition-colors"
               onClick={() => {
+                const maxStart = Math.max(0, allImages.length - 3);
+                const newStart = Math.min(maxStart, thumbStartIndex + 1);
+                setThumbStartIndex(newStart);
                 if (thumbRef.current) {
-                  thumbRef.current.scrollBy({ left: 88, behavior: 'smooth' });
+                  thumbRef.current.scrollTo({ left: newStart * 88, behavior: 'smooth' });
                 }
               }}
             >
