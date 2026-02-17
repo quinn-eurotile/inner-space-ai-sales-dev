@@ -31,7 +31,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
 
   return (
     <>
-      <div className="relative w-full">
+      <div className="relative w-full overflow-hidden">
         <div 
           className="aspect-square relative overflow-hidden cursor-pointer group"
           onClick={() => setLightboxOpen(true)}

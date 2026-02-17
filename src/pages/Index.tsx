@@ -154,7 +154,7 @@ const Index = () => {
                 Including nationwide kerbside delivery
               </p>
 
-              <div className="flex items-baseline gap-3 mb-4 justify-center lg:justify-start">
+              <div className="flex items-baseline gap-2 sm:gap-3 mb-4 justify-center lg:justify-start flex-wrap">
                 <span className="font-serif text-3xl lg:text-4xl font-light text-foreground">
                   £{product?.price_per_sqm?.toFixed(2) || '36.00'}
                 </span>
