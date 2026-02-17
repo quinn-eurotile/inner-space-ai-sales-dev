@@ -177,7 +177,7 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
               </DialogDescription>
             </DialogHeader>
             
-            <form onSubmit={handleSubmit} className="space-y-3 py-2">
+            <form onSubmit={handleSubmit} className="space-y-3 py-2" data-fb-nototrack="true">
               <div className="space-y-2">
                 <Label htmlFor="sample-name" className="text-xs tracking-wide uppercase text-muted-foreground">Full Name</Label>
                 <Input
