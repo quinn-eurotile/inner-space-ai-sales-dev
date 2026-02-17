@@ -50,6 +50,10 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
     const params = new URLSearchParams(window.location.search);
     const sampleSuccess = params.get('sample_success');
     if (sampleSuccess) {
+      // Fire Meta Pixel Purchase event on confirmed Stripe payment
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Purchase', { value: 7.00, currency: 'GBP' });
+      }
       // Update order status to confirmed
       supabase.from('sample_orders').update({ status: 'confirmed' }).eq('id', sampleSuccess).then(() => {
         onOrderComplete?.();
