@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { format } from 'date-fns';
 
 interface TimeLeft {
@@ -8,8 +8,8 @@ interface TimeLeft {
   seconds: number;
 }
 
-const calculateTimeLeft = (endDate: Date): TimeLeft | null => {
-  const difference = endDate.getTime() - new Date().getTime();
+const calculateTimeLeft = (endTime: number): TimeLeft | null => {
+  const difference = endTime - Date.now();
   
   if (difference <= 0) {
     return null;
@@ -29,22 +29,28 @@ interface CountdownTimerProps {
 }
 
 export function CountdownTimer({ endDate: endDateStr, onExpired }: CountdownTimerProps) {
-  const endDate = endDateStr ? new Date(endDateStr) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(calculateTimeLeft(endDate));
+  const endTime = useMemo(
+    () => endDateStr ? new Date(endDateStr).getTime() : Date.now() + 14 * 24 * 60 * 60 * 1000,
+    [endDateStr]
+  );
+  const endDate = useMemo(() => new Date(endTime), [endTime]);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() => calculateTimeLeft(endTime));
+  const onExpiredRef = useRef(onExpired);
+  onExpiredRef.current = onExpired;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const newTimeLeft = calculateTimeLeft(endDate);
+      const newTimeLeft = calculateTimeLeft(endTime);
       setTimeLeft(newTimeLeft);
       
-      if (!newTimeLeft && onExpired) {
-        onExpired();
+      if (!newTimeLeft) {
+        onExpiredRef.current?.();
         clearInterval(timer);
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endDate.getTime(), onExpired]);
+  }, [endTime]);
 
   if (!timeLeft) {
     return (
