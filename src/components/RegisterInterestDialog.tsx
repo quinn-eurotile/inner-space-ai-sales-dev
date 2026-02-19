@@ -17,7 +17,15 @@ const interestSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
   email: z.string().trim().email('Please enter a valid email').max(255),
   deliveryPostcode: z.string().trim().min(3, 'Please enter a valid postcode').max(10),
-  estimatedQuantity: z.string().trim().min(1, 'Please enter an estimated quantity').max(20),
+  estimatedQuantity: z
+    .string()
+    .trim()
+    .min(1, 'Please enter an estimated quantity')
+    .max(20)
+    .refine(val => {
+      const num = parseFloat(val.replace(/[^0-9.]/g, ''));
+      return !isNaN(num) && num > 57;
+    }, { message: 'Minimum quantity is over 57 sq.m' }),
   tel: z.string().trim().max(20).optional(),
 });
 
@@ -197,8 +205,8 @@ export function RegisterInterestDialog({ children }: RegisterInterestDialogProps
 
             <Button
               type="submit"
-              className="w-full h-11 mt-2"
-              style={{ backgroundColor: '#f0aa47', color: '#1a1a1a', border: 'none' }}
+              className="w-full h-11 mt-2 font-semibold"
+              style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none' }}
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Sending…' : 'Register Interest'}
