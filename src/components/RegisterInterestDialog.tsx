@@ -102,7 +102,7 @@ export function RegisterInterestDialog({ children }: RegisterInterestDialogProps
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif font-light text-xl">Register Interest</DialogTitle>
+          <DialogTitle className="font-serif font-light text-xl">I'm Interested in This Allocation</DialogTitle>
         </DialogHeader>
 
         {isSuccess ? (
