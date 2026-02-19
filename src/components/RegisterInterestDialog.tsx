@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
+import { pinterestTrack } from '@/lib/pinterest';
 
 const interestSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
@@ -75,10 +76,12 @@ export function RegisterInterestDialog({ children }: RegisterInterestDialogProps
       await supabase.functions.invoke('send-register-interest', {
         body: { formData: result.data },
       });
+      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
       setIsSuccess(true);
     } catch (err) {
       console.error('Failed to send interest form', err);
       // Still show success to the user — email may have sent
+      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
       setIsSuccess(true);
     } finally {
       setIsSubmitting(false);

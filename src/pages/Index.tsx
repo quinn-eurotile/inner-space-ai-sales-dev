@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 
 import { useSiteSettings } from '@/hooks/use-site-settings';
+import { pinterestTrack } from '@/lib/pinterest';
 
 interface Product {
   id: string;
@@ -63,6 +64,9 @@ const Index = () => {
   const { settings, loading: settingsLoading } = useSiteSettings();
 
   useEffect(() => {
+    // Fire Pinterest page visit on load
+    pinterestTrack('pagevisit');
+
     const fetchProduct = async () => {
       const { data: products, error } = await supabase
         .from('products')

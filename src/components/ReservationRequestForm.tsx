@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { supabase } from '@/integrations/supabase/client';
+import { pinterestTrack } from '@/lib/pinterest';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -192,6 +193,11 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
         console.log('Email notification failed, but reservation was saved');
       }
 
+      pinterestTrack('addtocart', {
+        value: Math.round(reservedQuantity * 36 * 100) / 100,
+        order_quantity: reservedQuantity,
+        currency: 'GBP',
+      });
       setHeldUntil(heldUntilDate);
       setExceededMax(didExceed);
       setRequestedQuantity(originalQuantity);
