@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Check, Package } from 'lucide-react';
+import { pinterestTrack } from '@/lib/pinterest';
 
 const sampleSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
@@ -61,6 +62,11 @@ export function SampleForm({ onSuccess }: SampleFormProps) {
     
     // Simulate API call
     setTimeout(() => {
+      pinterestTrack('checkout', {
+        value: 7,
+        order_quantity: 1,
+        currency: 'GBP',
+      });
       setIsSubmitting(false);
       setIsSuccess(true);
       onSuccess?.();
