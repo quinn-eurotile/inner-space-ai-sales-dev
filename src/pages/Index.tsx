@@ -189,7 +189,7 @@ const Index = () => {
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
                   >
-                    Register Interest
+                    I'm Interested in This Allocation
                   </Button>
                 </RegisterInterestDialog>
                 <SampleOrderDialog productId={product?.id}>
