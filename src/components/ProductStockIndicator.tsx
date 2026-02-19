@@ -17,7 +17,21 @@ export function ProductStockIndicator({
   const [stockAllocation, setStockAllocation] = useState(initialAllocation);
   const [stockSold, setStockSold] = useState(initialSold);
   const [stockReservedManual, setStockReservedManual] = useState(initialReservedManual);
+  const [stockReservedOnline, setStockReservedOnline] = useState(0);
   
+  const fetchReservations = async () => {
+    const { data } = await supabase
+      .from('reservations')
+      .select('required_quantity_sqm')
+      .eq('product_id', productId)
+      .not('status', 'in', '("released","cancelled","expired","sold")');
+
+    if (data) {
+      const total = data.reduce((sum, r) => sum + Number(r.required_quantity_sqm), 0);
+      setStockReservedOnline(total);
+    }
+  };
+
   useEffect(() => {
     const fetchStock = async () => {
       const { data, error } = await supabase
@@ -34,8 +48,9 @@ export function ProductStockIndicator({
     };
 
     fetchStock();
+    fetchReservations();
 
-    const channel = supabase
+    const productChannel = supabase
       .channel('product-stock')
       .on(
         'postgres_changes',
@@ -60,13 +75,30 @@ export function ProductStockIndicator({
       )
       .subscribe();
 
+    const reservationsChannel = supabase
+      .channel('reservations-stock')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'reservations',
+          filter: `product_id=eq.${productId}`,
+        },
+        () => {
+          fetchReservations();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(productChannel);
+      supabase.removeChannel(reservationsChannel);
     };
   }, [productId, initialAllocation, initialSold]);
 
   const totalSqm = stockAllocation;
-  const soldSqm = stockSold + stockReservedManual;
+  const soldSqm = stockSold + stockReservedManual + stockReservedOnline;
   const remainingSqm = totalSqm - soldSqm;
 
   return (
