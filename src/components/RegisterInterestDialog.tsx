@@ -109,9 +109,20 @@ export function RegisterInterestDialog({ children }: RegisterInterestDialogProps
           <div className="text-center py-8 animate-fade-in">
             <Check className="h-5 w-5 text-foreground mx-auto mb-4" />
             <h3 className="font-serif text-lg font-light text-foreground mb-2">Thank you</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-6">
               We've received your interest and will be in touch shortly.
             </p>
+            <Button
+              variant="outline"
+              className="text-sm"
+              onClick={() => {
+                setFormData({ name: '', email: '', deliveryPostcode: '', estimatedQuantity: '', tel: '' });
+                setErrors({});
+                setIsSuccess(false);
+              }}
+            >
+              Register Another Interest
+            </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-1" autoComplete="on">
