@@ -72,18 +72,20 @@ const Index = () => {
 
       if (products && !error) {
         setProduct(products);
-        
-        const { data: images } = await supabase
+
+        // Fire images fetch in parallel — no await needed here, it runs concurrently
+        supabase
           .from('product_images')
           .select('image_url, image_type')
           .eq('product_id', products.id)
-          .order('display_order');
-        
-        if (images) {
-          const hero = images.find(img => img.image_type === 'hero');
-          if (hero) setDbHeroImage(hero.image_url);
-          setProductImages(images.filter(img => img.image_type !== 'hero').map(img => img.image_url));
-        }
+          .order('display_order')
+          .then(({ data: images }) => {
+            if (images) {
+              const hero = images.find(img => img.image_type === 'hero');
+              if (hero) setDbHeroImage(hero.image_url);
+              setProductImages(images.filter(img => img.image_type !== 'hero').map(img => img.image_url));
+            }
+          });
       }
       setLoading(false);
     };

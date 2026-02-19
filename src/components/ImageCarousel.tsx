@@ -97,10 +97,12 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 >
-                  <img
+                <img
                     src={image}
                     alt={`Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
