@@ -333,12 +333,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
       )}
 
       <form onSubmit={handleShowTerms} className={cn("space-y-5", showTerms && "hidden")}>
-        <div className="py-4 border-y border-border">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Reservations are held provisionally for 7 days (max 200 sq.m per order).
-          </p>
-        </div>
-
         <div className="space-y-2">
           <Label htmlFor="name" className="text-xs tracking-wide uppercase text-muted-foreground">Full Name</Label>
           <Input
