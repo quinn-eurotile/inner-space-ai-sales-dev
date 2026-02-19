@@ -133,7 +133,7 @@ const Index = () => {
       {/* Allocation Notice */}
       <div className="py-3 sm:py-4">
         <div className="section-container text-center">
-          <p className="text-[15.6px] tracking-[0.15em] uppercase text-muted-foreground">
+          <p className="text-[15.6px] tracking-[0.15em] uppercase text-muted-foreground font-semibold">
             {settings.allocation_notice}
           </p>
         </div>
