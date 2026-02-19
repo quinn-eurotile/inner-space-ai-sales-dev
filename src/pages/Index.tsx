@@ -5,6 +5,7 @@ import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
+import { RegisterInterestDialog } from '@/components/RegisterInterestDialog';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -180,11 +181,19 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button size="lg" className="h-12 text-sm tracking-[0.05em] w-full" asChild>
-                  <a href="#reservation">Request Reservation</a>
-                </Button>
+                <RegisterInterestDialog>
+                  <Button
+                    size="lg"
+                    className="h-12 text-sm tracking-[0.05em] w-full transition-colors"
+                    style={{ backgroundColor: '#f0aa47', color: '#1a1a1a', border: 'none' }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
+                  >
+                    Register Interest
+                  </Button>
+                </RegisterInterestDialog>
                 <SampleOrderDialog productId={product?.id}>
-                  <Button size="lg" variant="secondary" className="h-12 text-sm tracking-[0.05em] w-full hover:bg-brand-accent hover:text-white hover:border-brand-accent">
+                  <Button size="lg" variant="outline" className="h-12 text-sm tracking-[0.05em] w-full">
                     Order Sample — £7.00
                   </Button>
                 </SampleOrderDialog>
