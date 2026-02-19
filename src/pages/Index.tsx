@@ -184,8 +184,8 @@ const Index = () => {
                 <RegisterInterestDialog>
                   <Button
                     size="lg"
-                    className="h-12 text-sm tracking-[0.05em] w-full transition-colors"
-                    style={{ backgroundColor: '#f0aa47', color: '#1a1a1a', border: 'none' }}
+                    className="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
+                    style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
                   >
@@ -193,7 +193,7 @@ const Index = () => {
                   </Button>
                 </RegisterInterestDialog>
                 <SampleOrderDialog productId={product?.id}>
-                  <Button size="lg" variant="outline" className="h-12 text-sm tracking-[0.05em] w-full">
+                  <Button size="lg" variant="outline" className="h-12 tracking-[0.05em] w-full font-semibold" style={{ fontSize: '1.05rem' }}>
                     Order Sample — £7.00
                   </Button>
                 </SampleOrderDialog>
