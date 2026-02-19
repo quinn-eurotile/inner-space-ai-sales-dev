@@ -174,11 +174,6 @@ const Index = () => {
                 {settings.hero_description}
               </p>
 
-              {/* Postcode Checker */}
-              <div className="mb-5">
-                <PostcodeChecker compact />
-              </div>
-
               {/* Countdown */}
               <div className="mb-5">
                 <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
