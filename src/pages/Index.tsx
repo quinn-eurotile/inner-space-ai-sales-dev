@@ -14,7 +14,7 @@ import { FAQ } from '@/components/FAQ';
 import { Download, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
-import heroImage from '@/assets/hero-tiles.jpg';
+
 import { useSiteSettings } from '@/hooks/use-site-settings';
 
 interface Product {
@@ -220,10 +220,14 @@ const Index = () => {
 
             {/* Right: Image */}
             <div className="order-1 lg:order-2">
-              <ImageCarousel 
-                images={productImages} 
-                heroImage={dbHeroImage || heroImage}
-              />
+              {dbHeroImage ? (
+                <ImageCarousel 
+                  images={productImages} 
+                  heroImage={dbHeroImage}
+                />
+              ) : (
+                <div className="aspect-square bg-muted w-full" />
+              )}
             </div>
           </div>
         </div>
