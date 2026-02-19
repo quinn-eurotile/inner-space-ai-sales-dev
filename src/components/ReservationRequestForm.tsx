@@ -238,21 +238,6 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
 
   return (
     <div className="space-y-6">
-      {/* Postcode Checker */}
-      <div className="py-5 border-y border-border">
-        <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mb-4">Check Delivery Tariff</p>
-        <PostcodeChecker
-          compact
-          defaultSqm={formData.requiredQuantitySqm || 57}
-          onResult={(res) => setDeliveryResult(res)}
-        />
-      </div>
-
-      {deliveryResult && deliveryResult.zone.surcharge_type === 'quote_required' && (
-        <p className="text-sm text-muted-foreground">
-          A delivery quotation will be included with your reservation request.
-        </p>
-      )}
 
       {showTerms && (
         <div className="border-t border-border pt-6 space-y-5 animate-fade-in">
@@ -468,7 +453,21 @@ export function ReservationRequestForm({ productId, onSuccess }: ReservationRequ
               />
               {errors.deliveryPostcode && <p className="text-xs text-destructive">{errors.deliveryPostcode}</p>}
             </div>
-          </div>
+        </div>
+        </div>
+
+        {/* Postcode Checker — inline after address */}
+        <div className="pt-1">
+          <PostcodeChecker
+            compact
+            defaultSqm={formData.requiredQuantitySqm || 57}
+            onResult={(res) => setDeliveryResult(res)}
+          />
+          {deliveryResult && deliveryResult.zone.surcharge_type === 'quote_required' && (
+            <p className="text-sm text-muted-foreground mt-2">
+              A delivery quotation will be included with your reservation request.
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
