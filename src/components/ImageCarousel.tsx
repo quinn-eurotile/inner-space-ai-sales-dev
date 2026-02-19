@@ -7,6 +7,15 @@ interface ImageCarouselProps {
   heroImage?: string;
 }
 
+/** Convert a Supabase Storage object URL to a transformed/resized URL */
+function transformUrl(url: string, width: number, quality: number): string {
+  if (!url.includes('/storage/v1/object/public/')) return url;
+  return (
+    url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') +
+    `?width=${width}&quality=${quality}&resize=contain`
+  );
+}
+
 export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
   const allImages = heroImage ? [heroImage, ...images] : images;
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,9 +47,10 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
           onClick={() => setLightboxOpen(true)}
         >
           <img
-            src={allImages[currentIndex]}
+            src={transformUrl(allImages[currentIndex], 1400, 82)}
             alt={`Product image ${currentIndex + 1}`}
             className="w-full h-full object-cover"
+            decoding="async"
           />
           
           <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors flex items-center justify-center">
@@ -97,8 +107,8 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 >
-                <img
-                    src={image}
+                  <img
+                    src={transformUrl(image, 160, 75)}
                     alt={`Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -125,6 +135,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
         )}
       </div>
 
+      {/* Lightbox — serve full quality for zoomed view */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-background border-border">
           <div className="relative w-full h-full flex items-center justify-center p-6">
@@ -133,7 +144,7 @@ export function ImageCarousel({ images, heroImage }: ImageCarouselProps) {
             </DialogClose>
             
             <img
-              src={allImages[currentIndex]}
+              src={transformUrl(allImages[currentIndex], 2400, 90)}
               alt={`Product image ${currentIndex + 1} - enlarged`}
               className="max-w-full max-h-[85vh] object-contain"
             />
