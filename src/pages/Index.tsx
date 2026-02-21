@@ -5,7 +5,7 @@ import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
-import { RegisterInterestDialog } from '@/components/RegisterInterestDialog';
+import { RegisterInterestInline } from '@/components/RegisterInterestInline';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -185,17 +185,10 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                <RegisterInterestDialog>
-                  <Button
-                    size="lg"
-                    className="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
-                    style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
-                  >
-                    Register My Interest
-                  </Button>
-                </RegisterInterestDialog>
+                <RegisterInterestInline
+                  buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
+                  buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                />
                 <SampleOrderDialog productId={product?.id}>
                   <Button size="lg" variant="outline" className="h-12 tracking-[0.05em] w-full font-semibold" style={{ fontSize: '1.05rem' }}>
                     Order Sample — £7.00
