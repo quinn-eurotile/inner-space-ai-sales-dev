@@ -20,7 +20,7 @@ const interestSchema = z.object({
       const num = parseFloat(val.replace(/[^0-9.]/g, ''));
       return !isNaN(num) && num > 57;
     }, { message: 'Minimum quantity is over 57 sq.m' }),
-  tel: z.string().trim().max(20).optional(),
+  tel: z.string().trim().min(5, 'Please enter a valid phone number').max(20),
 });
 
 type FormData = z.infer<typeof interestSchema>;
@@ -110,16 +110,9 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
           <div className="text-center py-6 animate-fade-in border border-border rounded-lg p-6">
             <Check className="h-5 w-5 text-foreground mx-auto mb-3" />
             <h3 className="font-serif text-lg font-light text-foreground mb-2">Thank you</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              We've received your interest and will be in touch shortly.
+            <p className="text-sm text-muted-foreground">
+              We'll be in touch shortly.
             </p>
-            <Button
-              variant="outline"
-              className="text-sm"
-              onClick={resetForm}
-            >
-              Register Another Interest
-            </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="border border-border rounded-lg p-4 space-y-2.5" autoComplete="on">
@@ -143,7 +136,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
 
               <div className="space-y-1">
                 <Label htmlFor="ri-tel" className="text-[10px] tracking-wide uppercase text-muted-foreground">
-                  Tel <span className="text-muted-foreground text-[9px] normal-case tracking-normal">(optional)</span>
+                  Tel <span className="text-foreground">*</span>
                 </Label>
                 <Input
                   id="ri-tel"
@@ -153,8 +146,9 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
                   placeholder="+44 7700 900000"
                   value={formData.tel}
                   onChange={handleChange('tel')}
-                  className="h-9 text-sm"
+                  className={`h-9 text-sm ${errors.tel ? 'border-destructive' : ''}`}
                 />
+                {errors.tel && <p className="text-[10px] text-destructive">{errors.tel}</p>}
               </div>
             </div>
 
