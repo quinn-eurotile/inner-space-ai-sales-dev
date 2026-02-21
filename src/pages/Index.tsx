@@ -141,6 +141,12 @@ const Index = () => {
           <p className="text-[15.6px] tracking-[0.15em] uppercase text-muted-foreground font-semibold">
             {settings.allocation_notice}
           </p>
+          <div className="mt-3 max-w-md mx-auto">
+            <RegisterInterestInline
+              buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
+              buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+            />
+          </div>
         </div>
       </div>
 
@@ -185,10 +191,6 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                <RegisterInterestInline
-                  buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
-                  buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
-                />
                 <SampleOrderDialog productId={product?.id}>
                   <Button size="lg" variant="outline" className="h-12 tracking-[0.05em] w-full font-semibold" style={{ fontSize: '1.05rem' }}>
                     Order Sample — £7.00
