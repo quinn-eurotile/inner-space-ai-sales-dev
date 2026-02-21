@@ -207,8 +207,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
 
             <Button
               type="submit"
-              className="w-full h-9 font-semibold text-sm"
-              style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none' }}
+              className="w-full h-9 font-semibold text-sm bg-foreground text-background hover:bg-foreground/90"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Sending…' : 'Submit Enquiry'}
