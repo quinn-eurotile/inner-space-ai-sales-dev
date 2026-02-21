@@ -97,7 +97,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
         onMouseEnter={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = '#d4913a')}
         onMouseLeave={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor as string)}
       >
-        Register My Interest
+        Enquire About This Allocation
         {expanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
       </Button>
 
@@ -211,7 +211,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
               style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none' }}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Sending…' : 'Submit Interest'}
+              {isSubmitting ? 'Sending…' : 'Submit Enquiry'}
             </Button>
           </form>
         )}
