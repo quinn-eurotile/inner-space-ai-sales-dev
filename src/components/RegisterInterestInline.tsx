@@ -122,41 +122,44 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3 border border-border rounded-lg p-5" autoComplete="on">
-            <div className="space-y-1.5">
-              <Label htmlFor="ri-name" className="text-xs tracking-wide uppercase text-muted-foreground">
-                Name <span className="text-foreground">*</span>
-              </Label>
-              <Input
-                id="ri-name"
-                name="name"
-                autoComplete="name"
-                type="text"
-                placeholder="Your full name"
-                value={formData.name}
-                onChange={handleChange('name')}
-                className={errors.name ? 'border-destructive' : ''}
-              />
-              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+          <form onSubmit={handleSubmit} className="border border-border rounded-lg p-4 space-y-2.5" autoComplete="on">
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label htmlFor="ri-name" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                  Name <span className="text-foreground">*</span>
+                </Label>
+                <Input
+                  id="ri-name"
+                  name="name"
+                  autoComplete="name"
+                  type="text"
+                  placeholder="Full name"
+                  value={formData.name}
+                  onChange={handleChange('name')}
+                  className={`h-9 text-sm ${errors.name ? 'border-destructive' : ''}`}
+                />
+                {errors.name && <p className="text-[10px] text-destructive">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="ri-tel" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                  Tel <span className="text-muted-foreground text-[9px] normal-case tracking-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="ri-tel"
+                  name="tel"
+                  autoComplete="tel"
+                  type="tel"
+                  placeholder="+44 7700 900000"
+                  value={formData.tel}
+                  onChange={handleChange('tel')}
+                  className="h-9 text-sm"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="ri-tel" className="text-xs tracking-wide uppercase text-muted-foreground">
-                Tel <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span>
-              </Label>
-              <Input
-                id="ri-tel"
-                name="tel"
-                autoComplete="tel"
-                type="tel"
-                placeholder="+44 7700 900000"
-                value={formData.tel}
-                onChange={handleChange('tel')}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="ri-email" className="text-xs tracking-wide uppercase text-muted-foreground">
+            <div className="space-y-1">
+              <Label htmlFor="ri-email" className="text-[10px] tracking-wide uppercase text-muted-foreground">
                 Email <span className="text-foreground">*</span>
               </Label>
               <Input
@@ -167,52 +170,54 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange('email')}
-                className={errors.email ? 'border-destructive' : ''}
+                className={`h-9 text-sm ${errors.email ? 'border-destructive' : ''}`}
               />
-              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+              {errors.email && <p className="text-[10px] text-destructive">{errors.email}</p>}
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="ri-postcode" className="text-xs tracking-wide uppercase text-muted-foreground">
-                Delivery Postcode <span className="text-foreground">*</span>
-              </Label>
-              <Input
-                id="ri-postcode"
-                name="postal-code"
-                autoComplete="postal-code"
-                type="text"
-                placeholder="SW1A 1AA"
-                value={formData.deliveryPostcode}
-                onChange={handleChange('deliveryPostcode')}
-                className={errors.deliveryPostcode ? 'border-destructive' : ''}
-              />
-              {errors.deliveryPostcode && <p className="text-xs text-destructive">{errors.deliveryPostcode}</p>}
-            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label htmlFor="ri-postcode" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                  Postcode <span className="text-foreground">*</span>
+                </Label>
+                <Input
+                  id="ri-postcode"
+                  name="postal-code"
+                  autoComplete="postal-code"
+                  type="text"
+                  placeholder="SW1A 1AA"
+                  value={formData.deliveryPostcode}
+                  onChange={handleChange('deliveryPostcode')}
+                  className={`h-9 text-sm ${errors.deliveryPostcode ? 'border-destructive' : ''}`}
+                />
+                {errors.deliveryPostcode && <p className="text-[10px] text-destructive">{errors.deliveryPostcode}</p>}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="ri-quantity" className="text-xs tracking-wide uppercase text-muted-foreground">
-                Estimated Quantity <span className="text-foreground">*</span>
-              </Label>
-              <Input
-                id="ri-quantity"
-                name="quantity"
-                autoComplete="off"
-                type="text"
-                placeholder="e.g. 50 sq.m"
-                value={formData.estimatedQuantity}
-                onChange={handleChange('estimatedQuantity')}
-                className={errors.estimatedQuantity ? 'border-destructive' : ''}
-              />
-              {errors.estimatedQuantity && <p className="text-xs text-destructive">{errors.estimatedQuantity}</p>}
+              <div className="space-y-1">
+                <Label htmlFor="ri-quantity" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                  Qty (sq.m) <span className="text-foreground">*</span>
+                </Label>
+                <Input
+                  id="ri-quantity"
+                  name="quantity"
+                  autoComplete="off"
+                  type="text"
+                  placeholder="e.g. 80"
+                  value={formData.estimatedQuantity}
+                  onChange={handleChange('estimatedQuantity')}
+                  className={`h-9 text-sm ${errors.estimatedQuantity ? 'border-destructive' : ''}`}
+                />
+                {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
+              </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full h-11 mt-2 font-semibold"
+              className="w-full h-9 font-semibold text-sm"
               style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none' }}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Sending…' : 'Submit'}
+              {isSubmitting ? 'Sending…' : 'Submit Interest'}
             </Button>
           </form>
         )}
