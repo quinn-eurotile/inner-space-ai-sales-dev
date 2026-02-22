@@ -140,7 +140,7 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <Truck className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
             <span className="text-[9px] sm:text-[11px] tracking-[0.12em] uppercase text-muted-foreground">
-              Free Nationwide Delivery
+              Nationwide Delivery
             </span>
           </div>
         </div>
