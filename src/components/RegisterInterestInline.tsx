@@ -3,13 +3,17 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { pinterestTrack } from '@/lib/pinterest';
 
-const interestSchema = z.object({
-  name: z.string().trim().min(2, 'Name is required').max(100),
+const step1Schema = z.object({
   email: z.string().trim().email('Please enter a valid email').max(255),
+});
+
+const step2Schema = z.object({
+  name: z.string().trim().min(2, 'Name is required').max(100),
+  tel: z.string().trim().min(5, 'Please enter a valid phone number').max(20),
   deliveryPostcode: z.string().trim().min(3, 'Please enter a valid postcode').max(10),
   estimatedQuantity: z
     .string()
@@ -20,11 +24,11 @@ const interestSchema = z.object({
       const num = parseFloat(val.replace(/[^0-9.]/g, ''));
       return !isNaN(num) && num > 57;
     }, { message: 'Minimum quantity is over 57 sq.m' }),
-  tel: z.string().trim().min(5, 'Please enter a valid phone number').max(20),
 });
 
-type FormData = z.infer<typeof interestSchema>;
-type FormErrors = Partial<Record<keyof FormData, string>>;
+type Step1Data = z.infer<typeof step1Schema>;
+type Step2Data = z.infer<typeof step2Schema>;
+type FormErrors = Partial<Record<string, string>>;
 
 interface RegisterInterestInlineProps {
   buttonStyle?: React.CSSProperties;
@@ -33,33 +37,50 @@ interface RegisterInterestInlineProps {
 
 export function RegisterInterestInline({ buttonStyle, buttonClassName }: RegisterInterestInlineProps) {
   const [expanded, setExpanded] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [step, setStep] = useState<1 | 2>(1);
+  const [step1Data, setStep1Data] = useState<Step1Data>({ email: '' });
+  const [step2Data, setStep2Data] = useState<Step2Data>({
     name: '',
-    email: '',
+    tel: '',
     deliveryPostcode: '',
     estimatedQuantity: '',
-    tel: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
+  const handleStep1Change = (field: keyof Step1Data) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStep1Data(prev => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStep2Change = (field: keyof Step2Data) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStep2Data(prev => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
+  };
 
-    const result = interestSchema.safeParse(formData);
+  const handleStep1Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = step1Schema.safeParse(step1Data);
     if (!result.success) {
       const fieldErrors: FormErrors = {};
       result.error.errors.forEach(err => {
-        const field = err.path[0] as keyof FormData;
-        fieldErrors[field] = err.message;
+        fieldErrors[err.path[0] as string] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+    setStep(2);
+  };
+
+  const handleStep2Submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = step2Schema.safeParse(step2Data);
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.errors.forEach(err => {
+        fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
       return;
@@ -68,7 +89,12 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
     setIsSubmitting(true);
     try {
       await supabase.functions.invoke('send-register-interest', {
-        body: { formData: result.data },
+        body: {
+          formData: {
+            email: step1Data.email,
+            ...result.data,
+          },
+        },
       });
       pinterestTrack('lead', { lead_type: 'Allocation Interest' });
       setIsSuccess(true);
@@ -81,10 +107,9 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
     }
   };
 
-  const resetForm = () => {
-    setFormData({ name: '', email: '', deliveryPostcode: '', estimatedQuantity: '', tel: '' });
-    setErrors({});
-    setIsSuccess(false);
+  const handlePalletQuickSelect = () => {
+    setStep2Data(prev => ({ ...prev, estimatedQuantity: '57.12' }));
+    if (errors.estimatedQuantity) setErrors(prev => ({ ...prev, estimatedQuantity: undefined }));
   };
 
   return (
@@ -97,7 +122,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
         onMouseEnter={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = '#d4913a')}
         onMouseLeave={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor as string)}
       >
-        Reserve Your Pallet
+        Enquire About This Allocation
         {expanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
       </Button>
 
@@ -114,8 +139,46 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
               We'll be in touch shortly.
             </p>
           </div>
+        ) : step === 1 ? (
+          <form onSubmit={handleStep1Submit} className="border border-border rounded-lg p-4 space-y-3" autoComplete="on">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Enter your email to check availability and receive allocation details.
+            </p>
+            <div className="space-y-1">
+              <Label htmlFor="ri-email" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                Email <span className="text-foreground">*</span>
+              </Label>
+              <Input
+                id="ri-email"
+                name="email"
+                autoComplete="email"
+                type="email"
+                placeholder="you@example.com"
+                value={step1Data.email}
+                onChange={handleStep1Change('email')}
+                className={`h-10 text-sm ${errors.email ? 'border-destructive' : ''}`}
+              />
+              {errors.email && <p className="text-[10px] text-destructive">{errors.email}</p>}
+            </div>
+            <Button
+              type="submit"
+              className="w-full h-10 font-semibold text-sm bg-foreground text-background hover:bg-foreground/90"
+            >
+              Continue
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </form>
         ) : (
-          <form onSubmit={handleSubmit} className="border border-border rounded-lg p-4 space-y-2.5" autoComplete="on">
+          <form onSubmit={handleStep2Submit} className="border border-border rounded-lg p-4 space-y-2.5 animate-fade-in" autoComplete="on">
+            {/* Step indicator */}
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-6 rounded-full bg-foreground" />
+                <div className="h-1.5 w-6 rounded-full bg-foreground" />
+              </div>
+              <span className="text-[10px] text-muted-foreground tracking-wide uppercase">Final step</span>
+            </div>
+
             <div className="grid grid-cols-2 gap-2.5">
               <div className="space-y-1">
                 <Label htmlFor="ri-name" className="text-[10px] tracking-wide uppercase text-muted-foreground">
@@ -127,8 +190,8 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
                   autoComplete="name"
                   type="text"
                   placeholder="Full name"
-                  value={formData.name}
-                  onChange={handleChange('name')}
+                  value={step2Data.name}
+                  onChange={handleStep2Change('name')}
                   className={`h-9 text-sm ${errors.name ? 'border-destructive' : ''}`}
                 />
                 {errors.name && <p className="text-[10px] text-destructive">{errors.name}</p>}
@@ -144,8 +207,8 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
                   autoComplete="tel"
                   type="tel"
                   placeholder="+44 7700 900000"
-                  value={formData.tel}
-                  onChange={handleChange('tel')}
+                  value={step2Data.tel}
+                  onChange={handleStep2Change('tel')}
                   className={`h-9 text-sm ${errors.tel ? 'border-destructive' : ''}`}
                 />
                 {errors.tel && <p className="text-[10px] text-destructive">{errors.tel}</p>}
@@ -153,56 +216,51 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="ri-email" className="text-[10px] tracking-wide uppercase text-muted-foreground">
-                Email <span className="text-foreground">*</span>
+              <Label htmlFor="ri-postcode" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                Delivery Postcode <span className="text-foreground">*</span>
               </Label>
               <Input
-                id="ri-email"
-                name="email"
-                autoComplete="email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={handleChange('email')}
-                className={`h-9 text-sm ${errors.email ? 'border-destructive' : ''}`}
+                id="ri-postcode"
+                name="postal-code"
+                autoComplete="postal-code"
+                type="text"
+                placeholder="SW1A 1AA"
+                value={step2Data.deliveryPostcode}
+                onChange={handleStep2Change('deliveryPostcode')}
+                className={`h-9 text-sm ${errors.deliveryPostcode ? 'border-destructive' : ''}`}
               />
-              {errors.email && <p className="text-[10px] text-destructive">{errors.email}</p>}
+              {errors.deliveryPostcode && <p className="text-[10px] text-destructive">{errors.deliveryPostcode}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="space-y-1">
-                <Label htmlFor="ri-postcode" className="text-[10px] tracking-wide uppercase text-muted-foreground">
-                  Postcode <span className="text-foreground">*</span>
-                </Label>
-                <Input
-                  id="ri-postcode"
-                  name="postal-code"
-                  autoComplete="postal-code"
-                  type="text"
-                  placeholder="SW1A 1AA"
-                  value={formData.deliveryPostcode}
-                  onChange={handleChange('deliveryPostcode')}
-                  className={`h-9 text-sm ${errors.deliveryPostcode ? 'border-destructive' : ''}`}
-                />
-                {errors.deliveryPostcode && <p className="text-[10px] text-destructive">{errors.deliveryPostcode}</p>}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="ri-quantity" className="text-[10px] tracking-wide uppercase text-muted-foreground">
-                  Qty (sq.m) <span className="text-foreground">*</span>
-                </Label>
+            <div className="space-y-1">
+              <Label htmlFor="ri-quantity" className="text-[10px] tracking-wide uppercase text-muted-foreground">
+                Estimated Quantity (sq.m) <span className="text-foreground">*</span>
+              </Label>
+              <div className="flex gap-2">
                 <Input
                   id="ri-quantity"
                   name="quantity"
                   autoComplete="off"
                   type="text"
                   placeholder="e.g. 80"
-                  value={formData.estimatedQuantity}
-                  onChange={handleChange('estimatedQuantity')}
-                  className={`h-9 text-sm ${errors.estimatedQuantity ? 'border-destructive' : ''}`}
+                  value={step2Data.estimatedQuantity}
+                  onChange={handleStep2Change('estimatedQuantity')}
+                  className={`h-9 text-sm flex-1 ${errors.estimatedQuantity ? 'border-destructive' : ''}`}
                 />
-                {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
+                <button
+                  type="button"
+                  onClick={handlePalletQuickSelect}
+                  className={`h-9 px-3 text-[10px] tracking-wide uppercase border rounded whitespace-nowrap transition-colors ${
+                    step2Data.estimatedQuantity === '57.12'
+                      ? 'bg-foreground text-background border-foreground'
+                      : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
+                  }`}
+                >
+                  1 Pallet
+                </button>
               </div>
+              {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
+              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet (57.12 sq.m)</p>
             </div>
 
             <Button
@@ -212,6 +270,14 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
             >
               {isSubmitting ? 'Sending…' : 'Submit Enquiry'}
             </Button>
+
+            <button
+              type="button"
+              onClick={() => { setStep(1); setErrors({}); }}
+              className="w-full text-[10px] text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase"
+            >
+              ← Back
+            </button>
           </form>
         )}
       </div>
