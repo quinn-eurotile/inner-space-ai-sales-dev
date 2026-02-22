@@ -174,16 +174,19 @@ const Index = () => {
                 Italian Porcelain · 120×120cm · Matt Finish
               </p>
 
-              {/* Benefit-led headline */}
-              <h1 className="font-serif text-[32px] sm:text-[40px] lg:text-[44px] font-light text-foreground mb-2 leading-[1.08]">
-                Large-Format Floor Tiles<br />
-                <span className="text-brand-accent">from £{pricePerSqm.toFixed(2)}/sq.m</span>
+              {/* Headline — category + allocation framing, no price */}
+              <h1 className="font-serif text-[28px] sm:text-[40px] lg:text-[44px] font-light text-foreground mb-2 leading-[1.08]">
+                Italian 120×120 Porcelain<br />
+                <span className="text-brand-accent">Factory Allocation</span>
               </h1>
 
-              {/* Price anchor — the key persuasion element */}
-              <div className="flex items-center gap-2 mb-4 justify-center lg:justify-start flex-wrap">
+              {/* Price anchor — immediately beneath H1 */}
+              <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start flex-wrap">
+                <span className="text-lg sm:text-xl font-semibold text-foreground">
+                  £{pricePerSqm.toFixed(2)}/sq.m
+                </span>
                 <span className="text-sm text-muted-foreground line-through">
-                  Retail £75.00/sq.m
+                  £75.00
                 </span>
                 <span className="inline-flex items-center bg-success/10 text-success text-xs font-semibold px-2 py-0.5 rounded">
                   Save 52%
@@ -191,8 +194,23 @@ const Index = () => {
                 <span className="text-[10px] text-muted-foreground tracking-[0.1em] uppercase">ex. vat</span>
               </div>
 
-              {/* Trust bullets — scannable, objection-busting */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 mb-5 text-left max-w-md mx-auto lg:mx-0">
+              {/* Primary CTA — in the mobile fold */}
+              <div className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
+                <RegisterInterestInline
+                  buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
+                  buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                />
+
+                {/* Micro CTA — text link style, not competing button */}
+                <SampleOrderDialog productId={product?.id}>
+                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
+                    Not ready? Order a £7.00 sample tile →
+                  </button>
+                </SampleOrderDialog>
+              </div>
+
+              {/* Trust bullets — below CTA on mobile, scannable */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 mb-4 text-left max-w-md mx-auto lg:mx-0">
                 <div className="flex items-center gap-2 text-sm text-foreground">
                   <Check className="h-4 w-4 text-success shrink-0" />
                   <span>AAA first-quality rated</span>
@@ -211,24 +229,9 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Countdown — visible in first scroll */}
-              <div className="mb-5">
+              {/* Countdown — below trust on mobile */}
+              <div className="mb-4">
                 <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
-              </div>
-
-              {/* Primary CTA */}
-              <div className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0">
-                <RegisterInterestInline
-                  buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
-                  buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
-                />
-
-                {/* Micro CTA — text link style, not competing button */}
-                <SampleOrderDialog productId={product?.id}>
-                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
-                    Not ready? Order a £7.00 sample tile →
-                  </button>
-                </SampleOrderDialog>
               </div>
 
               {/* Downloads */}
