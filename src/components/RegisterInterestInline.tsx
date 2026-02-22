@@ -97,7 +97,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
         onMouseEnter={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = '#d4913a')}
         onMouseLeave={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor as string)}
       >
-        Enquire About This Allocation
+        Reserve Your Pallet
         {expanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
       </Button>
 

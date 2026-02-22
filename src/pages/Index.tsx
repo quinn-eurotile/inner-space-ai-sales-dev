@@ -9,10 +9,11 @@ import { RegisterInterestInline } from '@/components/RegisterInterestInline';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { StockBanner } from '@/components/StockBanner';
+import { StickyMobileCTA } from '@/components/StickyMobileCTA';
 
-import { PostcodeChecker } from '@/components/PostcodeChecker';
 import { FAQ } from '@/components/FAQ';
-import { Download, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, FileText, ChevronDown, ChevronUp, Check, Truck, Factory, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 
@@ -64,7 +65,6 @@ const Index = () => {
   const { settings, loading: settingsLoading } = useSiteSettings();
 
   useEffect(() => {
-    // Fire Pinterest page visit on load
     pinterestTrack('pagevisit');
 
     const fetchProduct = async () => {
@@ -78,7 +78,6 @@ const Index = () => {
       if (products && !error) {
         setProduct(products);
 
-        // Fire images fetch in parallel — no await needed here, it runs concurrently
         supabase
           .from('product_images')
           .select('image_url, image_type')
@@ -98,6 +97,10 @@ const Index = () => {
     fetchProduct();
   }, []);
 
+  const scrollToReservation = () => {
+    document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   if (loading || settingsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -106,7 +109,6 @@ const Index = () => {
     );
   }
 
-  // Check if allocation is manually closed or timer expired
   const allocationClosed = settings.allocation_open === 'false' || isExpired;
 
   if (allocationClosed) {
@@ -117,88 +119,119 @@ const Index = () => {
     );
   }
 
+  const pricePerSqm = product?.price_per_sqm || 36;
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header - Fixed on mobile */}
-      <header className="py-3 sm:py-6">
+      {/* Scarcity banner */}
+      {product && (
+        <StockBanner
+          productId={product.id}
+          stockAllocation={product.stock_allocation || 1498}
+          stockSold={product.stock_sold || 0}
+        />
+      )}
+
+      {/* Header */}
+      <header className="py-3 sm:py-5">
         <div className="section-container flex items-center justify-between">
           <img 
             src={innerSpaceLogo} 
             alt="Inner Space" 
             className="h-5 sm:h-10 w-auto"
           />
-          <span className="text-[9px] sm:text-[11px] tracking-[0.12em] sm:tracking-[0.15em] uppercase text-muted-foreground">
-            {settings.min_order_label}
-          </span>
+          <div className="flex items-center gap-2">
+            <Truck className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
+            <span className="text-[9px] sm:text-[11px] tracking-[0.12em] uppercase text-muted-foreground">
+              Free Nationwide Delivery
+            </span>
+          </div>
         </div>
       </header>
 
       <div className="section-container"><div className="section-divider" /></div>
 
-      {/* Allocation Notice */}
-      <div className="py-3 sm:py-4">
-        <div className="section-container text-center">
-          <p className="text-[15.6px] tracking-[0.15em] uppercase text-muted-foreground font-semibold">
-            {settings.allocation_notice}
-          </p>
-          <div className="mt-3 max-w-md mx-auto">
-            <RegisterInterestInline
-              buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
-              buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="section-container"><div className="section-divider" /></div>
-
-      {/* Hero Section */}
-      <section className="pt-8 pb-6 sm:pt-14 sm:pb-10 lg:pt-16 lg:pb-12">
+      {/* Hero Section — restructured for cold traffic */}
+      <section className="pt-6 pb-6 sm:pt-10 sm:pb-8 lg:pt-12 lg:pb-10">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-            {/* Left: Text */}
-            <div className="order-2 lg:order-1 text-center lg:text-left">
-              <h1 className="font-serif text-[40px] sm:text-h1 lg:text-h1-lg font-light text-foreground mb-1 leading-[1.05]">
-                {settings.hero_heading}
-              </h1>
-              <div className="w-16 h-[2px] bg-brand-accent mb-4 mx-auto lg:mx-0" />
-              <p className="text-muted-foreground text-base mb-1">{settings.hero_subheading}</p>
-              <p className="text-muted-foreground text-sm mb-4">
-                Including nationwide kerbside delivery
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-start">
+            {/* Left: Image FIRST on mobile */}
+            <div className="order-1">
+              {dbHeroImage ? (
+                <ImageCarousel 
+                  images={productImages} 
+                  heroImage={dbHeroImage}
+                />
+              ) : (
+                <div className="aspect-square bg-muted w-full" />
+              )}
+            </div>
+
+            {/* Right: Value proposition */}
+            <div className="order-2 text-center lg:text-left">
+              {/* Eyebrow — instant category recognition */}
+              <p className="text-[11px] sm:text-xs tracking-[0.15em] uppercase text-muted-foreground mb-2">
+                Italian Porcelain · 120×120cm · Matt Finish
               </p>
 
-              <div className="flex items-baseline gap-2 sm:gap-3 mb-4 justify-center lg:justify-start flex-wrap">
-                <span className="font-serif text-3xl lg:text-4xl font-light text-foreground">
-                  £{product?.price_per_sqm?.toFixed(2) || '36.00'}
+              {/* Benefit-led headline */}
+              <h1 className="font-serif text-[32px] sm:text-[40px] lg:text-[44px] font-light text-foreground mb-2 leading-[1.08]">
+                Large-Format Floor Tiles<br />
+                <span className="text-brand-accent">from £{pricePerSqm.toFixed(2)}/sq.m</span>
+              </h1>
+
+              {/* Price anchor — the key persuasion element */}
+              <div className="flex items-center gap-2 mb-4 justify-center lg:justify-start flex-wrap">
+                <span className="text-sm text-muted-foreground line-through">
+                  Retail £75.00/sq.m
                 </span>
-                <span className="text-sm text-muted-foreground">per sq.m</span>
-                {product?.price_per_tile && (
-                  <span className="text-sm text-muted-foreground">
-                    / £{product.price_per_tile.toFixed(2)} per tile
-                  </span>
-                )}
-                <span className="text-[10px] text-muted-foreground tracking-[0.15em] uppercase">ex. vat</span>
+                <span className="inline-flex items-center bg-success/10 text-success text-xs font-semibold px-2 py-0.5 rounded">
+                  Save 52%
+                </span>
+                <span className="text-[10px] text-muted-foreground tracking-[0.1em] uppercase">ex. vat</span>
               </div>
 
-              {/* Editorial paragraph */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-5 max-w-md mx-auto lg:mx-0">
-                {settings.hero_description}
-              </p>
+              {/* Trust bullets — scannable, objection-busting */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 mb-5 text-left max-w-md mx-auto lg:mx-0">
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="h-4 w-4 text-success shrink-0" />
+                  <span>AAA first-quality rated</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Truck className="h-4 w-4 text-success shrink-0" />
+                  <span>Free kerbside delivery</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Factory className="h-4 w-4 text-success shrink-0" />
+                  <span>Direct from Italian factory</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Shield className="h-4 w-4 text-success shrink-0" />
+                  <span>Walls, floors & outdoor</span>
+                </div>
+              </div>
 
-              {/* Countdown */}
+              {/* Countdown — visible in first scroll */}
               <div className="mb-5">
                 <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
               </div>
 
-              <div className="flex flex-col gap-3">
+              {/* Primary CTA */}
+              <div className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0">
+                <RegisterInterestInline
+                  buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
+                  buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                />
+
+                {/* Micro CTA — text link style, not competing button */}
                 <SampleOrderDialog productId={product?.id}>
-                  <Button size="lg" variant="outline" className="h-12 tracking-[0.05em] w-full font-semibold" style={{ fontSize: '1.05rem' }}>
-                    Order Sample — £7.00
-                  </Button>
+                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
+                    Not ready? Order a £7.00 sample tile →
+                  </button>
                 </SampleOrderDialog>
               </div>
 
-              {/* Data Sheet & Downloads */}
+              {/* Downloads */}
               <div className="mt-5 pt-4 border-t border-border space-y-2">
                 {product?.google_drive_link && (
                   <a 
@@ -223,25 +256,12 @@ const Index = () => {
                   </a>
                 )}
               </div>
-
-            </div>
-
-            {/* Right: Image */}
-            <div className="order-1 lg:order-2">
-              {dbHeroImage ? (
-                <ImageCarousel 
-                  images={productImages} 
-                  heroImage={dbHeroImage}
-                />
-              ) : (
-                <div className="aspect-square bg-muted w-full" />
-              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stock Allocation */}
+      {/* Stock Allocation — full detail */}
       <section className="pb-6 sm:pb-14">
         <div className="section-container">
           {product && (
@@ -319,7 +339,6 @@ const Index = () => {
         </div>
       </section>
 
-
       {/* Reservation Section */}
       <section id="reservation" className="section-alt py-14 sm:py-24">
         <div className="section-container">
@@ -339,7 +358,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
 
       {/* FAQ Section */}
       <section className="py-10 sm:py-18">
@@ -368,7 +386,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Pre-footer tagline */}
+      {/* Pre-footer */}
       <div className="section-container"><div className="section-divider" /></div>
       <div className="py-5 sm:py-8 text-center">
         <p className="font-serif text-sm text-muted-foreground tracking-[0.05em]">
@@ -378,7 +396,7 @@ const Index = () => {
       <div className="section-container"><div className="section-divider" /></div>
 
       {/* Footer */}
-      <footer className="py-8 sm:py-12">
+      <footer className="py-8 sm:py-12 pb-20 sm:pb-12">
         <div className="section-container text-center">
           <img 
             src={innerSpaceLogo} 
@@ -390,6 +408,9 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      {/* Sticky mobile CTA */}
+      <StickyMobileCTA onReserveClick={scrollToReservation} />
     </div>
   );
 };
