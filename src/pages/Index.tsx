@@ -97,9 +97,6 @@ const Index = () => {
     fetchProduct();
   }, []);
 
-  const scrollToReservation = () => {
-    document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   if (loading || settingsLoading) {
     return (
@@ -195,7 +192,7 @@ const Index = () => {
               </div>
 
               {/* Primary CTA — in the mobile fold */}
-              <div className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
+              <div data-hero-cta className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
                 <RegisterInterestInline
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
@@ -413,7 +410,7 @@ const Index = () => {
       </footer>
 
       {/* Sticky mobile CTA */}
-      <StickyMobileCTA onReserveClick={scrollToReservation} />
+      <StickyMobileCTA />
     </div>
   );
 };

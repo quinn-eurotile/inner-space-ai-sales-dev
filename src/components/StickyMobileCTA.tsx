@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
-interface StickyMobileCTAProps {
-  onReserveClick: () => void;
-}
-
-export function StickyMobileCTA({ onReserveClick }: StickyMobileCTAProps) {
+export function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400);
+    const onScroll = () => setVisible(window.scrollY > 300);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  const scrollToHeroCTA = () => {
+    const hero = document.querySelector('[data-hero-cta]');
+    if (hero) {
+      hero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   if (!visible) return null;
 
@@ -27,11 +30,11 @@ export function StickyMobileCTA({ onReserveClick }: StickyMobileCTAProps) {
           size="lg"
           className="h-10 px-5 shrink-0 font-semibold text-sm"
           style={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none' }}
-          onClick={onReserveClick}
+          onClick={scrollToHeroCTA}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
         >
-          Reserve Now
+          Enquire Now
         </Button>
       </div>
     </div>

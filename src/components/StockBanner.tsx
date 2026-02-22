@@ -42,8 +42,8 @@ export function StockBanner({ productId, stockAllocation, stockSold: initialSold
     <div className="bg-foreground text-background py-2 px-4 text-center">
       <p className="text-xs sm:text-sm tracking-wide">
         <span className="font-semibold">{pallets > 0 ? `${pallets} pallets remaining` : 'Limited stock'}</span>
-        <span className="mx-2 opacity-40">·</span>
-        <span className="opacity-80">{Math.max(0, remaining).toLocaleString()} sq.m available</span>
+        <span className="mx-2 opacity-40 hidden sm:inline">·</span>
+        <span className="opacity-60 hidden sm:inline">{Math.max(0, remaining).toLocaleString()} sq.m</span>
       </p>
     </div>
   );
