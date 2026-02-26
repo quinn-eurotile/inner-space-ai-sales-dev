@@ -16,13 +16,14 @@ import { Download, FileText, ChevronDown, ChevronUp, Check, Truck, Factory, Shie
 import { supabase } from '@/integrations/supabase/client';
 import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
 import { useSiteSettings } from '@/hooks/use-site-settings';
+import { cn } from '@/lib/utils';
 
 interface Product {
   id: string;
   name: string;
   collection: string | null;
   origin: string | null;
-  price_per_sqm: number;
+  price_per_sqm: number | null;
   price_per_tile: number | null;
   factory_rating: string | null;
   tile_colour: string | null;
@@ -53,9 +54,34 @@ interface Product {
   data_sheet_url: string | null;
 }
 
+interface ProductVariant {
+  id: string;
+  product_id: string;
+  variant_label: string;
+  nominal_size: string | null;
+  thickness_mm: number | null;
+  width_mm: number | null;
+  length_mm: number | null;
+  price_per_sqm: number | null;
+  price_per_tile: number | null;
+  stock_allocation: number | null;
+  stock_sold: number | null;
+  stock_reserved_manual: number | null;
+  sqm_per_tile: number | null;
+  tiles_per_box: number | null;
+  sqm_per_box: number | null;
+  kg_per_box: number | null;
+  boxes_per_pallet: number | null;
+  sqm_per_pallet: number | null;
+  data_sheet_url: string | null;
+  display_order: number | null;
+}
+
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [variants, setVariants] = useState<ProductVariant[]>([]);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [dbHeroImage, setDbHeroImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,6 +105,18 @@ const ProductPage = () => {
       }
 
       setProduct(data);
+
+      // Fetch variants
+      const { data: variantData } = await (supabase
+        .from('product_variants')
+        .select('*') as any)
+        .eq('product_id', data.id)
+        .order('display_order');
+
+      if (variantData && variantData.length > 0) {
+        setVariants(variantData);
+        setSelectedVariantId(variantData[0].id);
+      }
 
       const { data: images } = await supabase
         .from('product_images')
@@ -117,15 +155,27 @@ const ProductPage = () => {
     );
   }
 
-  const pricePerSqm = product?.price_per_sqm || 0;
+  const hasVariants = variants.length > 0;
+  const selectedVariant = hasVariants ? variants.find(v => v.id === selectedVariantId) || variants[0] : null;
+
+  // Use variant-level price if available, otherwise product-level
+  const pricePerSqm = selectedVariant?.price_per_sqm ?? product?.price_per_sqm ?? null;
+  const hasPrice = pricePerSqm !== null && pricePerSqm > 0;
+
+  // Use variant-level specs for display, falling back to product-level
+  const activeNominalSize = selectedVariant?.nominal_size ?? product?.nominal_size;
+  const activeThickness = selectedVariant?.thickness_mm ?? product?.thickness_mm;
+  const activeWidth = selectedVariant?.width_mm ?? product?.width_mm;
+  const activeLength = selectedVariant?.length_mm ?? product?.length_mm;
+  const activeDataSheet = selectedVariant?.data_sheet_url ?? product?.data_sheet_url;
 
   return (
     <div className="min-h-screen bg-background">
-      {product && (
+      {product && hasPrice && (
         <StockBanner
           productId={product.id}
-          stockAllocation={product.stock_allocation || 0}
-          stockSold={product.stock_sold || 0}
+          stockAllocation={selectedVariant?.stock_allocation ?? product.stock_allocation ?? 0}
+          stockSold={selectedVariant?.stock_sold ?? product.stock_sold ?? 0}
         />
       )}
 
@@ -156,20 +206,42 @@ const ProductPage = () => {
 
             <div className="order-2 text-center lg:text-left">
               <p className="text-[11px] sm:text-xs tracking-[0.15em] uppercase text-muted-foreground mb-2">
-                {[product?.material, product?.nominal_size, product?.finish].filter(Boolean).join(' · ')}
+                {[product?.material, activeNominalSize, product?.finish].filter(Boolean).join(' · ')}
               </p>
 
               <h1 className="font-serif text-[28px] sm:text-[40px] lg:text-[44px] font-light text-foreground mb-2 leading-[1.08]">
                 {product?.name}<br />
-                <span className="text-brand-accent">Factory Allocation</span>
+                <span className="text-brand-accent">{hasPrice ? 'Factory Allocation' : 'Coming Soon'}</span>
               </h1>
 
-              <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start flex-wrap">
-                <span className="text-lg sm:text-xl font-semibold text-foreground">
-                  £{pricePerSqm.toFixed(2)}/sq.m
-                </span>
-                <span className="text-[10px] text-muted-foreground tracking-[0.1em] uppercase">ex. vat</span>
-              </div>
+              {/* Variant size selector */}
+              {hasVariants && (
+                <div className="flex gap-2 mb-4 justify-center lg:justify-start flex-wrap">
+                  {variants.map(v => (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedVariantId(v.id)}
+                      className={cn(
+                        "px-4 py-2 text-sm border transition-colors rounded",
+                        v.id === selectedVariantId
+                          ? "border-foreground bg-foreground text-background font-medium"
+                          : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                      )}
+                    >
+                      {v.variant_label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {hasPrice && (
+                <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start flex-wrap">
+                  <span className="text-lg sm:text-xl font-semibold text-foreground">
+                    £{pricePerSqm!.toFixed(2)}/sq.m
+                  </span>
+                  <span className="text-[10px] text-muted-foreground tracking-[0.1em] uppercase">ex. vat</span>
+                </div>
+              )}
 
               <div data-hero-cta className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
                 <RegisterInterestInline
@@ -202,9 +274,11 @@ const ProductPage = () => {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
-              </div>
+              {hasPrice && (
+                <div className="mb-4">
+                  <CountdownTimer endDate={settings.allocation_end_date} onExpired={() => setIsExpired(true)} />
+                </div>
+              )}
 
               <div className="mt-5 pt-4 border-t border-border space-y-2">
                 {product?.google_drive_link && (
@@ -213,10 +287,10 @@ const ProductPage = () => {
                     <Download className="h-4 w-4" /><span>Download high-res images</span>
                   </a>
                 )}
-                {product?.data_sheet_url && (
-                  <a href={`${product.data_sheet_url}?download=`} target="_blank" rel="noopener noreferrer"
+                {activeDataSheet && (
+                  <a href={`${activeDataSheet}?download=`} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start">
-                    <FileText className="h-4 w-4" /><span>Tile performance data sheet</span>
+                    <FileText className="h-4 w-4" /><span>Tile performance data sheet{hasVariants && selectedVariant ? ` (${selectedVariant.variant_label})` : ''}</span>
                   </a>
                 )}
               </div>
@@ -225,17 +299,19 @@ const ProductPage = () => {
         </div>
       </section>
 
-      <section className="pb-6 sm:pb-14">
-        <div className="section-container">
-          {product && (
-            <ProductStockIndicator
-              productId={product.id}
-              initialAllocation={product.stock_allocation || 0}
-              initialSold={product.stock_sold || 0}
-            />
-          )}
-        </div>
-      </section>
+      {hasPrice && (
+        <section className="pb-6 sm:pb-14">
+          <div className="section-container">
+            {product && (
+              <ProductStockIndicator
+                productId={product.id}
+                initialAllocation={selectedVariant?.stock_allocation ?? product.stock_allocation ?? 0}
+                initialSold={selectedVariant?.stock_sold ?? product.stock_sold ?? 0}
+              />
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="pb-9 sm:pb-18">
         <div className="section-container">
@@ -254,10 +330,10 @@ const ProductPage = () => {
                   origin: product.origin || undefined,
                   factoryRating: product.factory_rating || undefined,
                   tileColour: product.tile_colour || undefined,
-                  thicknessMm: product.thickness_mm || undefined,
-                  widthMm: product.width_mm || undefined,
-                  lengthMm: product.length_mm || undefined,
-                  nominalSize: product.nominal_size || undefined,
+                  thicknessMm: activeThickness || undefined,
+                  widthMm: activeWidth || undefined,
+                  lengthMm: activeLength || undefined,
+                  nominalSize: activeNominalSize || undefined,
                   finish: product.finish || undefined,
                   matchingOutdoorOption: product.matching_outdoor_option || undefined,
                   shape: product.shape || undefined,
@@ -269,12 +345,12 @@ const ProductPage = () => {
                   noTileFaces: product.no_tile_faces || undefined,
                   material: product.material || undefined,
                   frostResistant: product.frost_resistant || undefined,
-                  sqmPerTile: product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
-                  tilesPerBox: product.tiles_per_box || undefined,
-                  sqmPerBox: product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
-                  kgPerBox: product.kg_per_box ? Number(product.kg_per_box) : undefined,
-                  boxesPerPallet: product.boxes_per_pallet || undefined,
-                  sqmPerPallet: product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined,
+                  sqmPerTile: selectedVariant?.sqm_per_tile ? Number(selectedVariant.sqm_per_tile) : product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
+                  tilesPerBox: selectedVariant?.tiles_per_box ?? product.tiles_per_box ?? undefined,
+                  sqmPerBox: selectedVariant?.sqm_per_box ? Number(selectedVariant.sqm_per_box) : product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
+                  kgPerBox: selectedVariant?.kg_per_box ? Number(selectedVariant.kg_per_box) : product.kg_per_box ? Number(product.kg_per_box) : undefined,
+                  boxesPerPallet: selectedVariant?.boxes_per_pallet ?? product.boxes_per_pallet ?? undefined,
+                  sqmPerPallet: selectedVariant?.sqm_per_pallet ? Number(selectedVariant.sqm_per_pallet) : product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined,
                 }} />
               )}
             </CollapsibleContent>
@@ -282,22 +358,24 @@ const ProductPage = () => {
         </div>
       </section>
 
-      <section id="reservation" className="section-alt py-14 sm:py-24">
-        <div className="section-container">
-          <div className="max-w-2xl mx-auto">
-            <p className="section-label">Reservation Process</p>
-            <div className="mb-5">
-              <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">Request Reservation</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Reservations are held provisionally for 7 days (max 200 sq.m per order).
-              </p>
-            </div>
-            <div className="border border-border bg-background p-6 sm:p-8">
-              {product && <ReservationRequestForm productId={product.id} />}
+      {hasPrice && (
+        <section id="reservation" className="section-alt py-14 sm:py-24">
+          <div className="section-container">
+            <div className="max-w-2xl mx-auto">
+              <p className="section-label">Reservation Process</p>
+              <div className="mb-5">
+                <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground mb-3">Request Reservation</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Reservations are held provisionally for 7 days (max 200 sq.m per order).
+                </p>
+              </div>
+              <div className="border border-border bg-background p-6 sm:p-8">
+                {product && <ReservationRequestForm productId={product.id} />}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="py-10 sm:py-18">
         <div className="section-container">

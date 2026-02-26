@@ -329,7 +329,7 @@ export type Database = {
           no_tile_faces: string | null
           nominal_size: string | null
           origin: string | null
-          price_per_sqm: number
+          price_per_sqm: number | null
           price_per_tile: number | null
           shape: string | null
           slip_rating: string | null
@@ -369,7 +369,7 @@ export type Database = {
           no_tile_faces?: string | null
           nominal_size?: string | null
           origin?: string | null
-          price_per_sqm: number
+          price_per_sqm?: number | null
           price_per_tile?: number | null
           shape?: string | null
           slip_rating?: string | null
@@ -409,7 +409,7 @@ export type Database = {
           no_tile_faces?: string | null
           nominal_size?: string | null
           origin?: string | null
-          price_per_sqm?: number
+          price_per_sqm?: number | null
           price_per_tile?: number | null
           shape?: string | null
           slip_rating?: string | null

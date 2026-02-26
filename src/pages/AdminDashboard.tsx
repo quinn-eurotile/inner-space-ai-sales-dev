@@ -29,7 +29,9 @@ import {
   FileText,
   ShoppingBag,
   Settings,
-  CalendarIcon
+  CalendarIcon,
+  Plus,
+  X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import innerSpaceLogo from '@/assets/inner-space-logo.png';
@@ -41,7 +43,7 @@ interface Product {
   slug: string | null;
   collection: string | null;
   origin: string | null;
-  price_per_sqm: number;
+  price_per_sqm: number | null;
   price_per_tile: number | null;
   stock_allocation: number | null;
   stock_sold: number | null;
@@ -72,6 +74,29 @@ interface Product {
   shape: string | null;
   suitability: string | null;
   no_tile_faces: string | null;
+}
+
+interface ProductVariant {
+  id: string;
+  product_id: string;
+  variant_label: string;
+  nominal_size: string | null;
+  thickness_mm: number | null;
+  width_mm: number | null;
+  length_mm: number | null;
+  price_per_sqm: number | null;
+  price_per_tile: number | null;
+  stock_allocation: number | null;
+  stock_sold: number | null;
+  stock_reserved_manual: number | null;
+  sqm_per_tile: number | null;
+  tiles_per_box: number | null;
+  sqm_per_box: number | null;
+  kg_per_box: number | null;
+  boxes_per_pallet: number | null;
+  sqm_per_pallet: number | null;
+  data_sheet_url: string | null;
+  display_order: number | null;
 }
 
 interface Reservation {
@@ -119,15 +144,24 @@ export default function AdminDashboard() {
   const [sampleOrders, setSampleOrders] = useState<SampleOrder[]>([]);
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const { settings, updateSetting } = useSiteSettings();
   const [settingsSaving, setSettingsSaving] = useState<string | null>(null);
+
   useEffect(() => {
     checkAuth();
     fetchData();
   }, []);
+
+  // Fetch variants when selected product changes
+  useEffect(() => {
+    if (selectedProduct) {
+      fetchVariants(selectedProduct.id);
+    }
+  }, [selectedProduct?.id]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -168,6 +202,15 @@ export default function AdminDashboard() {
     }
     
     setLoading(false);
+  };
+
+  const fetchVariants = async (productId: string) => {
+    const { data } = await (supabase
+      .from('product_variants')
+      .select('*') as any)
+      .eq('product_id', productId)
+      .order('display_order');
+    setProductVariants(data || []);
   };
 
   const handleLogout = async () => {
@@ -306,7 +349,7 @@ export default function AdminDashboard() {
     const slug = 'new-product-' + Date.now();
     const { data, error } = await (supabase
       .from('products')
-      .insert({ name, price_per_sqm: 0, slug } as any)
+      .insert({ name, slug } as any)
       .select()
       .single() as any);
 
@@ -314,6 +357,66 @@ export default function AdminDashboard() {
       setProducts([data, ...products]);
       setSelectedProduct(data);
     }
+  };
+
+  // Variant CRUD
+  const addVariant = async () => {
+    if (!selectedProduct) return;
+    const { data, error } = await (supabase
+      .from('product_variants')
+      .insert({
+        product_id: selectedProduct.id,
+        variant_label: 'New Size',
+        display_order: productVariants.length,
+      } as any)
+      .select()
+      .single() as any);
+
+    if (!error && data) {
+      setProductVariants([...productVariants, data]);
+    }
+  };
+
+  const updateVariant = async (variantId: string, updates: Partial<ProductVariant>) => {
+    const { error } = await (supabase
+      .from('product_variants')
+      .update(updates) as any)
+      .eq('id', variantId);
+
+    if (!error) {
+      setProductVariants(productVariants.map(v =>
+        v.id === variantId ? { ...v, ...updates } : v
+      ));
+    }
+  };
+
+  const deleteVariant = async (variantId: string) => {
+    const { error } = await (supabase
+      .from('product_variants')
+      .delete() as any)
+      .eq('id', variantId);
+
+    if (!error) {
+      setProductVariants(productVariants.filter(v => v.id !== variantId));
+    }
+  };
+
+  const handleVariantPdfUpload = async (e: React.ChangeEvent<HTMLInputElement>, variantId: string) => {
+    if (!e.target.files || !e.target.files[0] || !selectedProduct) return;
+    const file = e.target.files[0];
+    const fileName = `${selectedProduct.id}/variant-${variantId}-${Date.now()}.pdf`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, file, { contentType: 'application/pdf' });
+
+    if (uploadError) return;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(fileName);
+
+    await updateVariant(variantId, { data_sheet_url: publicUrl });
   };
 
   const getStatusBadge = (status: string) => {
@@ -479,14 +582,16 @@ export default function AdminDashboard() {
                   {/* Pricing & Stock */}
                   <div className="space-y-4 pt-4 border-t border-border">
                     <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Pricing & Stock</h4>
+                    <p className="text-xs text-muted-foreground">Leave price at 0 or empty for no-price products (sample & interest only). If this product has size variants, set pricing per variant below.</p>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Price Per SQ.M (£)</Label>
                         <Input
                           type="number"
                           step="0.01"
-                          value={selectedProduct.price_per_sqm}
-                          onChange={(e) => updateProduct({ price_per_sqm: parseFloat(e.target.value) })}
+                          value={selectedProduct.price_per_sqm ?? ''}
+                          onChange={(e) => updateProduct({ price_per_sqm: e.target.value ? parseFloat(e.target.value) : null } as any)}
+                          placeholder="Leave empty for no price"
                         />
                       </div>
                       <div className="space-y-2">
@@ -519,9 +624,113 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                  {/* SIZE VARIANTS */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Size Variants</h4>
+                      <Button size="sm" variant="outline" onClick={addVariant}>
+                        <Plus className="h-3 w-3 mr-1" /> Add Variant
+                      </Button>
+                    </div>
+                    {productVariants.length === 0 && (
+                      <p className="text-sm text-muted-foreground">No variants — product uses a single size. Add variants if this product comes in multiple sizes.</p>
+                    )}
+                    {productVariants.map((variant) => (
+                      <div key={variant.id} className="border border-border rounded-lg p-4 space-y-3 bg-secondary/10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Input
+                              value={variant.variant_label}
+                              onChange={(e) => updateVariant(variant.id, { variant_label: e.target.value })}
+                              className="w-40 font-medium"
+                              placeholder="e.g. 90x90"
+                            />
+                            <Input
+                              value={variant.nominal_size || ''}
+                              onChange={(e) => updateVariant(variant.id, { nominal_size: e.target.value })}
+                              className="w-32"
+                              placeholder="Nominal size"
+                            />
+                          </div>
+                          <Button size="sm" variant="destructive" onClick={() => deleteVariant(variant.id)}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Width (mm)</Label>
+                            <Input type="number" value={variant.width_mm || ''} onChange={(e) => updateVariant(variant.id, { width_mm: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Length (mm)</Label>
+                            <Input type="number" value={variant.length_mm || ''} onChange={(e) => updateVariant(variant.id, { length_mm: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Thickness (mm)</Label>
+                            <Input type="number" value={variant.thickness_mm || ''} onChange={(e) => updateVariant(variant.id, { thickness_mm: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Price/sq.m (£)</Label>
+                            <Input type="number" step="0.01" value={variant.price_per_sqm ?? ''} onChange={(e) => updateVariant(variant.id, { price_per_sqm: e.target.value ? parseFloat(e.target.value) : null } as any)} placeholder="Optional" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">SQM/tile</Label>
+                            <Input type="number" step="0.01" value={variant.sqm_per_tile || ''} onChange={(e) => updateVariant(variant.id, { sqm_per_tile: parseFloat(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Tiles/box</Label>
+                            <Input type="number" value={variant.tiles_per_box || ''} onChange={(e) => updateVariant(variant.id, { tiles_per_box: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">SQM/box</Label>
+                            <Input type="number" step="0.01" value={variant.sqm_per_box || ''} onChange={(e) => updateVariant(variant.id, { sqm_per_box: parseFloat(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">KG/box</Label>
+                            <Input type="number" step="0.01" value={variant.kg_per_box || ''} onChange={(e) => updateVariant(variant.id, { kg_per_box: parseFloat(e.target.value) || null } as any)} />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Boxes/pallet</Label>
+                            <Input type="number" value={variant.boxes_per_pallet || ''} onChange={(e) => updateVariant(variant.id, { boxes_per_pallet: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">SQM/pallet</Label>
+                            <Input type="number" step="0.01" value={variant.sqm_per_pallet || ''} onChange={(e) => updateVariant(variant.id, { sqm_per_pallet: parseFloat(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Stock alloc.</Label>
+                            <Input type="number" value={variant.stock_allocation || ''} onChange={(e) => updateVariant(variant.id, { stock_allocation: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Stock sold</Label>
+                            <Input type="number" value={variant.stock_sold || ''} onChange={(e) => updateVariant(variant.id, { stock_sold: parseInt(e.target.value) || null } as any)} />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Data Sheet PDF</Label>
+                          <div className="flex items-center gap-2">
+                            {variant.data_sheet_url ? (
+                              <a href={variant.data_sheet_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline truncate max-w-[200px]">View PDF</a>
+                            ) : <span className="text-xs text-muted-foreground">No PDF</span>}
+                            <Input
+                              type="file"
+                              accept=".pdf"
+                              onChange={(e) => handleVariantPdfUpload(e, variant.id)}
+                              className="text-xs h-8 w-auto"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                   {/* Tile Specifications */}
                   <div className="space-y-4 pt-4 border-t border-border">
-                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Tile Specifications</h4>
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Tile Specifications (Product-level defaults)</h4>
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label>Nominal Size</Label>
@@ -621,7 +830,7 @@ export default function AdminDashboard() {
 
                   {/* Packing Info */}
                   <div className="space-y-4 pt-4 border-t border-border">
-                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Packing Info</h4>
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Packing Info (Product-level defaults)</h4>
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label>SQM per Tile</Label>
@@ -1089,7 +1298,6 @@ export default function AdminDashboard() {
                   const soldSqm = selectedProduct.stock_sold || 0;
                   const manualReservedSqm = selectedProduct.stock_reserved_manual || 0;
 
-                  // Auto-calculate reserved from active reservations
                   const onlineReservedSqm = reservations
                     .filter(r => r.status === 'pending' || r.status === 'confirmed')
                     .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
@@ -1132,7 +1340,6 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
-                      {/* Summary row */}
                       <div className="grid grid-cols-3 gap-4 p-4 bg-secondary/30 rounded-lg text-center">
                         <div>
                           <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Reserved</p>
@@ -1167,9 +1374,7 @@ export default function AdminDashboard() {
                     <Input
                       value={settings.allocation_notice}
                       onBlur={(e) => updateSetting('allocation_notice', e.target.value)}
-                      onChange={(e) => {
-                        // Local state update handled by the hook
-                      }}
+                      onChange={(e) => {}}
                       defaultValue={settings.allocation_notice}
                     />
                   </div>
