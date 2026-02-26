@@ -1,0 +1,1 @@
+ALTER TABLE public.products ALTER COLUMN price_per_sqm DROP NOT NULL;
