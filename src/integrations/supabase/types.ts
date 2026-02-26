@@ -228,6 +228,86 @@ export type Database = {
           },
         ]
       }
+      product_variants: {
+        Row: {
+          boxes_per_pallet: number | null
+          created_at: string
+          data_sheet_url: string | null
+          display_order: number | null
+          id: string
+          kg_per_box: number | null
+          length_mm: number | null
+          nominal_size: string | null
+          price_per_sqm: number | null
+          price_per_tile: number | null
+          product_id: string
+          sqm_per_box: number | null
+          sqm_per_pallet: number | null
+          sqm_per_tile: number | null
+          stock_allocation: number | null
+          stock_reserved_manual: number | null
+          stock_sold: number | null
+          thickness_mm: number | null
+          tiles_per_box: number | null
+          variant_label: string
+          width_mm: number | null
+        }
+        Insert: {
+          boxes_per_pallet?: number | null
+          created_at?: string
+          data_sheet_url?: string | null
+          display_order?: number | null
+          id?: string
+          kg_per_box?: number | null
+          length_mm?: number | null
+          nominal_size?: string | null
+          price_per_sqm?: number | null
+          price_per_tile?: number | null
+          product_id: string
+          sqm_per_box?: number | null
+          sqm_per_pallet?: number | null
+          sqm_per_tile?: number | null
+          stock_allocation?: number | null
+          stock_reserved_manual?: number | null
+          stock_sold?: number | null
+          thickness_mm?: number | null
+          tiles_per_box?: number | null
+          variant_label: string
+          width_mm?: number | null
+        }
+        Update: {
+          boxes_per_pallet?: number | null
+          created_at?: string
+          data_sheet_url?: string | null
+          display_order?: number | null
+          id?: string
+          kg_per_box?: number | null
+          length_mm?: number | null
+          nominal_size?: string | null
+          price_per_sqm?: number | null
+          price_per_tile?: number | null
+          product_id?: string
+          sqm_per_box?: number | null
+          sqm_per_pallet?: number | null
+          sqm_per_tile?: number | null
+          stock_allocation?: number | null
+          stock_reserved_manual?: number | null
+          stock_sold?: number | null
+          thickness_mm?: number | null
+          tiles_per_box?: number | null
+          variant_label?: string
+          width_mm?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           boxes_per_pallet: number | null
