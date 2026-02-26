@@ -253,6 +253,7 @@ export type Database = {
           price_per_tile: number | null
           shape: string | null
           slip_rating: string | null
+          slug: string | null
           sqm_per_box: number | null
           sqm_per_pallet: number | null
           sqm_per_tile: number | null
@@ -292,6 +293,7 @@ export type Database = {
           price_per_tile?: number | null
           shape?: string | null
           slip_rating?: string | null
+          slug?: string | null
           sqm_per_box?: number | null
           sqm_per_pallet?: number | null
           sqm_per_tile?: number | null
@@ -331,6 +333,7 @@ export type Database = {
           price_per_tile?: number | null
           shape?: string | null
           slip_rating?: string | null
+          slug?: string | null
           sqm_per_box?: number | null
           sqm_per_pallet?: number | null
           sqm_per_tile?: number | null

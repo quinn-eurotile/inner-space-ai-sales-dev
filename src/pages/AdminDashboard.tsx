@@ -38,6 +38,7 @@ import { useSiteSettings } from '@/hooks/use-site-settings';
 interface Product {
   id: string;
   name: string;
+  slug: string | null;
   collection: string | null;
   origin: string | null;
   price_per_sqm: number;
@@ -300,6 +301,21 @@ export default function AdminDashboard() {
     }
   };
 
+  const createProduct = async () => {
+    const name = 'New Product';
+    const slug = 'new-product-' + Date.now();
+    const { data, error } = await (supabase
+      .from('products')
+      .insert({ name, price_per_sqm: 0, slug } as any)
+      .select()
+      .single() as any);
+
+    if (!error && data) {
+      setProducts([data, ...products]);
+      setSelectedProduct(data);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -377,7 +393,10 @@ export default function AdminDashboard() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Product List */}
               <div className="bg-card border border-border rounded-lg p-4">
-                <h3 className="font-semibold mb-4">Products</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Products</h3>
+                  <Button size="sm" onClick={createProduct}>+ New</Button>
+                </div>
                 <div className="space-y-2">
                   {products.map(product => (
                     <button
@@ -390,7 +409,7 @@ export default function AdminDashboard() {
                       }`}
                     >
                       <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">{product.collection}</p>
+                      <p className="text-xs text-muted-foreground">/products/{product.slug || '—'}</p>
                     </button>
                   ))}
                 </div>
@@ -419,6 +438,18 @@ export default function AdminDashboard() {
                           onChange={(e) => updateProduct({ collection: e.target.value })}
                         />
                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>URL Slug</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">/products/</span>
+                        <Input
+                          value={selectedProduct.slug || ''}
+                          onChange={(e) => updateProduct({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') } as any)}
+                          placeholder="e.g. marble-grey-120"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">This is the public URL for this product page</p>
                     </div>
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
