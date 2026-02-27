@@ -392,7 +392,7 @@ const ProductPage = () => {
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="mt-4"><FAQ showHeader={false} /></div>
+              <div className="mt-4"><FAQ showHeader={false} isEnquiryOnly={!isProductSale} /></div>
             </CollapsibleContent>
           </Collapsible>
         </div>
