@@ -329,8 +329,10 @@ export type Database = {
           no_tile_faces: string | null
           nominal_size: string | null
           origin: string | null
+          page_type: string
           price_per_sqm: number | null
           price_per_tile: number | null
+          product_category: string
           shape: string | null
           slip_rating: string | null
           slug: string | null
@@ -369,8 +371,10 @@ export type Database = {
           no_tile_faces?: string | null
           nominal_size?: string | null
           origin?: string | null
+          page_type?: string
           price_per_sqm?: number | null
           price_per_tile?: number | null
+          product_category?: string
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null
@@ -409,8 +413,10 @@ export type Database = {
           no_tile_faces?: string | null
           nominal_size?: string | null
           origin?: string | null
+          page_type?: string
           price_per_sqm?: number | null
           price_per_tile?: number | null
+          product_category?: string
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null
