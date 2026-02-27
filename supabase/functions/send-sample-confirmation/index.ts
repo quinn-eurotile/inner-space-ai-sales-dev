@@ -43,7 +43,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { sampleOrder, utm }: { sampleOrder: { id: string; name: string; email: string; phone: string; address: string; postcode: string }; utm?: Record<string, string> } = await req.json();
+    const { sampleOrder, utm }: { sampleOrder: { id: string; name: string; email: string; phone: string; address: string; postcode: string; product_id?: string }; utm?: Record<string, string> } = await req.json();
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
@@ -54,11 +54,19 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    // Look up product name if product_id is available
+    let productName = "Tile Sample";
+    if (sampleOrder.product_id) {
+      const { data: product } = await supabase.from('products').select('name').eq('id', sampleOrder.product_id).single();
+      if (product?.name) productName = product.name;
+    }
+
     const customerHtml = emailLayout(`
       <h2>Sample Order Confirmed</h2>
       <p>Dear ${sampleOrder.name},</p>
       <p>Thank you for ordering a tile sample from Inner Space. Your payment has been received.</p>
       <table class="details">
+        <tr><td>Product</td><td>${productName}</td></tr>
         <tr><td>Sample</td><td>20×15cm Tile Sample</td></tr>
         <tr><td>Amount Paid</td><td>£7.00 (incl. P&P)</td></tr>
         <tr><td>Delivery Address</td><td>${sampleOrder.address}, ${sampleOrder.postcode}</td></tr>
@@ -77,6 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
     const adminHtml = emailLayout(`
       <h2>New Sample Order</h2>
       <table class="details">
+        <tr><td>Product</td><td>${productName}</td></tr>
         <tr><td>Name</td><td>${sampleOrder.name}</td></tr>
         <tr><td>Email</td><td>${sampleOrder.email}</td></tr>
         <tr><td>Phone</td><td>${sampleOrder.phone}</td></tr>
