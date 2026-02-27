@@ -711,15 +711,15 @@ export default function AdminDashboard() {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Width (mm)</Label>
-                            <Input type="number" value={variant.width_mm || ''} onChange={(e) => updateVariant(variant.id, { width_mm: parseInt(e.target.value) || null } as any)} />
+                            <Input type="number" step="0.1" value={variant.width_mm || ''} onChange={(e) => updateVariant(variant.id, { width_mm: parseFloat(e.target.value) || null } as any)} />
                           </div>
                           <div className="space-y-1">
                             <Label className="text-xs">Length (mm)</Label>
-                            <Input type="number" value={variant.length_mm || ''} onChange={(e) => updateVariant(variant.id, { length_mm: parseInt(e.target.value) || null } as any)} />
+                            <Input type="number" step="0.1" value={variant.length_mm || ''} onChange={(e) => updateVariant(variant.id, { length_mm: parseFloat(e.target.value) || null } as any)} />
                           </div>
                           <div className="space-y-1">
                             <Label className="text-xs">Thickness (mm)</Label>
-                            <Input type="number" value={variant.thickness_mm || ''} onChange={(e) => updateVariant(variant.id, { thickness_mm: parseInt(e.target.value) || null } as any)} />
+                            <Input type="number" step="0.1" value={variant.thickness_mm || ''} onChange={(e) => updateVariant(variant.id, { thickness_mm: parseFloat(e.target.value) || null } as any)} />
                           </div>
                           <div className="space-y-1">
                             <Label className="text-xs">Price/sq.m (£)</Label>
@@ -812,7 +812,7 @@ export default function AdminDashboard() {
                         <Input
                           type="number"
                           value={selectedProduct.thickness_mm || ''}
-                          onChange={(e) => updateProduct({ thickness_mm: parseInt(e.target.value) || null } as any)}
+                          onChange={(e) => updateProduct({ thickness_mm: parseFloat(e.target.value) || null } as any)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -820,7 +820,7 @@ export default function AdminDashboard() {
                         <Input
                           type="number"
                           value={selectedProduct.width_mm || ''}
-                          onChange={(e) => updateProduct({ width_mm: parseInt(e.target.value) || null } as any)}
+                          onChange={(e) => updateProduct({ width_mm: parseFloat(e.target.value) || null } as any)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -828,7 +828,7 @@ export default function AdminDashboard() {
                         <Input
                           type="number"
                           value={selectedProduct.length_mm || ''}
-                          onChange={(e) => updateProduct({ length_mm: parseInt(e.target.value) || null } as any)}
+                          onChange={(e) => updateProduct({ length_mm: parseFloat(e.target.value) || null } as any)}
                         />
                       </div>
                       <div className="space-y-2">
