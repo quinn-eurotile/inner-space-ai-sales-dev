@@ -415,7 +415,7 @@ const ProductPage = () => {
         </div>
       </footer>
 
-      <StickyMobileCTA />
+      <StickyMobileCTA productName={product?.name} isProductSale={isProductSale} pricePerSqm={pricePerSqm} />
     </div>
   );
 };
