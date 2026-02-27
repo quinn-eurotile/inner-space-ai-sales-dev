@@ -66,7 +66,7 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
     { label: 'KG Per Box', value: specs.kgPerBox },
     { label: 'Boxes Per Pallet', value: specs.boxesPerPallet },
     { label: 'SQ.M Per Pallet', value: specs.sqmPerPallet },
-  ];
+  ].filter(item => item.value !== undefined && item.value !== null);
 
   return (
     <div>
