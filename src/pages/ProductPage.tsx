@@ -211,7 +211,7 @@ const ProductPage = () => {
 
               <h1 className="font-serif text-[28px] sm:text-[40px] lg:text-[44px] font-light text-foreground mb-2 leading-[1.08]">
                 {product?.name}<br />
-                <span className="text-brand-accent">{hasPrice ? 'Factory Allocation' : 'Coming Soon'}</span>
+                {hasPrice && <span className="text-brand-accent">Factory Allocation</span>}
               </h1>
 
               {/* Variant size selector */}
