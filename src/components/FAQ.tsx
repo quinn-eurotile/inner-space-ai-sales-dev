@@ -5,7 +5,13 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-const faqs = [
+interface FAQItem {
+  question: string;
+  answer: string;
+  allocationOnly?: boolean;
+}
+
+const faqs: FAQItem[] = [
   {
     question: "Why is this tile £36 per sq.m?",
     answer: `This is a limited factory allocation secured at export pricing.
@@ -14,13 +20,15 @@ To preserve this price, orders must meet pallet quantities and structured delive
 
 This is first-quality Italian porcelain. It is not clearance, surplus, or graded stock.
 
-Once the allocation is exhausted, pricing returns to standard showroom levels.`
+Once the allocation is exhausted, pricing returns to standard showroom levels.`,
+    allocationOnly: true,
   },
   {
     question: "What is the minimum order?",
     answer: `The allocation price applies to 57 sq.m and above (full pallet quantity).
 
-Smaller quantities are available at standard retail pricing.`
+Smaller quantities are available at standard retail pricing.`,
+    allocationOnly: true,
   },
   {
     question: "Is VAT included?",
@@ -33,17 +41,20 @@ Smaller quantities are available at standard retail pricing.`
 3. Reserve your required sq.m (maximum 200 sq.m per project)
 4. Full payment secures dispatch
 
-Reservations are held for 7 days pending payment.`
+Reservations are held for 7 days pending payment.`,
+    allocationOnly: true,
   },
   {
     question: "What if I require more than 200 sq.m?",
-    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 sq.m and a representative will contact you to coordinate the remainder of your order."
+    answer: "Submit your desired quantity which will reserve the maximum allocation of 200 sq.m and a representative will contact you to coordinate the remainder of your order.",
+    allocationOnly: true,
   },
   {
     question: "Why is full payment required upfront?",
     answer: `Allocation stock is secured specifically against confirmed orders at this price.
 
-Full payment is required prior to delivery. We do not operate deposit or staged payment terms on allocation releases.`
+Full payment is required prior to delivery. We do not operate deposit or staged payment terms on allocation releases.`,
+    allocationOnly: true,
   },
   {
     question: "Is the sample fee refundable?",
@@ -97,7 +108,8 @@ Example: If advised to purchase 100 sq.m, we recommend ordering 110–115 sq.m.`
 
 Top-up orders will be charged at standard showroom pricing (£75 per sq.m + VAT) and shade or batch matching cannot be guaranteed.
 
-We strongly recommend securing your full project quantity at the outset.`
+We strongly recommend securing your full project quantity at the outset.`,
+    allocationOnly: true,
   },
   {
     question: "What is your breakage policy?",
@@ -108,13 +120,15 @@ In the event of damage:
 • Breakages must exceed 5% of the tile surface area
 • Minor chips or edge imperfections are not classified as breakages
 
-We do not provide replacement shipments for allocation stock. Where eligible, a credit will be issued for confirmed damaged tiles.`
+We do not provide replacement shipments for allocation stock. Where eligible, a credit will be issued for confirmed damaged tiles.`,
+    allocationOnly: true,
   },
   {
     question: "Do you offer storage?",
     answer: `Seven days complimentary storage is provided from your requested dispatch date.
 
-Thereafter, storage is charged at £10 per pallet per week.`
+Thereafter, storage is charged at £10 per pallet per week.`,
+    allocationOnly: true,
   },
   {
     question: "Can I return allocation stock?",
@@ -124,7 +138,8 @@ Thereafter, storage is charged at £10 per pallet per week.`
 • Goods must be unused and in original condition
 • Returns can only be for the entire complete order, not part of the order
 
-Please ensure full specification approval before confirming your order.`
+Please ensure full specification approval before confirming your order.`,
+    allocationOnly: true,
   },
   {
     question: "Do I need a trade account?",
@@ -144,15 +159,18 @@ Due to pallet quantities, it is generally unsuitable for small bathroom installa
 
 interface FAQProps {
   showHeader?: boolean;
+  isEnquiryOnly?: boolean;
 }
 
-export function FAQ({ showHeader = true }: FAQProps) {
+export function FAQ({ showHeader = true, isEnquiryOnly = false }: FAQProps) {
+  const filteredFaqs = isEnquiryOnly ? faqs.filter(faq => !faq.allocationOnly) : faqs;
+
   return (
     <div>
       {showHeader && <p className="section-label">Frequently Asked Questions</p>}
       <div className="max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
-          {faqs.map((faq, index) => (
+          {filteredFaqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`} className="border-border/60">
               <AccordionTrigger className="text-left text-[15px] font-normal hover:no-underline py-4">
                 {faq.question}
