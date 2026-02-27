@@ -73,6 +73,7 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                 phone: order.phone,
                 address: order.address,
                 postcode: order.postcode,
+                product_id: order.product_id,
               },
             },
           });
