@@ -97,10 +97,17 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
         },
       });
       pinterestTrack('lead', { lead_type: 'Allocation Interest' });
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
+        console.log('[Meta Pixel] Lead event fired');
+      }
       setIsSuccess(true);
     } catch (err) {
       console.error('Failed to send interest form', err);
       pinterestTrack('lead', { lead_type: 'Allocation Interest' });
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
+      }
       setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
