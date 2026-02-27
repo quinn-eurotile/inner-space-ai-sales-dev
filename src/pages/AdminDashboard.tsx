@@ -74,6 +74,8 @@ interface Product {
   shape: string | null;
   suitability: string | null;
   no_tile_faces: string | null;
+  page_type: string;
+  product_category: string;
 }
 
 interface ProductVariant {
@@ -512,7 +514,11 @@ export default function AdminDashboard() {
                       }`}
                     >
                       <p className="font-medium">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">/products/{product.slug || '—'}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{(product as any).product_category || 'tiles'}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{(product as any).page_type === 'enquiry_only' ? 'Enquiry' : 'Sale'}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">/{product.slug || '—'}</p>
                     </button>
                   ))}
                 </div>
@@ -523,61 +529,107 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-card border border-border rounded-lg p-6 space-y-6">
                   <h3 className="text-xl font-semibold">Edit Product</h3>
                   
-                  {/* Basic Info */}
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Basic Info</h4>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Product Name</Label>
-                        <Input
-                          value={selectedProduct.name}
-                          onChange={(e) => updateProduct({ name: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Collection</Label>
-                        <Input
-                          value={selectedProduct.collection || ''}
-                          onChange={(e) => updateProduct({ collection: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>URL Slug</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground whitespace-nowrap">/products/</span>
-                        <Input
-                          value={selectedProduct.slug || ''}
-                          onChange={(e) => updateProduct({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') } as any)}
-                          placeholder="e.g. marble-grey-120"
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">This is the public URL for this product page</p>
-                    </div>
-                    <div className="grid sm:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label>Origin</Label>
-                        <Input
-                          value={selectedProduct.origin || ''}
-                          onChange={(e) => updateProduct({ origin: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Material</Label>
-                        <Input
-                          value={selectedProduct.material || ''}
-                          onChange={(e) => updateProduct({ material: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Factory Rating</Label>
-                        <Input
-                          value={selectedProduct.factory_rating || ''}
-                          onChange={(e) => updateProduct({ factory_rating: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                   {/* Page Type & Category */}
+                   <div className="space-y-4">
+                     <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Page Setup</h4>
+                     <div className="grid sm:grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                         <Label>Page Type</Label>
+                         <div className="flex gap-2">
+                           {[{ value: 'product_sale', label: 'Product Sale' }, { value: 'enquiry_only', label: 'Enquiry Only' }].map(opt => (
+                             <button
+                               key={opt.value}
+                               onClick={() => updateProduct({ page_type: opt.value } as any)}
+                               className={cn(
+                                 "px-4 py-2 text-sm border rounded transition-colors flex-1",
+                                 (selectedProduct as any).page_type === opt.value
+                                   ? "border-foreground bg-foreground text-background font-medium"
+                                   : "border-border text-muted-foreground hover:border-foreground"
+                               )}
+                             >
+                               {opt.label}
+                             </button>
+                           ))}
+                         </div>
+                         <p className="text-xs text-muted-foreground">Enquiry Only hides pricing, stock & reservations</p>
+                       </div>
+                       <div className="space-y-2">
+                         <Label>Product Category</Label>
+                         <div className="flex gap-2">
+                           {[{ value: 'tiles', label: 'Tiles' }, { value: 'wood', label: 'Wood' }, { value: 'lvt', label: 'LVT' }].map(opt => (
+                             <button
+                               key={opt.value}
+                               onClick={() => updateProduct({ product_category: opt.value } as any)}
+                               className={cn(
+                                 "px-4 py-2 text-sm border rounded transition-colors flex-1",
+                                 (selectedProduct as any).product_category === opt.value
+                                   ? "border-foreground bg-foreground text-background font-medium"
+                                   : "border-border text-muted-foreground hover:border-foreground"
+                               )}
+                             >
+                               {opt.label}
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Basic Info */}
+                   <div className="space-y-4 pt-4 border-t border-border">
+                     <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Basic Info</h4>
+                     <div className="grid sm:grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                         <Label>Product Name</Label>
+                         <Input
+                           value={selectedProduct.name}
+                           onChange={(e) => updateProduct({ name: e.target.value })}
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label>Collection</Label>
+                         <Input
+                           value={selectedProduct.collection || ''}
+                           onChange={(e) => updateProduct({ collection: e.target.value })}
+                         />
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <Label>URL Slug</Label>
+                       <div className="flex items-center gap-2">
+                         <span className="text-sm text-muted-foreground whitespace-nowrap">/products/</span>
+                         <Input
+                           value={selectedProduct.slug || ''}
+                           onChange={(e) => updateProduct({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') } as any)}
+                           placeholder="e.g. marble-grey-120"
+                         />
+                       </div>
+                       <p className="text-xs text-muted-foreground">This is the public URL for this product page</p>
+                     </div>
+                     <div className="grid sm:grid-cols-3 gap-4">
+                       <div className="space-y-2">
+                         <Label>Origin</Label>
+                         <Input
+                           value={selectedProduct.origin || ''}
+                           onChange={(e) => updateProduct({ origin: e.target.value })}
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label>Material</Label>
+                         <Input
+                           value={selectedProduct.material || ''}
+                           onChange={(e) => updateProduct({ material: e.target.value })}
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label>Factory Rating</Label>
+                         <Input
+                           value={selectedProduct.factory_rating || ''}
+                           onChange={(e) => updateProduct({ factory_rating: e.target.value })}
+                         />
+                       </div>
+                     </div>
+                   </div>
 
                   {/* Pricing & Stock */}
                   <div className="space-y-4 pt-4 border-t border-border">
