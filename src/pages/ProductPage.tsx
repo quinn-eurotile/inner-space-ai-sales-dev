@@ -52,6 +52,8 @@ interface Product {
   stock_sold: number | null;
   google_drive_link: string | null;
   data_sheet_url: string | null;
+  page_type: string;
+  product_category: string;
 }
 
 interface ProductVariant {
@@ -160,7 +162,8 @@ const ProductPage = () => {
 
   // Use variant-level price if available, otherwise product-level
   const pricePerSqm = selectedVariant?.price_per_sqm ?? product?.price_per_sqm ?? null;
-  const hasPrice = pricePerSqm !== null && pricePerSqm > 0;
+  const isProductSale = product?.page_type === 'product_sale';
+  const hasPrice = isProductSale && pricePerSqm !== null && pricePerSqm > 0;
 
   // Use variant-level specs for display, falling back to product-level
   const activeNominalSize = selectedVariant?.nominal_size ?? product?.nominal_size;
