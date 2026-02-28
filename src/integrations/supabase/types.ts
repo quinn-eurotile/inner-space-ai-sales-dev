@@ -95,6 +95,39 @@ export type Database = {
         }
         Relationships: []
       }
+      interest_submissions: {
+        Row: {
+          created_at: string
+          delivery_postcode: string | null
+          email: string
+          estimated_quantity: string | null
+          id: string
+          name: string | null
+          product_name: string | null
+          tel: string | null
+        }
+        Insert: {
+          created_at?: string
+          delivery_postcode?: string | null
+          email: string
+          estimated_quantity?: string | null
+          id?: string
+          name?: string | null
+          product_name?: string | null
+          tel?: string | null
+        }
+        Update: {
+          created_at?: string
+          delivery_postcode?: string | null
+          email?: string
+          estimated_quantity?: string | null
+          id?: string
+          name?: string | null
+          product_name?: string | null
+          tel?: string | null
+        }
+        Relationships: []
+      }
       postcode_checks: {
         Row: {
           created_at: string

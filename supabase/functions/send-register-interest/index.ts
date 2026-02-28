@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -55,10 +56,28 @@ const handler = async (req: Request): Promise<Response> => {
     const { formData } = await req.json();
     const { name, email, tel, deliveryPostcode, estimatedQuantity, productName } = formData;
 
+    // Save to database first so we never lose a lead
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const { error: dbError } = await supabase.from("interest_submissions").insert({
+      product_name: productName || null,
+      email,
+      name: name || null,
+      tel: tel || null,
+      delivery_postcode: deliveryPostcode || null,
+      estimated_quantity: estimatedQuantity || null,
+    });
+
+    if (dbError) {
+      console.error("Failed to save interest submission to DB:", dbError);
+    }
+
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
       console.error("RESEND_API_KEY not configured");
-      return new Response(JSON.stringify({ error: "Email not configured" }), {
+      return new Response(JSON.stringify({ error: "Email not configured", saved: !dbError }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -97,7 +116,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!res.ok) {
       console.error("Resend error:", data);
-      return new Response(JSON.stringify({ error: data }), {
+      return new Response(JSON.stringify({ error: data, saved: !dbError }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
