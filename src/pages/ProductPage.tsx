@@ -107,6 +107,8 @@ const ProductPage = () => {
       }
 
       setProduct(data);
+      document.title = `Inner Space — ${data.name}${data.nominal_size ? ' ' + data.nominal_size : ''}`;
+
 
       // Fetch variants
       const { data: variantData } = await (supabase
