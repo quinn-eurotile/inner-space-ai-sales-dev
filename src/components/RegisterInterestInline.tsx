@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Check, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { pinterestTrack } from '@/lib/pinterest';
 
 const step1Schema = z.object({
   email: z.string().trim().email('Please enter a valid email').max(255),
@@ -37,6 +37,7 @@ interface RegisterInterestInlineProps {
 }
 
 export function RegisterInterestInline({ buttonStyle, buttonClassName, productName }: RegisterInterestInlineProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Data>({ email: '' });
@@ -99,20 +100,11 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
         },
       });
       if (error) throw error;
-      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
-        console.log('[Meta Pixel] Lead event fired');
-      }
-      setIsSuccess(true);
+      navigate('/thank-you');
     } catch (err) {
       console.error('Failed to send interest form', err);
-      // Still show success since the lead is saved to DB even if email fails
-      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
-      }
-      setIsSuccess(true);
+      // Still redirect since the lead is saved to DB even if email fails
+      navigate('/thank-you');
     } finally {
       setIsSubmitting(false);
     }
