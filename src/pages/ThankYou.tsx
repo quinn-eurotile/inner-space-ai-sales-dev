@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { pinterestTrack } from '@/lib/pinterest';
 
@@ -26,12 +25,12 @@ export default function ThankYou() {
         <p className="text-sm text-muted-foreground leading-relaxed">
           We've received your details and will be in touch shortly to discuss availability and next steps.
         </p>
-        <Link
-          to="/"
+        <button
+          onClick={() => window.history.back()}
           className="inline-block text-xs tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors border-b border-muted-foreground/30 pb-0.5"
         >
-          Back to home
-        </Link>
+          Back to product
+        </button>
       </div>
     </div>
   );
