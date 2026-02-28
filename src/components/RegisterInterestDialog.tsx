@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { pinterestTrack } from '@/lib/pinterest';
 
 const interestSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
@@ -38,6 +38,7 @@ interface RegisterInterestDialogProps {
 }
 
 export function RegisterInterestDialog({ children }: RegisterInterestDialogProps) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -76,13 +77,10 @@ export function RegisterInterestDialog({ children }: RegisterInterestDialogProps
       await supabase.functions.invoke('send-register-interest', {
         body: { formData: result.data },
       });
-      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
-      setIsSuccess(true);
+      navigate('/thank-you');
     } catch (err) {
       console.error('Failed to send interest form', err);
-      // Still show success to the user — email may have sent
-      pinterestTrack('lead', { lead_type: 'Allocation Interest' });
-      setIsSuccess(true);
+      navigate('/thank-you');
     } finally {
       setIsSubmitting(false);
     }
