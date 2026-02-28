@@ -89,7 +89,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
 
     setIsSubmitting(true);
     try {
-      await supabase.functions.invoke('send-register-interest', {
+      const { error } = await supabase.functions.invoke('send-register-interest', {
         body: {
           formData: {
             email: step1Data.email,
@@ -98,6 +98,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
           },
         },
       });
+      if (error) throw error;
       pinterestTrack('lead', { lead_type: 'Allocation Interest' });
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
@@ -106,6 +107,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
       setIsSuccess(true);
     } catch (err) {
       console.error('Failed to send interest form', err);
+      // Still show success since the lead is saved to DB even if email fails
       pinterestTrack('lead', { lead_type: 'Allocation Interest' });
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'Lead', { content_name: 'Tile Enquiry' });
