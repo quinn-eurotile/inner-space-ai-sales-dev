@@ -33,9 +33,10 @@ type FormErrors = Partial<Record<string, string>>;
 interface RegisterInterestInlineProps {
   buttonStyle?: React.CSSProperties;
   buttonClassName?: string;
+  productName?: string;
 }
 
-export function RegisterInterestInline({ buttonStyle, buttonClassName }: RegisterInterestInlineProps) {
+export function RegisterInterestInline({ buttonStyle, buttonClassName, productName }: RegisterInterestInlineProps) {
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Data>({ email: '' });
@@ -93,6 +94,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName }: Registe
           formData: {
             email: step1Data.email,
             ...result.data,
+            productName: productName || 'Not specified',
           },
         },
       });

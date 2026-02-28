@@ -250,6 +250,7 @@ const ProductPage = () => {
                 <RegisterInterestInline
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                  productName={product?.name}
                 />
                 <SampleOrderDialog productId={product?.id}>
                   <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">

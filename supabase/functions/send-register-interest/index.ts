@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { formData } = await req.json();
-    const { name, email, tel, deliveryPostcode, estimatedQuantity } = formData;
+    const { name, email, tel, deliveryPostcode, estimatedQuantity, productName } = formData;
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
@@ -63,10 +63,13 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    const tileProduct = productName || 'Not specified';
+
     const html = emailLayout(`
-      <h2>Register Interest</h2>
+      <h2>Register Interest — ${tileProduct}</h2>
       <p>A new interest registration has been received.</p>
       <table class="details">
+        <tr><td>Product</td><td><strong>${tileProduct}</strong></td></tr>
         <tr><td>Name</td><td>${name}</td></tr>
         <tr><td>Email</td><td>${email}</td></tr>
         ${tel ? `<tr><td>Tel</td><td>${tel}</td></tr>` : ''}
@@ -85,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
         from: FROM_EMAIL,
         to: [TO_EMAIL],
         reply_to: email,
-        subject: `Register Interest — ${name}`,
+        subject: `Register Interest — ${tileProduct} — ${name}`,
         html,
       }),
     });
