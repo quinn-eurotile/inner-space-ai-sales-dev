@@ -165,7 +165,8 @@ const ProductPage = () => {
   // Use variant-level price if available, otherwise product-level
   const pricePerSqm = selectedVariant?.price_per_sqm ?? product?.price_per_sqm ?? null;
   const isProductSale = product?.page_type === 'product_sale';
-  const hasPrice = isProductSale && pricePerSqm !== null && pricePerSqm > 0;
+  const isChargeable = (product as any)?.is_chargeable === true;
+  const hasPrice = (isProductSale || isChargeable) && pricePerSqm !== null && pricePerSqm > 0;
 
   // Use variant-level specs for display, falling back to product-level
   const activeNominalSize = selectedVariant?.nominal_size ?? product?.nominal_size;
@@ -253,6 +254,7 @@ const ProductPage = () => {
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
                   productName={product?.name}
+                  productCategory={product?.product_category}
                 />
                 <SampleOrderDialog productId={product?.id}>
                   <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">

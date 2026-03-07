@@ -34,9 +34,10 @@ interface RegisterInterestInlineProps {
   buttonStyle?: React.CSSProperties;
   buttonClassName?: string;
   productName?: string;
+  productCategory?: string;
 }
 
-export function RegisterInterestInline({ buttonStyle, buttonClassName, productName }: RegisterInterestInlineProps) {
+export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory }: RegisterInterestInlineProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
@@ -125,7 +126,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
         onMouseEnter={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = '#d4913a')}
         onMouseLeave={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor as string)}
       >
-        Enquire About This Tile
+        {productCategory === 'wood' ? 'Check Stock Availability' : 'Enquire About This Tile'}
         {expanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
       </Button>
 
