@@ -5,10 +5,9 @@ interface StockBannerProps {
   productId: string;
   stockAllocation: number;
   stockSold: number;
-  sqmPerPallet?: number;
 }
 
-export function StockBanner({ productId, stockAllocation, stockSold: initialSold, sqmPerPallet = 57.12 }: StockBannerProps) {
+export function StockBanner({ productId, stockAllocation, stockSold: initialSold }: StockBannerProps) {
   const [sold, setSold] = useState(initialSold);
   const [reserved, setReserved] = useState(0);
   const [manualReserved, setManualReserved] = useState(0);
@@ -37,7 +36,7 @@ export function StockBanner({ productId, stockAllocation, stockSold: initialSold
   }, [productId]);
 
   const remaining = Math.round(stockAllocation - sold - manualReserved - reserved);
-  const pallets = sqmPerPallet > 0 ? Math.floor(remaining / sqmPerPallet) : 0;
+  const pallets = Math.floor(remaining / 57.12);
 
   return (
     <div className="bg-foreground text-background py-2 px-4 text-center">

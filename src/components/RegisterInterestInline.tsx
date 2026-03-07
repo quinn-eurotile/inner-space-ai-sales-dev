@@ -11,7 +11,7 @@ const step1Schema = z.object({
   email: z.string().trim().email('Please enter a valid email').max(255),
 });
 
-const createStep2Schema = (minQty: number) => z.object({
+const step2Schema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
   tel: z.string().trim().min(5, 'Please enter a valid phone number').max(20),
   deliveryPostcode: z.string().trim().min(3, 'Please enter a valid postcode').max(10),
@@ -22,12 +22,12 @@ const createStep2Schema = (minQty: number) => z.object({
     .max(20)
     .refine(val => {
       const num = parseFloat(val.replace(/[^0-9.]/g, ''));
-      return !isNaN(num) && num >= minQty;
-    }, { message: `Minimum quantity is ${minQty} sq.m (1 pallet)` }),
+      return !isNaN(num) && num > 57;
+    }, { message: 'Minimum quantity is over 57 sq.m' }),
 });
 
 type Step1Data = z.infer<typeof step1Schema>;
-type Step2Data = z.infer<ReturnType<typeof createStep2Schema>>;
+type Step2Data = z.infer<typeof step2Schema>;
 type FormErrors = Partial<Record<string, string>>;
 
 interface RegisterInterestInlineProps {
@@ -35,10 +35,9 @@ interface RegisterInterestInlineProps {
   buttonClassName?: string;
   productName?: string;
   productCategory?: string;
-  sqmPerPallet?: number;
 }
 
-export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory, sqmPerPallet = 57.12 }: RegisterInterestInlineProps) {
+export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory }: RegisterInterestInlineProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
@@ -80,7 +79,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
 
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = createStep2Schema(sqmPerPallet).safeParse(step2Data);
+    const result = step2Schema.safeParse(step2Data);
     if (!result.success) {
       const fieldErrors: FormErrors = {};
       result.error.errors.forEach(err => {
@@ -112,10 +111,8 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
     }
   };
 
-  const palletQty = String(sqmPerPallet);
-
   const handlePalletQuickSelect = () => {
-    setStep2Data(prev => ({ ...prev, estimatedQuantity: palletQty }));
+    setStep2Data(prev => ({ ...prev, estimatedQuantity: '57.12' }));
     if (errors.estimatedQuantity) setErrors(prev => ({ ...prev, estimatedQuantity: undefined }));
   };
 
@@ -258,7 +255,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                   type="button"
                   onClick={handlePalletQuickSelect}
                   className={`h-9 px-3 text-[10px] tracking-wide uppercase border rounded whitespace-nowrap transition-colors ${
-                    step2Data.estimatedQuantity === palletQty
+                    step2Data.estimatedQuantity === '57.12'
                       ? 'bg-foreground text-background border-foreground'
                       : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
                   }`}
@@ -267,7 +264,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                 </button>
               </div>
               {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
-              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet ({sqmPerPallet} sq.m)</p>
+              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet (57.12 sq.m)</p>
             </div>
 
             <Button

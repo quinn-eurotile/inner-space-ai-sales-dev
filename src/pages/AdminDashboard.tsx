@@ -34,7 +34,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import innerSpaceLogo from '@/assets/admin-logo.png';
+import innerSpaceLogo from '@/assets/inner-space-logo-trans.png';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 
 interface Product {
@@ -150,7 +150,6 @@ export default function AdminDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [saving, setSaving] = useState(false);
-  const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const { settings, updateSetting } = useSiteSettings();
@@ -349,38 +348,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleImageDrop = async (targetImageId: string) => {
-    if (!draggedImageId || draggedImageId === targetImageId || !selectedProduct) return;
-    
-    const currentImages = productImages
-      .filter(img => img.product_id === selectedProduct.id)
-      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-    
-    const dragIdx = currentImages.findIndex(img => img.id === draggedImageId);
-    const dropIdx = currentImages.findIndex(img => img.id === targetImageId);
-    if (dragIdx === -1 || dropIdx === -1) return;
-
-    const reordered = [...currentImages];
-    const [moved] = reordered.splice(dragIdx, 1);
-    reordered.splice(dropIdx, 0, moved);
-
-    // Update local state immediately
-    const updatedImages = productImages.map(img => {
-      const newIdx = reordered.findIndex(r => r.id === img.id);
-      if (newIdx !== -1) return { ...img, display_order: newIdx };
-      return img;
-    });
-    setProductImages(updatedImages);
-
-    // Persist to DB
-    await Promise.all(
-      reordered.map((img, idx) =>
-        supabase.from('product_images').update({ display_order: idx }).eq('id', img.id)
-      )
-    );
-    setDraggedImageId(null);
-  };
-
   const createProduct = async () => {
     const name = 'New Product';
     const slug = 'new-product-' + Date.now();
@@ -490,7 +457,7 @@ export default function AdminDashboard() {
             <img 
               src={innerSpaceLogo} 
               alt="Inner Space" 
-              className="h-24 w-auto"
+              className="h-8 w-auto"
             />
             <span className="text-muted-foreground">|</span>
             <span className="font-medium">Admin Dashboard</span>
@@ -1425,30 +1392,17 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-lg font-semibold mb-2">Current Images</h3>
-                  <p className="text-xs text-muted-foreground mb-4">Drag images to reorder them.</p>
+                  <h3 className="text-lg font-semibold mb-4">Current Images</h3>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {productImages
                       .filter(img => img.product_id === selectedProduct.id)
-                      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
                       .map(image => (
-                        <div
-                          key={image.id}
-                          className={cn(
-                            "relative group cursor-grab active:cursor-grabbing rounded-lg transition-opacity",
-                            draggedImageId === image.id && "opacity-40"
-                          )}
-                          draggable
-                          onDragStart={() => setDraggedImageId(image.id)}
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={() => handleImageDrop(image.id)}
-                          onDragEnd={() => setDraggedImageId(null)}
-                        >
+                        <div key={image.id} className="relative group">
                           <img
                             src={image.image_url}
                             alt=""
-                            className="w-full aspect-square object-cover rounded-lg pointer-events-none"
+                            className="w-full aspect-square object-cover rounded-lg"
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                             <Button
@@ -1462,9 +1416,6 @@ export default function AdminDashboard() {
                           <Badge className="absolute top-2 left-2" variant="secondary">
                             {image.image_type}
                           </Badge>
-                          <span className="absolute bottom-2 right-2 text-[10px] bg-black/60 text-white px-1.5 py-0.5 rounded">
-                            {(image.display_order || 0) + 1}
-                          </span>
                         </div>
                       ))}
                     {productImages.filter(img => img.product_id === selectedProduct?.id).length === 0 && (
