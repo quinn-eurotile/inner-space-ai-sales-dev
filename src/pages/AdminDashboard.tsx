@@ -583,6 +583,27 @@ export default function AdminDashboard() {
                           onCheckedChange={(checked) => updateProduct({ samples_chargeable: checked } as any)}
                         />
                       </div>
+                      <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-secondary/20">
+                        <div className="flex-1">
+                          <Label className="text-sm font-medium">Minimum Order Quantity</Label>
+                          <p className="text-xs text-muted-foreground">Set a minimum sq.m order for reservations. Leave empty for no minimum.</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="None"
+                            className="w-24 h-9 text-sm"
+                            value={(selectedProduct as any).min_order_sqm ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? null : parseFloat(e.target.value);
+                              updateProduct({ min_order_sqm: val } as any);
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">sq.m</span>
+                        </div>
+                      </div>
                    </div>
 
                    {/* Basic Info */}

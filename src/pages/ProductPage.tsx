@@ -378,7 +378,7 @@ const ProductPage = () => {
                 </p>
               </div>
               <div className="border border-border bg-background p-6 sm:p-8">
-                {product && <ReservationRequestForm productId={product.id} />}
+                {product && <ReservationRequestForm productId={product.id} minOrderSqm={(product as any).min_order_sqm} />}
               </div>
             </div>
           </div>

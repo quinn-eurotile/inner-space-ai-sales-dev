@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN min_order_sqm numeric DEFAULT NULL;
