@@ -335,7 +335,7 @@ const ProductPage = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               {product && (
-                <TechnicalSpecs specs={{
+                <TechnicalSpecs productCategory={product.product_category} specs={{
                   origin: product.origin || undefined,
                   factoryRating: product.factory_rating || undefined,
                   tileColour: product.tile_colour || undefined,
@@ -354,6 +354,7 @@ const ProductPage = () => {
                   noTileFaces: product.no_tile_faces || undefined,
                   material: product.material || undefined,
                   frostResistant: product.frost_resistant || undefined,
+                  wearLayerMm: product.wear_layer_mm ? Number(product.wear_layer_mm) : undefined,
                   sqmPerTile: selectedVariant?.sqm_per_tile ? Number(selectedVariant.sqm_per_tile) : product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
                   tilesPerBox: selectedVariant?.tiles_per_box ?? product.tiles_per_box ?? undefined,
                   sqmPerBox: selectedVariant?.sqm_per_box ? Number(selectedVariant.sqm_per_box) : product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
