@@ -1,6 +1,7 @@
 import { Check, X } from 'lucide-react';
 
 interface TechnicalSpecsProps {
+  productCategory?: string;
   specs: {
     origin?: string;
     factoryRating?: string;
@@ -20,6 +21,7 @@ interface TechnicalSpecsProps {
     noTileFaces?: string;
     material?: string;
     frostResistant?: boolean;
+    wearLayerMm?: number;
     sqmPerTile?: number;
     tilesPerBox?: number;
     sqmPerBox?: number;
@@ -29,7 +31,9 @@ interface TechnicalSpecsProps {
   };
 }
 
-export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
+export function TechnicalSpecs({ specs, productCategory }: TechnicalSpecsProps) {
+  const isWood = productCategory === 'wood';
+
   const renderValue = (value: boolean | string | number | undefined) => {
     if (typeof value === 'boolean') {
       return value ? (
@@ -44,7 +48,7 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
   const specItems = [
     { label: 'Origin', value: specs.origin },
     { label: 'Factory Rating', value: specs.factoryRating },
-    { label: 'Tile Colour', value: specs.tileColour },
+    { label: isWood ? 'Colour' : 'Tile Colour', value: specs.tileColour },
     { label: 'Thickness (mm)', value: specs.thicknessMm },
     { label: 'Width (mm)', value: specs.widthMm },
     { label: 'Length (mm)', value: specs.lengthMm },
@@ -54,14 +58,15 @@ export function TechnicalSpecs({ specs }: TechnicalSpecsProps) {
     { label: 'Shape', value: specs.shape },
     { label: 'Suitability', value: specs.suitability },
     { label: 'Underfloor Heating Compatible', value: specs.underfloorHeatingCompatible },
-    { label: 'Tile Style', value: specs.tileStyle },
+    { label: isWood ? 'Style' : 'Tile Style', value: specs.tileStyle },
     { label: 'Edge', value: specs.edge },
     { label: 'Slip Rating', value: specs.slipRating },
-    { label: 'No. Tile Faces', value: specs.noTileFaces },
+    { label: isWood ? 'No. Faces' : 'No. Tile Faces', value: specs.noTileFaces },
     { label: 'Material', value: specs.material },
     { label: 'Frost Resistant', value: specs.frostResistant },
-    { label: 'SQ.M Per Tile', value: specs.sqmPerTile },
-    { label: 'Tiles Per Box', value: specs.tilesPerBox },
+    ...(isWood ? [{ label: 'Wear Layer (mm)', value: specs.wearLayerMm }] : []),
+    { label: isWood ? 'SQ.M Per Plank' : 'SQ.M Per Tile', value: specs.sqmPerTile },
+    { label: isWood ? 'Planks Per Box' : 'Tiles Per Box', value: specs.tilesPerBox },
     { label: 'SQ.M Per Box', value: specs.sqmPerBox },
     { label: 'KG Per Box', value: specs.kgPerBox },
     { label: 'Boxes Per Pallet', value: specs.boxesPerPallet },

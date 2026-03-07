@@ -908,6 +908,15 @@ export default function AdminDashboard() {
                           onChange={(e) => updateProduct({ no_tile_faces: e.target.value })}
                         />
                       </div>
+                      <div className="space-y-2">
+                        <Label>Wear Layer (mm)</Label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={(selectedProduct as any).wear_layer_mm || ''}
+                          onChange={(e) => updateProduct({ wear_layer_mm: parseFloat(e.target.value) || null } as any)}
+                        />
+                      </div>
                     </div>
                   </div>
 

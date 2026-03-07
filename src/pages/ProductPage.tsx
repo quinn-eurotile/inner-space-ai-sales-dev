@@ -42,6 +42,7 @@ interface Product {
   no_tile_faces: string | null;
   material: string | null;
   frost_resistant: boolean | null;
+  wear_layer_mm: number | null;
   sqm_per_tile: number | null;
   tiles_per_box: number | null;
   sqm_per_box: number | null;
@@ -298,7 +299,7 @@ const ProductPage = () => {
                 {activeDataSheet && (
                   <a href={`${activeDataSheet}?download=`} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start">
-                    <FileText className="h-4 w-4" /><span>Tile performance data sheet{hasVariants && selectedVariant ? ` (${selectedVariant.variant_label})` : ''}</span>
+                    <FileText className="h-4 w-4" /><span>{product?.product_category === 'wood' ? 'Product' : 'Tile'} performance data sheet{hasVariants && selectedVariant ? ` (${selectedVariant.variant_label})` : ''}</span>
                   </a>
                 )}
               </div>
@@ -325,7 +326,7 @@ const ProductPage = () => {
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
-              <p className="section-label">Technical Specification</p>
+              <p className="section-label">{product?.product_category === 'wood' ? 'Product Specification' : 'Technical Specification'}</p>
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">Performance & Material Data</h2>
                 <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">Show <ChevronDown className="h-3 w-3" /></span>
@@ -334,7 +335,7 @@ const ProductPage = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               {product && (
-                <TechnicalSpecs specs={{
+                <TechnicalSpecs productCategory={product.product_category} specs={{
                   origin: product.origin || undefined,
                   factoryRating: product.factory_rating || undefined,
                   tileColour: product.tile_colour || undefined,
@@ -353,6 +354,7 @@ const ProductPage = () => {
                   noTileFaces: product.no_tile_faces || undefined,
                   material: product.material || undefined,
                   frostResistant: product.frost_resistant || undefined,
+                  wearLayerMm: product.wear_layer_mm ? Number(product.wear_layer_mm) : undefined,
                   sqmPerTile: selectedVariant?.sqm_per_tile ? Number(selectedVariant.sqm_per_tile) : product.sqm_per_tile ? Number(product.sqm_per_tile) : undefined,
                   tilesPerBox: selectedVariant?.tiles_per_box ?? product.tiles_per_box ?? undefined,
                   sqmPerBox: selectedVariant?.sqm_per_box ? Number(selectedVariant.sqm_per_box) : product.sqm_per_box ? Number(product.sqm_per_box) : undefined,
