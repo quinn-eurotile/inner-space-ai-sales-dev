@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,6 +33,7 @@ interface OrderSampleInlineProps {
 }
 
 export function OrderSampleInline({ buttonStyle, buttonClassName, productId, productName, onOrderComplete }: OrderSampleInlineProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Data>({ email: '' });
@@ -138,7 +140,7 @@ export function OrderSampleInline({ buttonStyle, buttonClassName, productId, pro
         (window as any).fbq('track', 'Lead', { content_name: productName || 'Sample Order' });
       }
 
-      setIsSuccess(true);
+      navigate('/thank-you');
       onOrderComplete?.();
     } catch (error) {
       console.error('Sample order error:', error);
