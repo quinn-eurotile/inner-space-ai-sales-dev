@@ -326,7 +326,7 @@ const ProductPage = () => {
         <div className="section-container">
           <Collapsible>
             <CollapsibleTrigger className="w-full text-left group">
-              <p className="section-label">Technical Specification</p>
+              <p className="section-label">{product?.product_category === 'wood' ? 'Product Specification' : 'Technical Specification'}</p>
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-h2 sm:text-h2-lg font-light text-foreground">Performance & Material Data</h2>
                 <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-muted-foreground group-data-[state=open]:hidden">Show <ChevronDown className="h-3 w-3" /></span>
