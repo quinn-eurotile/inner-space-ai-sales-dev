@@ -255,6 +255,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                   onChange={handleStep2Change('estimatedQuantity')}
                   className={`h-9 text-sm flex-1 ${errors.estimatedQuantity ? 'border-destructive' : ''}`}
                 />
+                {palletSqm && (
                 <button
                   type="button"
                   onClick={handlePalletQuickSelect}
@@ -266,6 +267,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                 >
                   1 Pallet
                 </button>
+                )}
               </div>
               {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
               <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet{palletSqm ? ` (${palletSqm} sq.m)` : ''}</p>
