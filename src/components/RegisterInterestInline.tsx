@@ -126,7 +126,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
         onMouseEnter={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = '#d4913a')}
         onMouseLeave={e => buttonStyle?.backgroundColor && (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor as string)}
       >
-        Enquire About This Tile
+        {productCategory === 'wood' ? 'Check Stock Availability' : 'Enquire About This Tile'}
         {expanded ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
       </Button>
 
