@@ -490,7 +490,7 @@ export default function AdminDashboard() {
             <img 
               src={innerSpaceLogo} 
               alt="Inner Space" 
-              className="h-14 w-auto"
+              className="h-24 w-auto"
             />
             <span className="text-muted-foreground">|</span>
             <span className="font-medium">Admin Dashboard</span>
