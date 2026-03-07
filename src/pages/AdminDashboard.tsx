@@ -1430,6 +1430,26 @@ export default function AdminDashboard() {
           </TabsContent>
           {/* Settings Tab */}
           <TabsContent value="settings">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="max-w-2xl space-y-8">
               {/* Allocation Timer */}
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
