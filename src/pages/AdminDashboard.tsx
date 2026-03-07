@@ -103,6 +103,7 @@ interface ProductVariant {
 
 interface Reservation {
   id: string;
+  product_id: string;
   name: string;
   email: string;
   phone: string;
@@ -121,6 +122,7 @@ interface Reservation {
 
 interface SampleOrder {
   id: string;
+  product_id: string | null;
   name: string;
   email: string;
   phone: string;
@@ -1135,6 +1137,26 @@ export default function AdminDashboard() {
 
           {/* Reservations Tab */}
           <TabsContent value="reservations">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="bg-card border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -1153,7 +1175,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reservations.map(reservation => (
+                  {reservations.filter(r => r.product_id === selectedProduct?.id).map(reservation => (
                     <TableRow key={reservation.id}>
                       <TableCell className="font-medium">{reservation.name}</TableCell>
                       <TableCell className="text-xs">{reservation.email}</TableCell>
@@ -1196,10 +1218,10 @@ export default function AdminDashboard() {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {reservations.length === 0 && (
+                  {reservations.filter(r => r.product_id === selectedProduct?.id).length === 0 && (
                     <TableRow>
                       <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
-                        No reservations yet
+                        No reservations for this product
                       </TableCell>
                     </TableRow>
                   )}
@@ -1210,6 +1232,26 @@ export default function AdminDashboard() {
 
           {/* Sample Orders Tab */}
           <TabsContent value="samples">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="bg-card border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -1225,7 +1267,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sampleOrders.map(order => (
+                  {sampleOrders.filter(o => o.product_id === selectedProduct?.id).map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="text-xs">
                         {format(new Date(order.created_at), 'dd/MM/yyyy HH:mm')}
@@ -1267,10 +1309,10 @@ export default function AdminDashboard() {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {sampleOrders.length === 0 && (
+                  {sampleOrders.filter(o => o.product_id === selectedProduct?.id).length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No sample orders yet
+                        No sample orders for this product
                       </TableCell>
                     </TableRow>
                   )}
@@ -1281,6 +1323,26 @@ export default function AdminDashboard() {
 
           {/* Images Tab */}
           <TabsContent value="images">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             {selectedProduct && (
               <div className="space-y-8">
                 <div className="bg-card border border-border rounded-lg p-6">
@@ -1368,6 +1430,26 @@ export default function AdminDashboard() {
           </TabsContent>
           {/* Settings Tab */}
           <TabsContent value="settings">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="max-w-2xl space-y-8">
               {/* Allocation Timer */}
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
@@ -1437,7 +1519,7 @@ export default function AdminDashboard() {
                   const manualReservedSqm = selectedProduct.stock_reserved_manual || 0;
 
                   const onlineReservedSqm = reservations
-                    .filter(r => r.status === 'pending' || r.status === 'confirmed')
+                    .filter(r => r.product_id === selectedProduct.id && (r.status === 'pending' || r.status === 'confirmed'))
                     .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
 
                   const totalReservedSqm = onlineReservedSqm + manualReservedSqm;
