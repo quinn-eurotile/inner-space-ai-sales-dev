@@ -384,6 +384,7 @@ export type Database = {
           tiles_per_box: number | null
           underfloor_heating_compatible: boolean | null
           updated_at: string
+          wear_layer_mm: number | null
           width_mm: number | null
         }
         Insert: {
@@ -428,6 +429,7 @@ export type Database = {
           tiles_per_box?: number | null
           underfloor_heating_compatible?: boolean | null
           updated_at?: string
+          wear_layer_mm?: number | null
           width_mm?: number | null
         }
         Update: {
@@ -472,6 +474,7 @@ export type Database = {
           tiles_per_box?: number | null
           underfloor_heating_compatible?: boolean | null
           updated_at?: string
+          wear_layer_mm?: number | null
           width_mm?: number | null
         }
         Relationships: []

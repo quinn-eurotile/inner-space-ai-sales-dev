@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN wear_layer_mm numeric DEFAULT NULL;
