@@ -1519,7 +1519,7 @@ export default function AdminDashboard() {
                   const manualReservedSqm = selectedProduct.stock_reserved_manual || 0;
 
                   const onlineReservedSqm = reservations
-                    .filter(r => r.status === 'pending' || r.status === 'confirmed')
+                    .filter(r => r.product_id === selectedProduct.id && (r.status === 'pending' || r.status === 'confirmed'))
                     .reduce((sum, r) => sum + (r.required_quantity_sqm || 0), 0);
 
                   const totalReservedSqm = onlineReservedSqm + manualReservedSqm;
