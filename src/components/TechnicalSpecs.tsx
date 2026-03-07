@@ -50,6 +50,7 @@ export function TechnicalSpecs({ specs, productCategory }: TechnicalSpecsProps) 
     { label: 'Factory Rating', value: specs.factoryRating },
     { label: isWood ? 'Colour' : 'Tile Colour', value: specs.tileColour },
     { label: 'Thickness (mm)', value: specs.thicknessMm },
+    ...(isWood ? [{ label: 'Wear Layer (mm)', value: specs.wearLayerMm }] : []),
     { label: 'Width (mm)', value: specs.widthMm },
     { label: 'Length (mm)', value: specs.lengthMm },
     { label: 'Nominal Size (cm)', value: specs.nominalSize },
