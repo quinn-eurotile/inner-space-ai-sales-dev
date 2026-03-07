@@ -299,7 +299,7 @@ const ProductPage = () => {
                 {activeDataSheet && (
                   <a href={`${activeDataSheet}?download=`} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover-accent-underline justify-center lg:justify-start">
-                    <FileText className="h-4 w-4" /><span>Tile performance data sheet{hasVariants && selectedVariant ? ` (${selectedVariant.variant_label})` : ''}</span>
+                    <FileText className="h-4 w-4" /><span>{product?.product_category === 'wood' ? 'Product' : 'Tile'} performance data sheet{hasVariants && selectedVariant ? ` (${selectedVariant.variant_label})` : ''}</span>
                   </a>
                 )}
               </div>
