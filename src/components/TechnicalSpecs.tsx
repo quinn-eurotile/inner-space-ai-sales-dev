@@ -65,7 +65,7 @@ export function TechnicalSpecs({ specs, productCategory }: TechnicalSpecsProps) 
     { label: isWood ? 'No. Faces' : 'No. Tile Faces', value: specs.noTileFaces },
     { label: 'Material', value: specs.material },
     { label: 'Frost Resistant', value: specs.frostResistant },
-    ...(isWood ? [{ label: 'Wear Layer (mm)', value: specs.wearLayerMm }] : []),
+    { label: 'Material', value: specs.material },
     { label: isWood ? 'SQ.M Per Plank' : 'SQ.M Per Tile', value: specs.sqmPerTile },
     { label: isWood ? 'Planks Per Box' : 'Tiles Per Box', value: specs.tilesPerBox },
     { label: 'SQ.M Per Box', value: specs.sqmPerBox },
