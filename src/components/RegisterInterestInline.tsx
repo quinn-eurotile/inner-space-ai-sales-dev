@@ -80,7 +80,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
 
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = step2Schema.safeParse(step2Data);
+    const result = createStep2Schema(sqmPerPallet).safeParse(step2Data);
     if (!result.success) {
       const fieldErrors: FormErrors = {};
       result.error.errors.forEach(err => {
