@@ -358,6 +358,7 @@ export type Database = {
           length_mm: number | null
           matching_outdoor_option: boolean | null
           material: string | null
+          min_order_sqm: number | null
           name: string
           no_tile_faces: string | null
           nominal_size: string | null
@@ -401,6 +402,7 @@ export type Database = {
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
           material?: string | null
+          min_order_sqm?: number | null
           name: string
           no_tile_faces?: string | null
           nominal_size?: string | null
@@ -444,6 +446,7 @@ export type Database = {
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
           material?: string | null
+          min_order_sqm?: number | null
           name?: string
           no_tile_faces?: string | null
           nominal_size?: string | null
