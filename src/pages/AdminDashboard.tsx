@@ -551,28 +551,38 @@ export default function AdminDashboard() {
                              </button>
                            ))}
                          </div>
-                         <p className="text-xs text-muted-foreground">Enquiry Only hides pricing, stock & reservations</p>
-                       </div>
-                       <div className="space-y-2">
-                         <Label>Product Category</Label>
-                         <div className="flex gap-2">
-                           {[{ value: 'tiles', label: 'Tiles' }, { value: 'wood', label: 'Wood' }, { value: 'lvt', label: 'LVT' }].map(opt => (
-                             <button
-                               key={opt.value}
-                               onClick={() => updateProduct({ product_category: opt.value } as any)}
-                               className={cn(
-                                 "px-4 py-2 text-sm border rounded transition-colors flex-1",
-                                 (selectedProduct as any).product_category === opt.value
-                                   ? "border-foreground bg-foreground text-background font-medium"
-                                   : "border-border text-muted-foreground hover:border-foreground"
-                               )}
-                             >
-                               {opt.label}
-                             </button>
-                           ))}
-                         </div>
-                       </div>
-                     </div>
+                          <p className="text-xs text-muted-foreground">Enquiry Only hides pricing, stock & reservations</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Product Category</Label>
+                          <div className="flex gap-2">
+                            {[{ value: 'tiles', label: 'Tiles' }, { value: 'wood', label: 'Wood' }, { value: 'lvt', label: 'LVT' }].map(opt => (
+                              <button
+                                key={opt.value}
+                                onClick={() => updateProduct({ product_category: opt.value } as any)}
+                                className={cn(
+                                  "px-4 py-2 text-sm border rounded transition-colors flex-1",
+                                  (selectedProduct as any).product_category === opt.value
+                                    ? "border-foreground bg-foreground text-background font-medium"
+                                    : "border-border text-muted-foreground hover:border-foreground"
+                                )}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-secondary/20">
+                        <div>
+                          <Label className="text-sm font-medium">Chargeable Product</Label>
+                          <p className="text-xs text-muted-foreground">Show pricing, stock levels & reservation form</p>
+                        </div>
+                        <Switch
+                          checked={(selectedProduct as any).is_chargeable === true}
+                          onCheckedChange={(checked) => updateProduct({ is_chargeable: checked } as any)}
+                        />
+                      </div>
                    </div>
 
                    {/* Basic Info */}
