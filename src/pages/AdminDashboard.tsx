@@ -34,7 +34,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import innerSpaceLogo from '@/assets/inner-space-logo-new.png';
+import innerSpaceLogo from '@/assets/admin-logo.png';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 
 interface Product {
