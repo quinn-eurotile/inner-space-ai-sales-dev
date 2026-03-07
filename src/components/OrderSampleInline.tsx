@@ -33,6 +33,7 @@ interface OrderSampleInlineProps {
 }
 
 export function OrderSampleInline({ buttonStyle, buttonClassName, productId, productName, onOrderComplete }: OrderSampleInlineProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Data>({ email: '' });
