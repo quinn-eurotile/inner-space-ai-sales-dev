@@ -11,7 +11,7 @@ const step1Schema = z.object({
   email: z.string().trim().email('Please enter a valid email').max(255),
 });
 
-const step2Schema = z.object({
+const createStep2Schema = (minQty: number) => z.object({
   name: z.string().trim().min(2, 'Name is required').max(100),
   tel: z.string().trim().min(5, 'Please enter a valid phone number').max(20),
   deliveryPostcode: z.string().trim().min(3, 'Please enter a valid postcode').max(10),
@@ -22,8 +22,8 @@ const step2Schema = z.object({
     .max(20)
     .refine(val => {
       const num = parseFloat(val.replace(/[^0-9.]/g, ''));
-      return !isNaN(num) && num > 57;
-    }, { message: 'Minimum quantity is over 57 sq.m' }),
+      return !isNaN(num) && num >= minQty;
+    }, { message: `Minimum quantity is ${minQty} sq.m (1 pallet)` }),
 });
 
 type Step1Data = z.infer<typeof step1Schema>;
