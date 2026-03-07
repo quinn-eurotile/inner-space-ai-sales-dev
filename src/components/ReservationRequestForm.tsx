@@ -33,15 +33,17 @@ const createReservationSchema = (minOrderSqm: number | null) => {
   });
 };
 
-type FormData = z.infer<typeof reservationSchema>;
+type FormData = z.infer<ReturnType<typeof createReservationSchema>>;
 type FormErrors = Partial<Record<keyof FormData, string>>;
 
 interface ReservationRequestFormProps {
   productId: string;
+  minOrderSqm?: number | null;
   onSuccess?: () => void;
 }
 
-export function ReservationRequestForm({ productId, onSuccess }: ReservationRequestFormProps) {
+export function ReservationRequestForm({ productId, minOrderSqm = null, onSuccess }: ReservationRequestFormProps) {
+  const reservationSchema = createReservationSchema(minOrderSqm);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
