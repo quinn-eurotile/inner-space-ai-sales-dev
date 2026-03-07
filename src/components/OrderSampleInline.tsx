@@ -140,7 +140,7 @@ export function OrderSampleInline({ buttonStyle, buttonClassName, productId, pro
         (window as any).fbq('track', 'Lead', { content_name: productName || 'Sample Order' });
       }
 
-      setIsSuccess(true);
+      navigate('/thank-you');
       onOrderComplete?.();
     } catch (error) {
       console.error('Sample order error:', error);
