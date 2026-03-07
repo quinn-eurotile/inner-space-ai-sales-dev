@@ -27,7 +27,7 @@ const createStep2Schema = (minQty: number) => z.object({
 });
 
 type Step1Data = z.infer<typeof step1Schema>;
-type Step2Data = z.infer<typeof step2Schema>;
+type Step2Data = z.infer<ReturnType<typeof createStep2Schema>>;
 type FormErrors = Partial<Record<string, string>>;
 
 interface RegisterInterestInlineProps {
