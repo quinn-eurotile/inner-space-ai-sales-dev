@@ -35,9 +35,10 @@ interface RegisterInterestInlineProps {
   buttonClassName?: string;
   productName?: string;
   productCategory?: string;
+  sqmPerPallet?: number;
 }
 
-export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory }: RegisterInterestInlineProps) {
+export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory, sqmPerPallet }: RegisterInterestInlineProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
