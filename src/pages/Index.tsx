@@ -5,7 +5,7 @@ import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
 import { InterestForm } from '@/components/InterestForm';
-import { RegisterInterestInline } from '@/components/RegisterInterestInline';
+import { OrderSampleInline } from '@/components/OrderSampleInline';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -194,19 +194,20 @@ const Index = () => {
 
               {/* Primary CTA — in the mobile fold */}
               <div data-hero-cta className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
-                <RegisterInterestInline
+                <OrderSampleInline
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                  productId={product?.id}
                   productName={product?.name}
-                  sqmPerPallet={product?.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined}
                 />
 
-                {/* Micro CTA — text link style, not competing button */}
-                <SampleOrderDialog productId={product?.id}>
-                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
-                    Not ready? Order a £7.00 sample tile →
-                  </button>
-                </SampleOrderDialog>
+                {/* Secondary CTA — link to reservation */}
+                <button
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer"
+                  onClick={() => document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Already know your quantity? Reserve stock →
+                </button>
               </div>
 
               {/* Trust bullets — below CTA on mobile, scannable */}

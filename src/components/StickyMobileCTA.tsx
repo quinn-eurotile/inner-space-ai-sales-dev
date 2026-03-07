@@ -49,7 +49,7 @@ export function StickyMobileCTA({ productName, isProductSale = true, pricePerSqm
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4913a')}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f0aa47')}
         >
-          Enquire Now
+          Free Sample
         </Button>
       </div>
     </div>

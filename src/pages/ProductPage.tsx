@@ -5,7 +5,7 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
-import { RegisterInterestInline } from '@/components/RegisterInterestInline';
+import { OrderSampleInline } from '@/components/OrderSampleInline';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -252,18 +252,18 @@ const ProductPage = () => {
               )}
 
               <div data-hero-cta className="flex flex-col gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
-                <RegisterInterestInline
+                <OrderSampleInline
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
+                  productId={product?.id}
                   productName={product?.name}
-                  productCategory={product?.product_category}
-                  sqmPerPallet={selectedVariant?.sqm_per_pallet ? Number(selectedVariant.sqm_per_pallet) : product?.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined}
                 />
-                <SampleOrderDialog productId={product?.id} samplesChargeable={samplesChargeable}>
-                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
-                    {samplesChargeable ? 'Not ready? Order a £7.00 sample tile →' : 'Not ready? Order a free sample →'}
-                  </button>
-                </SampleOrderDialog>
+                <button
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer"
+                  onClick={() => document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Already know your quantity? Reserve stock →
+                </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 mb-4 text-left max-w-md mx-auto lg:mx-0">
