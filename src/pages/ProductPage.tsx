@@ -165,8 +165,8 @@ const ProductPage = () => {
   // Use variant-level price if available, otherwise product-level
   const pricePerSqm = selectedVariant?.price_per_sqm ?? product?.price_per_sqm ?? null;
   const isProductSale = product?.page_type === 'product_sale';
-  const isChargeable = (product as any)?.is_chargeable === true;
-  const hasPrice = (isProductSale || isChargeable) && pricePerSqm !== null && pricePerSqm > 0;
+  const samplesChargeable = (product as any)?.samples_chargeable !== false;
+  const hasPrice = isProductSale && pricePerSqm !== null && pricePerSqm > 0;
 
   // Use variant-level specs for display, falling back to product-level
   const activeNominalSize = selectedVariant?.nominal_size ?? product?.nominal_size;
