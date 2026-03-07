@@ -1232,6 +1232,26 @@ export default function AdminDashboard() {
 
           {/* Sample Orders Tab */}
           <TabsContent value="samples">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="bg-card border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -1247,7 +1267,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sampleOrders.map(order => (
+                  {sampleOrders.filter(o => o.product_id === selectedProduct?.id).map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="text-xs">
                         {format(new Date(order.created_at), 'dd/MM/yyyy HH:mm')}
@@ -1289,10 +1309,10 @@ export default function AdminDashboard() {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {sampleOrders.length === 0 && (
+                  {sampleOrders.filter(o => o.product_id === selectedProduct?.id).length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No sample orders yet
+                        No sample orders for this product
                       </TableCell>
                     </TableRow>
                   )}
