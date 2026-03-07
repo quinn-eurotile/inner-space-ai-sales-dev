@@ -120,23 +120,61 @@ export function SampleOrderDialog({ children, productId, onOrderComplete, sample
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-sample-checkout', {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          postcode: formData.postcode,
-          productId: productId || null,
-        },
-      });
+      if (samplesChargeable) {
+        // Paid sample — redirect to Stripe checkout
+        const { data, error } = await supabase.functions.invoke('create-sample-checkout', {
+          body: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            postcode: formData.postcode,
+            productId: productId || null,
+          },
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.location.href = data.url;
+        }
+      } else {
+        // Free sample — save directly with confirmed status
+        const { data: order, error: insertError } = await supabase
+          .from('sample_orders')
+          .insert({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            postcode: formData.postcode,
+            product_id: productId || null,
+            status: 'confirmed',
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+        if (insertError) throw insertError;
+
+        if (order) {
+          await supabase.functions.invoke('send-sample-confirmation', {
+            body: {
+              sampleOrder: {
+                id: order.id,
+                name: order.name,
+                email: order.email,
+                phone: order.phone,
+                address: order.address,
+                postcode: order.postcode,
+                product_id: order.product_id,
+              },
+            },
+          });
+        }
+        setIsSuccess(true);
+        onOrderComplete?.();
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Sample order error:', error);
+    } finally {
       setIsSubmitting(false);
     }
   };
