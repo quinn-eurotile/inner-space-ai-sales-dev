@@ -15,21 +15,23 @@ import { pinterestTrack } from '@/lib/pinterest';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-const MIN_ORDER_SQM = 57;
 const MAX_RESERVATION_SQM = 200;
 
-const reservationSchema = z.object({
-  name: z.string().trim().min(2, 'Name is required').max(100),
-  email: z.string().trim().email('Please enter a valid email').max(255),
-  phone: z.string().trim().min(10, 'Please enter a valid phone number').max(20),
-  requiredQuantitySqm: z.number().min(MIN_ORDER_SQM, `Minimum order is ${MIN_ORDER_SQM} SQ.M`),
-  needOutdoorTile: z.enum(['yes', 'no'], { required_error: 'Please select whether you need a matching outdoor tile' }),
-  deliveryDoorHouse: z.string().trim().min(1, 'Door/House number is required').max(100),
-  deliveryStreet: z.string().trim().min(1, 'Street name is required').max(200),
-  deliveryCity: z.string().trim().min(1, 'City is required').max(100),
-  deliveryPostcode: z.string().trim().min(5, 'Please enter a valid postcode').max(10),
-  requiredDeliveryDate: z.date({ required_error: 'Please select a delivery date' }),
-});
+const createReservationSchema = (minOrderSqm: number | null) => {
+  const minQty = minOrderSqm && minOrderSqm > 0 ? minOrderSqm : 1;
+  return z.object({
+    name: z.string().trim().min(2, 'Name is required').max(100),
+    email: z.string().trim().email('Please enter a valid email').max(255),
+    phone: z.string().trim().min(10, 'Please enter a valid phone number').max(20),
+    requiredQuantitySqm: z.number().min(minQty, `Minimum order is ${minQty} SQ.M`),
+    needOutdoorTile: z.enum(['yes', 'no'], { required_error: 'Please select whether you need a matching outdoor tile' }),
+    deliveryDoorHouse: z.string().trim().min(1, 'Door/House number is required').max(100),
+    deliveryStreet: z.string().trim().min(1, 'Street name is required').max(200),
+    deliveryCity: z.string().trim().min(1, 'City is required').max(100),
+    deliveryPostcode: z.string().trim().min(5, 'Please enter a valid postcode').max(10),
+    requiredDeliveryDate: z.date({ required_error: 'Please select a delivery date' }),
+  });
+};
 
 type FormData = z.infer<typeof reservationSchema>;
 type FormErrors = Partial<Record<keyof FormData, string>>;
