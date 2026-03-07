@@ -5,7 +5,7 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { ProductStockIndicator } from '@/components/ProductStockIndicator';
 import { ReservationRequestForm } from '@/components/ReservationRequestForm';
 import { SampleOrderDialog } from '@/components/SampleOrderDialog';
-import { RegisterInterestInline } from '@/components/RegisterInterestInline';
+import { OrderSampleInline } from '@/components/OrderSampleInline';
 import { ImageCarousel } from '@/components/ImageCarousel';
 import { TechnicalSpecs } from '@/components/TechnicalSpecs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
