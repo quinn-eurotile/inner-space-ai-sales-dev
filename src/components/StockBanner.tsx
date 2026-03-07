@@ -37,7 +37,7 @@ export function StockBanner({ productId, stockAllocation, stockSold: initialSold
   }, [productId]);
 
   const remaining = Math.round(stockAllocation - sold - manualReserved - reserved);
-  const pallets = Math.floor(remaining / 57.12);
+  const pallets = sqmPerPallet > 0 ? Math.floor(remaining / sqmPerPallet) : 0;
 
   return (
     <div className="bg-foreground text-background py-2 px-4 text-center">

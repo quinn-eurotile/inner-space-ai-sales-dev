@@ -267,7 +267,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                 </button>
               </div>
               {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
-              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet (57.12 sq.m)</p>
+              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet ({sqmPerPallet} sq.m)</p>
             </div>
 
             <Button
