@@ -150,6 +150,7 @@ export default function AdminDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [saving, setSaving] = useState(false);
+  const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const { settings, updateSetting } = useSiteSettings();
