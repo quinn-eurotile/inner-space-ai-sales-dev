@@ -198,6 +198,7 @@ const Index = () => {
                   buttonClassName="h-12 tracking-[0.05em] w-full transition-colors font-semibold"
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
                   productName={product?.name}
+                  sqmPerPallet={product?.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined}
                 />
 
                 {/* Micro CTA — text link style, not competing button */}
