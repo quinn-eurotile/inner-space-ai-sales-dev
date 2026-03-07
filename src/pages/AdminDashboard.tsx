@@ -349,6 +349,38 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleImageDrop = async (targetImageId: string) => {
+    if (!draggedImageId || draggedImageId === targetImageId || !selectedProduct) return;
+    
+    const currentImages = productImages
+      .filter(img => img.product_id === selectedProduct.id)
+      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    
+    const dragIdx = currentImages.findIndex(img => img.id === draggedImageId);
+    const dropIdx = currentImages.findIndex(img => img.id === targetImageId);
+    if (dragIdx === -1 || dropIdx === -1) return;
+
+    const reordered = [...currentImages];
+    const [moved] = reordered.splice(dragIdx, 1);
+    reordered.splice(dropIdx, 0, moved);
+
+    // Update local state immediately
+    const updatedImages = productImages.map(img => {
+      const newIdx = reordered.findIndex(r => r.id === img.id);
+      if (newIdx !== -1) return { ...img, display_order: newIdx };
+      return img;
+    });
+    setProductImages(updatedImages);
+
+    // Persist to DB
+    await Promise.all(
+      reordered.map((img, idx) =>
+        supabase.from('product_images').update({ display_order: idx }).eq('id', img.id)
+      )
+    );
+    setDraggedImageId(null);
+  };
+
   const createProduct = async () => {
     const name = 'New Product';
     const slug = 'new-product-' + Date.now();
