@@ -122,6 +122,7 @@ interface Reservation {
 
 interface SampleOrder {
   id: string;
+  product_id: string | null;
   name: string;
   email: string;
   phone: string;
