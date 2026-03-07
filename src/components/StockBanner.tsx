@@ -8,7 +8,7 @@ interface StockBannerProps {
   sqmPerPallet?: number;
 }
 
-export function StockBanner({ productId, stockAllocation, stockSold: initialSold }: StockBannerProps) {
+export function StockBanner({ productId, stockAllocation, stockSold: initialSold, sqmPerPallet }: StockBannerProps) {
   const [sold, setSold] = useState(initialSold);
   const [reserved, setReserved] = useState(0);
   const [manualReserved, setManualReserved] = useState(0);
