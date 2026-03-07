@@ -1137,6 +1137,26 @@ export default function AdminDashboard() {
 
           {/* Reservations Tab */}
           <TabsContent value="reservations">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="bg-card border border-border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -1155,7 +1175,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reservations.map(reservation => (
+                  {reservations.filter(r => r.product_id === selectedProduct?.id).map(reservation => (
                     <TableRow key={reservation.id}>
                       <TableCell className="font-medium">{reservation.name}</TableCell>
                       <TableCell className="text-xs">{reservation.email}</TableCell>
@@ -1198,10 +1218,10 @@ export default function AdminDashboard() {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {reservations.length === 0 && (
+                  {reservations.filter(r => r.product_id === selectedProduct?.id).length === 0 && (
                     <TableRow>
                       <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
-                        No reservations yet
+                        No reservations for this product
                       </TableCell>
                     </TableRow>
                   )}
