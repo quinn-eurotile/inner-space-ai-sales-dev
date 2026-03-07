@@ -126,6 +126,7 @@ const Index = () => {
           productId={product.id}
           stockAllocation={product.stock_allocation || 1498}
           stockSold={product.stock_sold || 0}
+          sqmPerPallet={product.sqm_per_pallet ?? undefined}
         />
       )}
 
