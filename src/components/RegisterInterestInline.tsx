@@ -35,9 +35,10 @@ interface RegisterInterestInlineProps {
   buttonClassName?: string;
   productName?: string;
   productCategory?: string;
+  sqmPerPallet?: number;
 }
 
-export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory }: RegisterInterestInlineProps) {
+export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory, sqmPerPallet }: RegisterInterestInlineProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
@@ -111,8 +112,11 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
     }
   };
 
+  const palletSqm = sqmPerPallet && sqmPerPallet > 0 ? String(sqmPerPallet) : '';
+
   const handlePalletQuickSelect = () => {
-    setStep2Data(prev => ({ ...prev, estimatedQuantity: '57.12' }));
+    if (!palletSqm) return;
+    setStep2Data(prev => ({ ...prev, estimatedQuantity: palletSqm }));
     if (errors.estimatedQuantity) setErrors(prev => ({ ...prev, estimatedQuantity: undefined }));
   };
 
@@ -255,7 +259,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                   type="button"
                   onClick={handlePalletQuickSelect}
                   className={`h-9 px-3 text-[10px] tracking-wide uppercase border rounded whitespace-nowrap transition-colors ${
-                    step2Data.estimatedQuantity === '57.12'
+                    step2Data.estimatedQuantity === palletSqm
                       ? 'bg-foreground text-background border-foreground'
                       : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
                   }`}
@@ -264,7 +268,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                 </button>
               </div>
               {errors.estimatedQuantity && <p className="text-[10px] text-destructive">{errors.estimatedQuantity}</p>}
-              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet (57.12 sq.m)</p>
+              <p className="text-[10px] text-muted-foreground">Most customers reserve 1 pallet{palletSqm ? ` (${palletSqm} sq.m)` : ''}</p>
             </div>
 
             <Button

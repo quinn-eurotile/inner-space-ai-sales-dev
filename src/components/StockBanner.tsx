@@ -5,9 +5,10 @@ interface StockBannerProps {
   productId: string;
   stockAllocation: number;
   stockSold: number;
+  sqmPerPallet?: number;
 }
 
-export function StockBanner({ productId, stockAllocation, stockSold: initialSold }: StockBannerProps) {
+export function StockBanner({ productId, stockAllocation, stockSold: initialSold, sqmPerPallet }: StockBannerProps) {
   const [sold, setSold] = useState(initialSold);
   const [reserved, setReserved] = useState(0);
   const [manualReserved, setManualReserved] = useState(0);
@@ -36,12 +37,13 @@ export function StockBanner({ productId, stockAllocation, stockSold: initialSold
   }, [productId]);
 
   const remaining = Math.round(stockAllocation - sold - manualReserved - reserved);
-  const pallets = Math.floor(remaining / 57.12);
+  const palletSize = sqmPerPallet && sqmPerPallet > 0 ? sqmPerPallet : 1;
+  const pallets = sqmPerPallet && sqmPerPallet > 0 ? Math.floor(remaining / palletSize) : null;
 
   return (
     <div className="bg-foreground text-background py-2 px-4 text-center">
       <p className="text-xs sm:text-sm tracking-wide">
-        <span className="font-semibold">{pallets > 0 ? `${pallets} pallets remaining` : 'Limited stock'}</span>
+        <span className="font-semibold">{pallets !== null && pallets > 0 ? `${pallets} pallets remaining` : 'Limited stock'}</span>
         <span className="mx-2 opacity-40 hidden sm:inline">·</span>
         <span className="opacity-60 hidden sm:inline">{Math.max(0, remaining).toLocaleString()} sq.m</span>
       </p>
