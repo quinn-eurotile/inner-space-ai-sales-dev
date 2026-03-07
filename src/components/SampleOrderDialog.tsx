@@ -286,13 +286,17 @@ export function SampleOrderDialog({ children, productId, onOrderComplete, sample
                 {errors.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
               </div>
               
-              <div className="py-3 border-y border-border flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Sample cost (incl. P&P)</span>
-                <span className="text-sm text-foreground">£7.00</span>
-              </div>
+              {samplesChargeable && (
+                <div className="py-3 border-y border-border flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Sample cost (incl. P&P)</span>
+                  <span className="text-sm text-foreground">£7.00</span>
+                </div>
+              )}
               
               <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
-                {isSubmitting ? 'Redirecting to payment…' : 'Continue to Payment'}
+                {isSubmitting
+                  ? (samplesChargeable ? 'Redirecting to payment…' : 'Submitting…')
+                  : (samplesChargeable ? 'Continue to Payment' : 'Order Free Sample')}
               </Button>
             </form>
           </>
