@@ -33,7 +33,7 @@ interface SampleOrderDialogProps {
   samplesChargeable?: boolean;
 }
 
-export function SampleOrderDialog({ children, productId, onOrderComplete }: SampleOrderDialogProps) {
+export function SampleOrderDialog({ children, productId, onOrderComplete, samplesChargeable = true }: SampleOrderDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
