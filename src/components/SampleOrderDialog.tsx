@@ -213,7 +213,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete, sample
             <DialogHeader>
               <DialogTitle className="font-serif text-xl font-light">Order a Sample</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
-                You will receive a 20x15cm sample tile. The £7.00 fee covers handling, packaging and delivery. Please use the same email address for both sample requests and reservation submissions.
+                {samplesChargeable
+                  ? 'You will receive a 20x15cm sample tile. The £7.00 fee covers handling, packaging and delivery. Please use the same email address for both sample requests and reservation submissions.'
+                  : 'You will receive a free sample. Please use the same email address for both sample requests and reservation submissions.'}
               </DialogDescription>
             </DialogHeader>
             
