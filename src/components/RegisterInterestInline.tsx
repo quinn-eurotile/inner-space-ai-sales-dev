@@ -259,7 +259,7 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
                   type="button"
                   onClick={handlePalletQuickSelect}
                   className={`h-9 px-3 text-[10px] tracking-wide uppercase border rounded whitespace-nowrap transition-colors ${
-                    step2Data.estimatedQuantity === '57.12'
+                    step2Data.estimatedQuantity === palletSqm
                       ? 'bg-foreground text-background border-foreground'
                       : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
                   }`}
