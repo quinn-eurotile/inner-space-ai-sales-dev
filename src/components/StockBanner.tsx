@@ -5,6 +5,7 @@ interface StockBannerProps {
   productId: string;
   stockAllocation: number;
   stockSold: number;
+  sqmPerPallet?: number;
 }
 
 export function StockBanner({ productId, stockAllocation, stockSold: initialSold }: StockBannerProps) {
