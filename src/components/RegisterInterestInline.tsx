@@ -35,6 +35,7 @@ interface RegisterInterestInlineProps {
   buttonClassName?: string;
   productName?: string;
   productCategory?: string;
+  sqmPerPallet?: number;
 }
 
 export function RegisterInterestInline({ buttonStyle, buttonClassName, productName, productCategory }: RegisterInterestInlineProps) {
