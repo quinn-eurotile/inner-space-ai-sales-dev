@@ -354,7 +354,6 @@ export type Database = {
           google_drive_link: string | null
           id: string
           is_active: boolean | null
-          is_chargeable: boolean
           kg_per_box: number | null
           length_mm: number | null
           matching_outdoor_option: boolean | null
@@ -398,7 +397,6 @@ export type Database = {
           google_drive_link?: string | null
           id?: string
           is_active?: boolean | null
-          is_chargeable?: boolean
           kg_per_box?: number | null
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
@@ -442,7 +440,6 @@ export type Database = {
           google_drive_link?: string | null
           id?: string
           is_active?: boolean | null
-          is_chargeable?: boolean
           kg_per_box?: number | null
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
