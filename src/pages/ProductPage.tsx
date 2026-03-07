@@ -183,6 +183,7 @@ const ProductPage = () => {
           productId={product.id}
           stockAllocation={selectedVariant?.stock_allocation ?? product.stock_allocation ?? 0}
           stockSold={selectedVariant?.stock_sold ?? product.stock_sold ?? 0}
+          sqmPerPallet={selectedVariant?.sqm_per_pallet ? Number(selectedVariant.sqm_per_pallet) : product.sqm_per_pallet ? Number(product.sqm_per_pallet) : undefined}
         />
       )}
 
