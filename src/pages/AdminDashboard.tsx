@@ -1474,52 +1474,6 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">No product selected.</p>
                 )}
               </div>
-              <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-semibold">Landing Page Content</h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Allocation Notice Banner</Label>
-                    <Input
-                      value={settings.allocation_notice}
-                      onBlur={(e) => updateSetting('allocation_notice', e.target.value)}
-                      onChange={(e) => {}}
-                      defaultValue={settings.allocation_notice}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Min Order Label</Label>
-                    <Input
-                      defaultValue={settings.min_order_label}
-                      onBlur={(e) => updateSetting('min_order_label', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Hero Heading</Label>
-                    <Input
-                      defaultValue={settings.hero_heading}
-                      onBlur={(e) => updateSetting('hero_heading', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Hero Subheading</Label>
-                    <Input
-                      defaultValue={settings.hero_subheading}
-                      onBlur={(e) => updateSetting('hero_subheading', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Product Description</Label>
-                    <Textarea
-                      defaultValue={settings.hero_description}
-                      onBlur={(e) => updateSetting('hero_description', e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Changes save automatically when you leave each field.
-                </p>
-              </div>
             </div>
           </TabsContent>
 
