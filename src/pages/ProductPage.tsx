@@ -257,6 +257,7 @@ const ProductPage = () => {
                   buttonStyle={{ backgroundColor: '#f0aa47', color: '#ffffff', border: 'none', fontSize: '1.05rem' }}
                   productName={product?.name}
                   productCategory={product?.product_category}
+                  sqmPerPallet={selectedVariant?.sqm_per_pallet ?? product?.sqm_per_pallet ?? undefined}
                 />
                 <SampleOrderDialog productId={product?.id} samplesChargeable={samplesChargeable}>
                   <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-muted-foreground/30 hover:decoration-foreground/50 cursor-pointer">
