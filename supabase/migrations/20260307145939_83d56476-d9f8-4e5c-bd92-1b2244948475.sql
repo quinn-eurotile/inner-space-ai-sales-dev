@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN samples_chargeable boolean NOT NULL DEFAULT true;

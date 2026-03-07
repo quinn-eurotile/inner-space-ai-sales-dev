@@ -367,6 +367,7 @@ export type Database = {
           price_per_sqm: number | null
           price_per_tile: number | null
           product_category: string
+          samples_chargeable: boolean
           shape: string | null
           slip_rating: string | null
           slug: string | null
@@ -410,6 +411,7 @@ export type Database = {
           price_per_sqm?: number | null
           price_per_tile?: number | null
           product_category?: string
+          samples_chargeable?: boolean
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null
@@ -453,6 +455,7 @@ export type Database = {
           price_per_sqm?: number | null
           price_per_tile?: number | null
           product_category?: string
+          samples_chargeable?: boolean
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null
