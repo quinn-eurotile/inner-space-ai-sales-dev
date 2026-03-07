@@ -103,6 +103,7 @@ interface ProductVariant {
 
 interface Reservation {
   id: string;
+  product_id: string;
   name: string;
   email: string;
   phone: string;
