@@ -575,12 +575,12 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-secondary/20">
                         <div>
-                          <Label className="text-sm font-medium">Chargeable Product</Label>
-                          <p className="text-xs text-muted-foreground">Show pricing, stock levels & reservation form</p>
+                          <Label className="text-sm font-medium">Chargeable Samples</Label>
+                          <p className="text-xs text-muted-foreground">When enabled, samples cost £7.00 via Stripe. When off, samples are free.</p>
                         </div>
                         <Switch
-                          checked={(selectedProduct as any).is_chargeable === true}
-                          onCheckedChange={(checked) => updateProduct({ is_chargeable: checked } as any)}
+                          checked={(selectedProduct as any).samples_chargeable !== false}
+                          onCheckedChange={(checked) => updateProduct({ samples_chargeable: checked } as any)}
                         />
                       </div>
                    </div>

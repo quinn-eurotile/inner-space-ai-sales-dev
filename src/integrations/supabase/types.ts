@@ -354,7 +354,6 @@ export type Database = {
           google_drive_link: string | null
           id: string
           is_active: boolean | null
-          is_chargeable: boolean
           kg_per_box: number | null
           length_mm: number | null
           matching_outdoor_option: boolean | null
@@ -367,6 +366,7 @@ export type Database = {
           price_per_sqm: number | null
           price_per_tile: number | null
           product_category: string
+          samples_chargeable: boolean
           shape: string | null
           slip_rating: string | null
           slug: string | null
@@ -397,7 +397,6 @@ export type Database = {
           google_drive_link?: string | null
           id?: string
           is_active?: boolean | null
-          is_chargeable?: boolean
           kg_per_box?: number | null
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
@@ -410,6 +409,7 @@ export type Database = {
           price_per_sqm?: number | null
           price_per_tile?: number | null
           product_category?: string
+          samples_chargeable?: boolean
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null
@@ -440,7 +440,6 @@ export type Database = {
           google_drive_link?: string | null
           id?: string
           is_active?: boolean | null
-          is_chargeable?: boolean
           kg_per_box?: number | null
           length_mm?: number | null
           matching_outdoor_option?: boolean | null
@@ -453,6 +452,7 @@ export type Database = {
           price_per_sqm?: number | null
           price_per_tile?: number | null
           product_category?: string
+          samples_chargeable?: boolean
           shape?: string | null
           slip_rating?: string | null
           slug?: string | null

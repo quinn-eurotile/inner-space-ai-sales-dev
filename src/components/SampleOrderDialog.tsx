@@ -30,9 +30,10 @@ interface SampleOrderDialogProps {
   children: React.ReactNode;
   productId?: string;
   onOrderComplete?: () => void;
+  samplesChargeable?: boolean;
 }
 
-export function SampleOrderDialog({ children, productId, onOrderComplete }: SampleOrderDialogProps) {
+export function SampleOrderDialog({ children, productId, onOrderComplete, samplesChargeable = true }: SampleOrderDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -119,23 +120,61 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-sample-checkout', {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          postcode: formData.postcode,
-          productId: productId || null,
-        },
-      });
+      if (samplesChargeable) {
+        // Paid sample — redirect to Stripe checkout
+        const { data, error } = await supabase.functions.invoke('create-sample-checkout', {
+          body: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            postcode: formData.postcode,
+            productId: productId || null,
+          },
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.location.href = data.url;
+        }
+      } else {
+        // Free sample — save directly with confirmed status
+        const { data: order, error: insertError } = await supabase
+          .from('sample_orders')
+          .insert({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            postcode: formData.postcode,
+            product_id: productId || null,
+            status: 'confirmed',
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+        if (insertError) throw insertError;
+
+        if (order) {
+          await supabase.functions.invoke('send-sample-confirmation', {
+            body: {
+              sampleOrder: {
+                id: order.id,
+                name: order.name,
+                email: order.email,
+                phone: order.phone,
+                address: order.address,
+                postcode: order.postcode,
+                product_id: order.product_id,
+              },
+            },
+          });
+        }
+        setIsSuccess(true);
+        onOrderComplete?.();
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Sample order error:', error);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -174,7 +213,9 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
             <DialogHeader>
               <DialogTitle className="font-serif text-xl font-light">Order a Sample</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
-                You will receive a 20x15cm sample tile. The £7.00 fee covers handling, packaging and delivery. Please use the same email address for both sample requests and reservation submissions.
+                {samplesChargeable
+                  ? 'You will receive a 20x15cm sample tile. The £7.00 fee covers handling, packaging and delivery. Please use the same email address for both sample requests and reservation submissions.'
+                  : 'You will receive a free sample. Please use the same email address for both sample requests and reservation submissions.'}
               </DialogDescription>
             </DialogHeader>
             
@@ -245,13 +286,17 @@ export function SampleOrderDialog({ children, productId, onOrderComplete }: Samp
                 {errors.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
               </div>
               
-              <div className="py-3 border-y border-border flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Sample cost (incl. P&P)</span>
-                <span className="text-sm text-foreground">£7.00</span>
-              </div>
+              {samplesChargeable && (
+                <div className="py-3 border-y border-border flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Sample cost (incl. P&P)</span>
+                  <span className="text-sm text-foreground">£7.00</span>
+                </div>
+              )}
               
               <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
-                {isSubmitting ? 'Redirecting to payment…' : 'Continue to Payment'}
+                {isSubmitting
+                  ? (samplesChargeable ? 'Redirecting to payment…' : 'Submitting…')
+                  : (samplesChargeable ? 'Continue to Payment' : 'Order Free Sample')}
               </Button>
             </form>
           </>
