@@ -30,6 +30,7 @@ interface SampleOrderDialogProps {
   children: React.ReactNode;
   productId?: string;
   onOrderComplete?: () => void;
+  samplesChargeable?: boolean;
 }
 
 export function SampleOrderDialog({ children, productId, onOrderComplete }: SampleOrderDialogProps) {
