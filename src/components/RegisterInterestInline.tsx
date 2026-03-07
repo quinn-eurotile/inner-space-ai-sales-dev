@@ -112,8 +112,11 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
     }
   };
 
+  const palletSqm = sqmPerPallet && sqmPerPallet > 0 ? String(sqmPerPallet) : '';
+
   const handlePalletQuickSelect = () => {
-    setStep2Data(prev => ({ ...prev, estimatedQuantity: '57.12' }));
+    if (!palletSqm) return;
+    setStep2Data(prev => ({ ...prev, estimatedQuantity: palletSqm }));
     if (errors.estimatedQuantity) setErrors(prev => ({ ...prev, estimatedQuantity: undefined }));
   };
 
