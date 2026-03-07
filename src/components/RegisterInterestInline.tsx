@@ -34,6 +34,7 @@ interface RegisterInterestInlineProps {
   buttonStyle?: React.CSSProperties;
   buttonClassName?: string;
   productName?: string;
+  productCategory?: string;
 }
 
 export function RegisterInterestInline({ buttonStyle, buttonClassName, productName }: RegisterInterestInlineProps) {
