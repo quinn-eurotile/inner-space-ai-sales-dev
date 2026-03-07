@@ -112,8 +112,10 @@ export function RegisterInterestInline({ buttonStyle, buttonClassName, productNa
     }
   };
 
+  const palletQty = String(sqmPerPallet);
+
   const handlePalletQuickSelect = () => {
-    setStep2Data(prev => ({ ...prev, estimatedQuantity: '57.12' }));
+    setStep2Data(prev => ({ ...prev, estimatedQuantity: palletQty }));
     if (errors.estimatedQuantity) setErrors(prev => ({ ...prev, estimatedQuantity: undefined }));
   };
 
