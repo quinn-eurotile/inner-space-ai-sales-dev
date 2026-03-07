@@ -1323,6 +1323,26 @@ export default function AdminDashboard() {
 
           {/* Images Tab */}
           <TabsContent value="images">
+            {/* Product Selector */}
+            <div className="flex items-center gap-3 mb-4">
+              <Label className="text-sm font-medium shrink-0">Product:</Label>
+              <div className="flex gap-2 flex-wrap">
+                {products.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProduct(p)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm border rounded-lg transition-colors",
+                      selectedProduct?.id === p.id
+                        ? "border-foreground bg-foreground text-background font-medium"
+                        : "border-border text-muted-foreground hover:border-foreground"
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
             {selectedProduct && (
               <div className="space-y-8">
                 <div className="bg-card border border-border rounded-lg p-6">
