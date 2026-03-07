@@ -42,6 +42,7 @@ interface Product {
   no_tile_faces: string | null;
   material: string | null;
   frost_resistant: boolean | null;
+  wear_layer_mm: number | null;
   sqm_per_tile: number | null;
   tiles_per_box: number | null;
   sqm_per_box: number | null;
