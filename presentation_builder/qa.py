@@ -42,5 +42,5 @@ def pdf_postflight(pdf_path,expected_pages):
         except Exception as e: errors.append(f'page {i+1}: render failure {e}')
         for b in p.get_text('blocks'):
             x0,y0,x1,y1,*_=b
-            if x0<-1 or y0<-1 or x1>rect.width+1 or y1>rect.height+1: errors.append(f'page {i+1}: extracted text outside page')
+            if x0<-1 or y0<-1 or x1>rect.width+1 or y1>rect.height+1:\n                sample=str(b[4]).replace('\\n',' ')[:90]\n                errors.append(f'page {i+1}: extracted text outside page bbox=({x0:.1f},{y0:.1f},{x1:.1f},{y1:.1f}) text={sample!r}')
     doc.close(); return errors
