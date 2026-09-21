@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PRESENTATION_CLIENT_IDS: '10,11,12,13'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,7 +20,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils
           python -m pip install --upgrade pip
-          pip install reportlab pillow requests fonttools pymupdf
+          pip install reportlab pillow requests fonttools pymupdf pytest
       - name: Prepare fonts
         run: |
           mkdir -p /tmp/isfonts
@@ -34,41 +36,47 @@ jobs:
             ('/tmp/Playfair-var.ttf','/tmp/isfonts/PlayfairDisplay-Regular.ttf',{'wght':400}),
           ]
           for src,dst,axes in specs:
-            f=TTFont(src)
-            out=instantiateVariableFont(f,axes,inplace=False)
-            out.save(dst)
+            f=TTFont(src); instantiateVariableFont(f,axes,inplace=False).save(dst)
           PY
-      - name: Generate PDFs
+      - name: Source-truth and builder tests
+        run: pytest -q
+      - name: Download known-good baseline artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: inner-space-presentation-batch-20260921
+          path: baseline_output
+          github-token: ${{ github.token }}
+          run-id: 35657545269
+      - name: Generate v1.0 validation PDFs only
         run: python batch_presentations.py
-      - name: PDF preflight
+      - name: PDF preflight and render visual QA
         run: |
-          mkdir -p presentation_output/qa
+          mkdir -p presentation_output/qa/baseline
+          for id in 10 11 12 13; do cp baseline_output/CLIENT-${id}-*-Material-Selection.pdf presentation_output/qa/baseline/; done
           for f in presentation_output/*.pdf; do
             pdfinfo "$f" > "presentation_output/qa/$(basename "$f" .pdf)-pdfinfo.txt"
             pdftotext "$f" "presentation_output/qa/$(basename "$f" .pdf)-text.txt"
           done
+          python render_presentation_qa.py
+      - name: Verify exactly four development PDFs
+        run: |
+          count=$(find presentation_output -maxdepth 1 -name 'CLIENT-*.pdf' | wc -l)
+          test "$count" -eq 4
+          for id in 10 11 12 13; do test $(find presentation_output -maxdepth 1 -name "CLIENT-${id}-*.pdf" | wc -l) -eq 1; done
+      - name: Fail if any layout QA failed
+        run: |
           python - <<'PY'
-          import fitz,glob,os
-          from PIL import Image,ImageOps,ImageDraw
-          out='presentation_output/qa'
-          for pdf in glob.glob('presentation_output/*.pdf'):
-              doc=fitz.open(pdf)
-              thumbs=[]
-              for i,p in enumerate(doc):
-                  pix=p.get_pixmap(matrix=fitz.Matrix(0.6,0.6),alpha=False)
-                  im=Image.frombytes('RGB',[pix.width,pix.height],pix.samples)
-                  im.thumbnail((260,360))
-                  thumbs.append(im.copy())
-              cols=3; gap=12; cw=260; ch=360
-              rows=(len(thumbs)+cols-1)//cols
-              sheet=Image.new('RGB',(cols*cw+(cols+1)*gap,rows*ch+(rows+1)*gap),'white')
-              for idx,im in enumerate(thumbs):
-                  x=gap+(idx%cols)*cw; y=gap+(idx//cols)*ch
-                  sheet.paste(im,(x,y))
-              sheet.save(os.path.join(out,os.path.basename(pdf).replace('.pdf','-contact.jpg')),quality=88)
+          import glob,json,sys
+          bad=[]
+          for f in glob.glob('presentation_output/qa/CLIENT-*-layout-qa.json'):
+              q=json.load(open(f))
+              if not q.get('ok'): bad.append((f,q.get('errors',[])))
+          if bad:
+              print(bad); sys.exit(1)
+          print('All layout QA manifests PASS')
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: inner-space-presentation-batch-20260921
+          name: inner-space-presentation-builder-v1-validation
           path: presentation_output/
-          retention-days: 7
+          retention-days: 14
