@@ -1,0 +1,74 @@
+name: Build presentation batch
+on:
+  push:
+    branches:
+      - presentation-batch-20260921
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          python -m pip install --upgrade pip
+          pip install reportlab pillow requests fonttools pymupdf
+      - name: Prepare fonts
+        run: |
+          mkdir -p /tmp/isfonts
+          curl -L --fail --retry 3 -o /tmp/Inter-var.ttf 'https://github.com/google/fonts/raw/main/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf'
+          curl -L --fail --retry 3 -o /tmp/Playfair-var.ttf 'https://github.com/google/fonts/raw/main/ofl/playfairdisplay/PlayfairDisplay%5Bwght%5D.ttf'
+          python - <<'PY'
+          from fontTools.ttLib import TTFont
+          from fontTools.varLib.instancer import instantiateVariableFont
+          specs=[
+            ('/tmp/Inter-var.ttf','/tmp/isfonts/Inter-Regular.ttf',{'wght':400,'opsz':14}),
+            ('/tmp/Inter-var.ttf','/tmp/isfonts/Inter-Medium.ttf',{'wght':500,'opsz':14}),
+            ('/tmp/Inter-var.ttf','/tmp/isfonts/Inter-Bold.ttf',{'wght':700,'opsz':14}),
+            ('/tmp/Playfair-var.ttf','/tmp/isfonts/PlayfairDisplay-Regular.ttf',{'wght':400}),
+          ]
+          for src,dst,axes in specs:
+            f=TTFont(src)
+            out=instantiateVariableFont(f,axes,inplace=False)
+            out.save(dst)
+          PY
+      - name: Generate PDFs
+        run: python batch_presentations.py
+      - name: PDF preflight
+        run: |
+          mkdir -p presentation_output/qa
+          for f in presentation_output/*.pdf; do
+            pdfinfo "$f" > "presentation_output/qa/$(basename "$f" .pdf)-pdfinfo.txt"
+            pdftotext "$f" "presentation_output/qa/$(basename "$f" .pdf)-text.txt"
+          done
+          python - <<'PY'
+          import fitz,glob,os
+          from PIL import Image,ImageOps,ImageDraw
+          out='presentation_output/qa'
+          for pdf in glob.glob('presentation_output/*.pdf'):
+              doc=fitz.open(pdf)
+              thumbs=[]
+              for i,p in enumerate(doc):
+                  pix=p.get_pixmap(matrix=fitz.Matrix(0.6,0.6),alpha=False)
+                  im=Image.frombytes('RGB',[pix.width,pix.height],pix.samples)
+                  im.thumbnail((260,360))
+                  thumbs.append(im.copy())
+              cols=3; gap=12; cw=260; ch=360
+              rows=(len(thumbs)+cols-1)//cols
+              sheet=Image.new('RGB',(cols*cw+(cols+1)*gap,rows*ch+(rows+1)*gap),'white')
+              for idx,im in enumerate(thumbs):
+                  x=gap+(idx%cols)*cw; y=gap+(idx//cols)*ch
+                  sheet.paste(im,(x,y))
+              sheet.save(os.path.join(out,os.path.basename(pdf).replace('.pdf','-contact.jpg')),quality=88)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inner-space-presentation-batch-20260921
+          path: presentation_output/
+          retention-days: 7
