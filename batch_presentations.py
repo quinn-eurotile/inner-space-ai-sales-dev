@@ -167,10 +167,13 @@ def draw_crop(c,path,x,y,w,h,soften=False):
     c.drawImage(ImageReader(bio),x,y,w,h,mask='auto')
 
 def spaced(c,text,x,y,size=7.2,font="Inter-Medium",spacing=2.2,color=GREY):
-    c.setFont(font,size); c.setFillColor(color)
-    c.setCharSpace(spacing)
-    c.drawString(x,y,text.upper())
-    c.setCharSpace(0)
+    t=c.beginText()
+    t.setTextOrigin(x,y)
+    t.setFont(font,size)
+    t.setFillColor(color)
+    t.setCharSpace(spacing)
+    t.textOut(text.upper())
+    c.drawText(t)
 
 def wrap_lines(text,font,size,maxw):
     words=text.split()
