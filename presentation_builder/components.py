@@ -62,10 +62,23 @@ def product_page(c,job,key,products,assets,manifest,page):
     manifest.add_text(page,'product_title',T.Box(T.MARGIN_X,T.PAGE_H-145,T.CONTENT_W,65),st,p['name'],len(title_lines)*st.leading)
     for role,box,kind in [('product_authoritative',T.PRODUCT_LEFT_BOX,'image'),('product_lifestyle',T.PRODUCT_RIGHT_BOX,'life')]:
         assets.draw_crop(c,assets.get(key,kind),box.x,box.y,box.w,box.h); manifest.add_box(page,'image',role,box)
-    draw_tracked(c,'Why we selected it',T.MARGIN_X,T.PRODUCT_RATIONALE_LABEL_Y,T.TYPE['spec_label'],T.GREY,manifest,page,'rationale_label')
+    # Keep the tracked label and untracked body as separate semantic regions.
+    # Geometry is unchanged from the approved grid: the label occupies the
+    # fixed left column and the body ends exactly at the established safe margin.
+    rationale_label='Why we selected it'
+    label_style=T.TYPE['spec_label']
+    body_x=T.PRODUCT_RATIONALE_BOX.x
+    safe_right=T.PAGE_W-T.MARGIN_X
+    label_right=body_x-T.GUTTER
+    label_col_w=label_right-T.MARGIN_X
+    label_render_w=tracked_width(rationale_label.upper(),label_style.font,label_style.size,label_style.tracking)
+    if label_render_w>label_col_w+0.01:
+        raise LayoutError(f'rationale label exceeds fixed label column: {label_render_w:.1f}pt > {label_col_w:.1f}pt')
+    draw_tracked(c,rationale_label,T.MARGIN_X,T.PRODUCT_RATIONALE_LABEL_Y,label_style,T.GREY,manifest,page,'rationale_label')
     rationale=p['short']
     if job['mode']=='io': rationale+=(' The coordinating 20 mm option supports a considered transition to external areas while retaining the same material language.' if p.get('outdoor') else ' The internal format provides the intended large-scale floor module.')
-    draw_wrapped(c,rationale,T.PRODUCT_RATIONALE_BOX,T.TYPE['body'],T.BLACK,manifest,'body_rationale',page)
+    rationale_body_box=T.Box(body_x,T.PRODUCT_RATIONALE_BOX.y,safe_right-body_x,T.PRODUCT_RATIONALE_BOX.h)
+    draw_wrapped(c,rationale,rationale_body_box,T.TYPE['body'],T.BLACK,manifest,'body_rationale',page)
     sy=T.PRODUCT_SPEC_RULE_Y
     if job['mode']=='io':
         for idx,(label,val) in enumerate([('INDOOR',p['internal']),('OUTDOOR',p.get('outdoor') or 'No verified 20 mm option shown')]):

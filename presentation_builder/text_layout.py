@@ -38,8 +38,19 @@ def draw_wrapped(canvas,text,box,style,color,manifest,role,page_index):
     if style.tracking!=0: raise LayoutError(f'{role}: wrapped/body text cannot use tracking {style.tracking}')
     h,lines=required_text_height(text,style.font,style.size,style.leading,box.w)
     if h>box.h+0.01: raise LayoutError(f'{role}: text needs {h:.1f}pt but box allows {box.h:.1f}pt')
-    canvas.setFillColor(color); canvas.setFont(style.font,style.size)
+    # ReportLab/PDF text-state parameters such as Tc (character spacing) persist
+    # across BT/ET blocks. Body text must therefore explicitly reset typography
+    # after a tracked label rather than relying on canvas.drawString defaults.
     y=box.y+box.h-style.size
-    for line in lines: canvas.drawString(box.x,y,line); y-=style.leading
+    t=canvas.beginText()
+    t.setTextOrigin(box.x,y)
+    t.setFont(style.font,style.size)
+    t.setFillColor(color)
+    t.setCharSpace(0)
+    t.setHorizScale(100)
+    t.setLeading(style.leading)
+    for line in lines:
+        t.textLine(line)
+    canvas.drawText(t)
     manifest.add_text(page_index,role,box,style,text,h)
     return len(lines)
