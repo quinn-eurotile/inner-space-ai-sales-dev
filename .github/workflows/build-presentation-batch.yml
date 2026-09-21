@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PRESENTATION_CLIENT_IDS: '10,11,12,13'
-      PYTHONPATH: '.'
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,7 +40,11 @@ jobs:
             f=TTFont(src); instantiateVariableFont(f,axes,inplace=False).save(dst)
           PY
       - name: Source-truth and builder tests
-        run: python -m pytest -q
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -c "import presentation_builder, presentation_jobs; print('repository-local package imports: PASS')"
+          pytest -q
       - name: Download known-good baseline artifact
         uses: actions/download-artifact@v4
         with:
