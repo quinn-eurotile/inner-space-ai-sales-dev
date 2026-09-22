@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PRESENTATION_CLIENT_IDS: '01,02,03,04,05,06,07,08,09'
+      PRESENTATION_CLIENT_IDS: '01,02,03,04,05,06,07,08,09,10,11,12,13'
       PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
@@ -52,22 +52,22 @@ jobs:
           path: baseline_output
           github-token: ${{ github.token }}
           run-id: 35657545269
-      - name: Generate approved production PDFs CLIENT-01 through CLIENT-09
+      - name: Generate approved production PDFs CLIENT-01 through CLIENT-13
         run: python batch_presentations.py
       - name: PDF preflight and render visual QA
         run: |
           mkdir -p presentation_output/qa/baseline
-          for id in 01 02 03 04 05 06 07 08 09; do cp baseline_output/CLIENT-${id}-*-Material-Selection.pdf presentation_output/qa/baseline/; done
+          for id in 01 02 03 04 05 06 07 08 09 10 11 12 13; do cp baseline_output/CLIENT-${id}-*-Material-Selection.pdf presentation_output/qa/baseline/; done
           for f in presentation_output/*.pdf; do
             pdfinfo "$f" > "presentation_output/qa/$(basename "$f" .pdf)-pdfinfo.txt"
             pdftotext "$f" "presentation_output/qa/$(basename "$f" .pdf)-text.txt"
           done
           python render_presentation_qa.py
-      - name: Verify exactly nine production PDFs
+      - name: Verify exactly thirteen production PDFs
         run: |
           count=$(find presentation_output -maxdepth 1 -name 'CLIENT-*.pdf' | wc -l)
-          test "$count" -eq 9
-          for id in 01 02 03 04 05 06 07 08 09; do test $(find presentation_output -maxdepth 1 -name "CLIENT-${id}-*.pdf" | wc -l) -eq 1; done
+          test "$count" -eq 13
+          for id in 01 02 03 04 05 06 07 08 09 10 11 12 13; do test $(find presentation_output -maxdepth 1 -name "CLIENT-${id}-*.pdf" | wc -l) -eq 1; done
       - name: Fail if any layout QA failed
         run: |
           python - <<'PY'
@@ -87,6 +87,6 @@ jobs:
         run: python deliver_presentations.py
       - uses: actions/upload-artifact@v4
         with:
-          name: inner-space-presentation-builder-production-01-09
+          name: inner-space-presentation-builder-production-01-13
           path: presentation_output/
           retention-days: 14
