@@ -13,9 +13,6 @@ OUT = Path("presentation_output")
 QA_DIR = OUT / "qa"
 MANIFEST_PATH = OUT / "delivery-manifest.json"
 
-PDF_RE = re.compile(r"^CLIENT-(\d+)-(.+)-Material-Selection\.pdf$")
-
-
 def fail(message: str) -> None:
     raise RuntimeError(message)
 
@@ -88,16 +85,14 @@ def discover_deliveries() -> list[dict]:
         if client is None:
             fail(f"Unknown selected client ID: {client_id}")
 
-        matches = sorted(OUT.glob(f"CLIENT-{client_id}-*-Material-Selection.pdf"))
-        if len(matches) != 1:
+        from presentation_builder.builder import client_pdf_filename
+
+        pdf_path = OUT / client_pdf_filename(client)
+        if not pdf_path.is_file():
             fail(
-                f"Client {client_id}: expected exactly one final PDF after QA, "
-                f"found {len(matches)}."
+                f"Client {client_id}: expected final client-facing PDF is missing: "
+                f"{pdf_path.name!r}."
             )
-        pdf_path = matches[0]
-        match = PDF_RE.match(pdf_path.name)
-        if not match:
-            fail(f"Client {client_id}: unexpected final PDF filename {pdf_path.name!r}")
 
         qa_path = QA_DIR / f"CLIENT-{client_id}-layout-qa.json"
         if not qa_path.is_file():

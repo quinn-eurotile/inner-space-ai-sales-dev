@@ -65,9 +65,19 @@ jobs:
           python render_presentation_qa.py
       - name: Verify exactly thirteen production PDFs
         run: |
-          count=$(find presentation_output -maxdepth 1 -name 'CLIENT-*.pdf' | wc -l)
-          test "$count" -eq 13
-          for id in 01 02 03 04 05 06 07 08 09 10 11 12 13; do test $(find presentation_output -maxdepth 1 -name "CLIENT-${id}-*.pdf" | wc -l) -eq 1; done
+          python - <<'PY'
+          from pathlib import Path
+          from presentation_builder.builder import client_pdf_filename
+          from presentation_jobs.batch_20260921 import CLIENTS
+
+          selected={x.strip().zfill(2) for x in __import__('os').environ['PRESENTATION_CLIENT_IDS'].split(',') if x.strip()}
+          jobs=[c for c in CLIENTS if str(c['id']).zfill(2) in selected]
+          expected={client_pdf_filename(c) for c in jobs}
+          actual={p.name for p in Path('presentation_output').glob('*.pdf')}
+          if actual != expected:
+              raise SystemExit(f'PDF filename guard failed. expected={sorted(expected)!r} actual={sorted(actual)!r}')
+          print('Client-facing PDF filename guard PASS')
+          PY
       - name: Fail if any layout QA failed
         run: |
           python - <<'PY'

@@ -2,8 +2,11 @@ import glob, json
 from pathlib import Path
 import fitz
 from PIL import Image
+from presentation_builder.builder import client_pdf_filename
+from presentation_jobs.batch_20260921 import CLIENTS
 
 out=Path('presentation_output/qa'); out.mkdir(parents=True,exist_ok=True)
+client_ids_by_filename={client_pdf_filename(c):str(c['id']).zfill(2) for c in CLIENTS}
 summary=['# Presentation Builder v1.0 QA','']
 for pdf in sorted(glob.glob('presentation_output/*.pdf')):
     stem=Path(pdf).stem; render_dir=out/f'{stem}-pages'; render_dir.mkdir(exist_ok=True)
@@ -17,8 +20,9 @@ for pdf in sorted(glob.glob('presentation_output/*.pdf')):
     sheet=Image.new('RGB',(cols*cw+(cols+1)*gap,rows*ch+(rows+1)*gap),'white')
     for idx,im in enumerate(thumbs): sheet.paste(im,(gap+(idx%cols)*cw,gap+(idx//cols)*ch))
     sheet.save(out/f'{stem}-contact.jpg',quality=90)
-    qafile=out/f"CLIENT-{stem.split('-')[1]}-layout-qa.json"
-    qa=json.loads(qafile.read_text()) if qafile.exists() else {'ok':False,'errors':['missing layout qa']}
+    client_id=client_ids_by_filename.get(Path(pdf).name)
+    qafile=out/f"CLIENT-{client_id}-layout-qa.json" if client_id else None
+    qa=json.loads(qafile.read_text()) if qafile and qafile.exists() else {'ok':False,'errors':['missing layout qa or unrecognised client-facing filename']}
     summary += [f'## {stem}',f'- Pages rendered: {len(doc)}',f"- Layout QA: {'PASS' if qa.get('ok') else 'FAIL'}"]
     for err in qa.get('errors',[]): summary.append(f'- Error: {err}')
     summary.append(''); doc.close()

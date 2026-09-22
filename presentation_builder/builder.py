@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -7,6 +6,12 @@ from . import design_tokens as T
 from .assets import AssetManager
 from .components import cover_page,project_direction_page,product_page,comparison_page
 from .qa import LayoutManifest,pdf_postflight
+
+def client_pdf_filename(job):
+    name=str(job['name'])
+    if not name or name in {'.','..'} or '/' in name or '\\' in name or '\x00' in name:
+        raise RuntimeError(f"Unsafe client display name for PDF filename: {name!r}")
+    return f"{name} Material Selection.pdf"
 
 class PresentationBuilder:
     def __init__(self,products,output_dir='presentation_output',font_dir='/tmp/isfonts'):
@@ -21,7 +26,7 @@ class PresentationBuilder:
         if missing: raise RuntimeError('Required fonts are missing: '+', '.join(missing))
     def build(self,job):
         self.assets.validate(job['products'])
-        safe=re.sub(r'[^A-Za-z0-9]+','-',job['name']).strip('-'); path=self.out/f"CLIENT-{job['id']}-{safe}-Material-Selection.pdf"
+        path=self.out/client_pdf_filename(job)
         manifest=LayoutManifest(); c=canvas.Canvas(str(path),pagesize=(T.PAGE_W,T.PAGE_H),pageCompression=1)
         c.setTitle(f"Inner Space - {job['name']} Material Selection"); c.setAuthor('Inner Space Tiles & Wood')
         page=1; cover_page(c,job,self.products,self.assets,manifest,page); page+=1

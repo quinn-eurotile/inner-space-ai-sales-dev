@@ -7,6 +7,7 @@ from reportlab.pdfgen import canvas
 
 from presentation_builder import design_tokens as T
 from presentation_builder.components import product_page
+from presentation_builder.builder import client_pdf_filename
 from presentation_builder.qa import LayoutManifest
 from presentation_builder.text_layout import wrap_lines,tracked_width
 from presentation_jobs.batch_20260921 import PRODUCTS
@@ -77,3 +78,9 @@ def test_longest_current_why_selected_copy_stays_inside_safe_margin(tmp_path):
     assert matching, f'Could not locate rendered rationale block for {key}'
     assert max(b[2] for b in matching)<=safe_right+0.5
     doc.close()
+
+
+def test_client_facing_pdf_filename_uses_display_name_without_internal_id():
+    job={'id':'03','name':'Tim Crackle'}
+    assert client_pdf_filename(job)=='Tim Crackle Material Selection.pdf'
+    assert 'CLIENT-03' not in client_pdf_filename(job)
