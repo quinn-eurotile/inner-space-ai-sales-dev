@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PRESENTATION_CLIENT_IDS: '01,02,03,04,05,06,07,08,09,10,11,12,13'
+      PRESENTATION_CLIENT_IDS: '09,10,11'
       PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +45,47 @@ jobs:
         run: |
           python -c "import presentation_builder, presentation_jobs; print('repository-local package imports: PASS')"
           pytest -q
+      - name: Resolve San Andreas Cotto from live Inner Space catalogue
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os, requests
+          base=os.environ['SUPABASE_URL'].rstrip('/')
+          key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
+          h={'apikey':key,'Authorization':'Bearer '+key}
+          def get(table,params):
+              r=requests.get(f"{base}/rest/v1/{table}",headers=h,params=params,timeout=60)
+              r.raise_for_status()
+              return r.json()
+          products=get('products_core',{
+              'select':'id,product_name,slug,description,long_description,shade,shade_variation,tile_colour,finish,tile_style,shape,edge,slip_rating,no_tile_faces,material,frost_resistant,underfloor_heating_compatible,matching_outdoor_option,origin,product_category,page_type,suitability,collection_id',
+              'slug':'eq.san-andreas-cotto-ambra'
+          })
+          if len(products)!=1:
+              raise SystemExit(f"Expected one San Andreas Cotto product, got {len(products)}")
+          p=products[0]
+          variants=get('product_variants',{
+              'select':'id,variant_label,product_code,sku,sku_role,is_default,display_order,nominal_size,thickness_mm,width_mm,length_mm,data_sheet_url',
+              'product_id':f"eq.{p['id']}",
+              'order':'display_order.asc'
+          })
+          images=get('product_images',{
+              'select':'id,image_type,image_url,display_order,variant_id',
+              'product_id':f"eq.{p['id']}",
+              'order':'display_order.asc'
+          })
+          collection=get('collections',{
+              'select':'id,name,slug,description,lifestyle_url,technical_spec_pdf_url,technical_spec_file_name',
+              'id':f"eq.{p['collection_id']}"
+          })
+          out={'product':p,'variants':variants,'images':images,'collection':collection[0] if collection else None,'website_url':'https://innerspace.co.uk/showroom/p/san-andreas-cotto-ambra'}
+          print('SAN_ANDREAS_RESOLUTION_START')
+          print(json.dumps(out,indent=2))
+          print('SAN_ANDREAS_RESOLUTION_END')
+          raise SystemExit('Resolution-only run complete; production intentionally stopped before build')
+          PY
       - name: Download known-good baseline artifact
         uses: actions/download-artifact@v4
         with:
