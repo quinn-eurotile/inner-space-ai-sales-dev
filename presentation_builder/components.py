@@ -34,8 +34,8 @@ def project_direction_page(c,job,products,assets,manifest,page):
     st=T.TYPE['page_title']; c.setFont(st.font,st.size); c.setFillColor(T.BLACK); c.drawString(T.MARGIN_X,T.PAGE_H-110,'Project direction')
     manifest.add_text(page,'page_title',T.Box(T.MARGIN_X,T.PAGE_H-120,T.CONTENT_W,34),st,'Project direction',34)
     if job['mode']=='io':
-        txt='A considered large-format flooring selection built around warm natural stone, quiet mineral tones and a continuous relationship between interior and exterior. Internal floors use the primary 120 x 120 cm format; coordinating 20 mm outdoor porcelain is shown in the largest verified format available within each collection.'
-        bullets=[('Large-format internal flooring','Primary 120 x 120 cm selection'),('Indoor / outdoor continuity','Verified 20 mm external formats'),('Natural mineral palette','Warm limestone, stone and soft neutrals'),('Material-led specification','Product identity and format verified')]
+        txt='A considered large-format flooring selection built around warm natural stone, quiet mineral tones and a continuous relationship between interior and exterior. Internal floors use the primary 120 x 120 cm format; coordinating outdoor porcelain is shown in the largest verified format available within each collection.'
+        bullets=[('Large-format internal flooring','Primary 120 x 120 cm selection'),('Indoor / outdoor continuity','Verified external formats'),('Natural mineral palette','Warm limestone, stone and soft neutrals'),('Material-led specification','Product identity and format verified')]
     else:
         txt='A considered internal large-format flooring selection focused on calm stone character, subtle tonal movement and architectural scale. All primary floor selections are presented in the verified 120 x 120 cm internal format, allowing the materials to be compared consistently across colour, texture and visual character.'
         bullets=[('Large-format internal flooring','Primary 120 x 120 cm selection'),('Calm architectural scale','Low visual interruption across open areas'),('Natural mineral palette','Warm and cool stone options'),('Material-led specification','Product identity and format verified')]
@@ -76,12 +76,12 @@ def product_page(c,job,key,products,assets,manifest,page):
         raise LayoutError(f'rationale label exceeds fixed label column: {label_render_w:.1f}pt > {label_col_w:.1f}pt')
     draw_tracked(c,rationale_label,T.MARGIN_X,T.PRODUCT_RATIONALE_LABEL_Y,label_style,T.GREY,manifest,page,'rationale_label')
     rationale=p['short']
-    if job['mode']=='io': rationale+=(' The coordinating 20 mm option supports a considered transition to external areas while retaining the same material language.' if p.get('outdoor') else ' The internal format provides the intended large-scale floor module.')
+    if job['mode']=='io': rationale+=(' The coordinating outdoor option supports a considered transition to external areas while retaining the same material language.' if p.get('outdoor') else ' The internal format provides the intended large-scale floor module.')
     rationale_body_box=T.Box(body_x,T.PRODUCT_RATIONALE_BOX.y,safe_right-body_x,T.PRODUCT_RATIONALE_BOX.h)
     draw_wrapped(c,rationale,rationale_body_box,T.TYPE['body'],T.BLACK,manifest,'body_rationale',page)
     sy=T.PRODUCT_SPEC_RULE_Y
     if job['mode']=='io':
-        for idx,(label,val) in enumerate([('INDOOR',p['internal']),('OUTDOOR',p.get('outdoor') or 'No verified 20 mm option shown')]):
+        for idx,(label,val) in enumerate([('INDOOR',p['internal']),('OUTDOOR',p.get('outdoor') or 'No verified outdoor option shown')]):
             x=T.MARGIN_X+idx*(T.TWO_COL_W+T.GUTTER); c.setStrokeColor(T.BLACK); c.setLineWidth(.65); c.line(x,sy,x+T.TWO_COL_W,sy)
             draw_tracked(c,label,x,sy-18,T.TYPE['spec_label'],T.GREY,manifest,page,f'spec_label_{label.lower()}')
             draw_wrapped(c,val,T.Box(x,sy-49,T.TWO_COL_W,18),T.TYPE['spec_value'],T.GREY,manifest,f'spec_value_{label.lower()}',page)
