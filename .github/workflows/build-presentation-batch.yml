@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PRESENTATION_CLIENT_IDS: '09,10,11'
+      PRESENTATION_CLIENT_IDS: '03'
       PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
@@ -52,18 +52,18 @@ jobs:
           path: baseline_output
           github-token: ${{ github.token }}
           run-id: 35657545269
-      - name: Generate controlled update PDFs CLIENT-09 through CLIENT-11
+      - name: Generate controlled Tim Cracknell presentation
         run: python batch_presentations.py
       - name: PDF preflight and render visual QA
         run: |
           mkdir -p presentation_output/qa/baseline
-          for id in 09 10 11; do cp baseline_output/CLIENT-${id}-*-Material-Selection.pdf presentation_output/qa/baseline/; done
+          for id in 03; do cp baseline_output/CLIENT-${id}-*-Material-Selection.pdf presentation_output/qa/baseline/; done
           for f in presentation_output/*.pdf; do
             pdfinfo "$f" > "presentation_output/qa/$(basename "$f" .pdf)-pdfinfo.txt"
             pdftotext "$f" "presentation_output/qa/$(basename "$f" .pdf)-text.txt"
           done
           python render_presentation_qa.py
-      - name: Verify exactly three controlled-update PDFs
+      - name: Verify exactly one controlled-update PDF
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -97,6 +97,6 @@ jobs:
         run: python deliver_presentations.py
       - uses: actions/upload-artifact@v4
         with:
-          name: inner-space-presentation-builder-controlled-09-11
+          name: inner-space-presentation-builder-tim-cracknell
           path: presentation_output/
           retention-days: 14
