@@ -128,9 +128,9 @@ def comparison_page(c,job,products,assets,manifest,page):
     y-=22; panel_h=106
     if y-panel_h<98: raise LayoutError('comparison next-steps panel would collide with footer')
     c.setFillColor(T.PALE); c.rect(T.MARGIN_X,y-panel_h,T.CONTENT_W,panel_h,fill=1,stroke=0); manifest.add_box(page,'panel','next_steps',T.Box(T.MARGIN_X,y-panel_h,T.CONTENT_W,panel_h))
-    draw_tracked(c,'Samples & next steps',T.MARGIN_X+20,y-28,T.TYPE['spec_label'],T.GREY,manifest,page,'next_steps_label')
-    c.setFont('Playfair',18); c.setFillColor(T.BLACK); c.drawString(T.MARGIN_X+20,y-58,'Review the materials in your property')
-    draw_wrapped(c,'Review the physical samples in the intended light and against adjoining finishes. Once the preferred material is confirmed, Inner Space can finalise the project specification and quotation.',T.Box(T.MARGIN_X+20,y-103,T.CONTENT_W-40,34),T.TYPE['body_small'],T.GREY,manifest,'body_next_steps',page)
+    draw_tracked(c,'Next steps',T.MARGIN_X+20,y-28,T.TYPE['spec_label'],T.GREY,manifest,page,'next_steps_label')
+    c.setFont('Playfair',18); c.setFillColor(T.BLACK); c.drawString(T.MARGIN_X+20,y-58,'Review your material selection')
+    draw_wrapped(c,'Review the selected materials and consider which option best suits your project. For further information, samples, availability or project-specific pricing, please contact your Inner Space Project Specifier, who can assist with the next stage of your project.',T.Box(T.MARGIN_X+20,y-103,T.CONTENT_W-40,34),T.TYPE['body_small'],T.GREY,manifest,'body_next_steps',page)
     note_y=y-panel_h-34; draw_tracked(c,'Visualisation note',T.MARGIN_X,note_y,T.TYPE['spec_label'],T.GREY,manifest,page,'visualisation_note_label')
     draw_wrapped(c,'Please be aware that lifestyle visualisations in this presentation are computer-generated or digitally presented to give a representation of the design concept. Colour, scale, texture and surface detail may vary from the physical tile. Final selections should always be confirmed against the supplied product sample.',T.Box(T.MARGIN_X,note_y-52,T.CONTENT_W,40),T.TYPE['body_small'],T.GREY,manifest,'body_visualisation_note',page)
     c.setFont('Inter',5.8); c.setFillColor(T.MID); c.drawString(T.MARGIN_X,56,'Inner Space Tiles & Wood · 1354-1356 High Road, London N20 9HJ · info@innerspace.co.uk · innerspace.co.uk')
