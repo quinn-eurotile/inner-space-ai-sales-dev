@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import io
 import json
 import os
@@ -49,7 +50,7 @@ def test_catalogue_assets_replace_legacy_urls(http, tmp_path, key, slug, lifesty
     product = catalogue_product(PRODUCTS[key]['name'], slug, lifestyles, images)
     replies = [reply({'ok': True, 'product': product})]
     if not by_slug:
-        replies.insert(0, reply({'ok': True, 'products': [
+        replies.insert(0, reply({'ok': True, 'items': [
             {'product_id': product['product_id'], 'product_name': product['product_name'],
              'slug': slug, 'primary_image': product['primary_image']},
         ]}))
@@ -102,7 +103,10 @@ def test_missing_token_fails_before_http(http, monkeypatch, tmp_path):
     requests.get.assert_not_called()
 
 
-@pytest.mark.parametrize('payload', [{'ok': False}, {'ok': True}, {'ok': True, 'products': 'bad'}])
+@pytest.mark.parametrize('payload', [
+    {'ok': False}, {'ok': True}, {'ok': True, 'items': 'bad'},
+    {'ok': True, 'products': []}, {'ok': True, 'results': []},
+])
 def test_invalid_response_blocks_fallback(http, tmp_path, payload):
     http.return_value = reply(payload)
     with pytest.raises(CatalogReadError):
@@ -122,13 +126,13 @@ def test_timeout_blocks_fallback(http, tmp_path):
     [catalogue_product('Assisi Grey', 'assisi-grey')],
 ])
 def test_ambiguous_or_inexact_search_requires_identity(http, results):
-    http.return_value = reply({'ok': True, 'products': results})
+    http.return_value = reply({'ok': True, 'items': results})
     with pytest.raises(CatalogReadError, match='unambiguous'):
         CatalogReadClient().resolve(name='Assisi Beige')
 
 
 def test_confirmed_absence_retains_supplied_urls(http, tmp_path):
-    http.return_value = reply({'ok': True, 'products': []})
+    http.return_value = reply({'ok': True, 'items': []})
     resolved = AssetManager(PRODUCTS, tmp_path).resolve('assisi')
     assert resolved['asset_source'] == 'supplied_urls'
     assert resolved['image'] == PRODUCTS['assisi']['image']
@@ -164,16 +168,25 @@ def test_download_uses_resolved_url_and_cache_tracks_url_changes(http, monkeypat
     download = Mock(return_value=Mock(content=content.getvalue()))
     monkeypatch.setattr(requests, 'get', download)
     (tmp_path / 'p_image.png').write_bytes(b'old generated cache' * 1000)
+    digest = hashlib.sha256(product['primary_image']['image_url'].encode()).hexdigest()[:16]
+    (tmp_path / f'p_image_{digest}.jpg').write_bytes(b'old normalized cache' * 1000)
     products = {'p': {'slug': product['slug']}}
     manager = AssetManager(products, tmp_path)
+    manager.validate(['p'])
     first = manager.get('p', 'image')
+    assert first.read_bytes() == content.getvalue()  # Same original PNG as pre-integration rendering.
     assert manager.get('p', 'image') == first
-    assert download.call_count == 1
-    assert download.call_args.args[0] == product['primary_image']['image_url']
+    assert download.call_count == 2  # Product + lifestyle; rendering uses cached bytes.
+    assert download.call_args_list[0].args[0] == product['primary_image']['image_url']
+    # A fresh manager must render identical bytes from the URL-specific cache.
+    warm = AssetManager(products, tmp_path)
+    warm.validate(['p'])
+    assert warm.get('p', 'image').read_bytes() == first.read_bytes()
+    assert download.call_count == 2
     product['primary_image']['image_url'] = 'https://assets.example/new-primary.png'
     second = AssetManager(products, tmp_path).get('p', 'image')
     assert second != first
-    assert download.call_count == 2
+    assert download.call_count == 3
     assert download.call_args.args[0] == product['primary_image']['image_url']
 
 

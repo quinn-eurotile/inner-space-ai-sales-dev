@@ -18,10 +18,14 @@ class AssetManager:
         p=self.resolve(key); url=p['image' if kind=='image' else 'life']
         if not url: raise RuntimeError(f'{key}: no catalogue {kind} asset; no scraping or generation fallback')
         digest=hashlib.sha256(url.encode()).hexdigest()[:16]
+        ext='.jpg' if '.jpg' in url.lower() or '.jpeg' in url.lower() else '.png'
+        path=self.asset_dir/f'{key}_{kind}_{digest}{ext}'
         norm=self.asset_dir/f'{key}_{kind}_{digest}.jpg'
-        if norm.exists() and norm.stat().st_size>5000: return norm
-        r=requests.get(url,timeout=60,headers={'User-Agent':'Mozilla/5.0 InnerSpacePresentation/1.0'}); r.raise_for_status()
-        im=Image.open(io.BytesIO(r.content)).convert('RGB')
+        # Preserve the pre-integration source/normalisation path: after validation,
+        # PNGs render from original cached bytes, not an extra JPEG conversion.
+        if path.exists() and path.stat().st_size>5000: return path
+        r=requests.get(url,timeout=60,headers={'User-Agent':'Mozilla/5.0 InnerSpacePresentation/1.0'}); r.raise_for_status(); path.write_bytes(r.content)
+        im=Image.open(path).convert('RGB')
         if max(im.size)>1800: im.thumbnail((1800,1800),Image.Resampling.LANCZOS)
         im.save(norm,'JPEG',quality=94,subsampling=0); return norm
     def validate(self,keys):

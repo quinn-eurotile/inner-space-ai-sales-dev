@@ -63,7 +63,7 @@ class CatalogReadClient:
         if not name:
             raise CatalogReadError('A product slug, name or SKU is required')
         data = self._post(action='search', query=name, limit=20)
-        results = data.get('products', data.get('results'))
+        results = data.get('items')
         if not isinstance(results, list) or any(not isinstance(p, dict) for p in results):
             raise CatalogReadError('catalog-read returned invalid search results')
         if not results:
