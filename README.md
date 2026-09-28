@@ -1,5 +1,39 @@
 # Welcome to your Lovable project
 
+## Presentation Builder catalogue assets
+
+The builder resolves supplied product `slug`, `sku`, or `name` through the live
+`catalog-read` service before downloading images. Set
+`INNER_SPACE_CATALOG_AGENT_TOKEN` in the process environment (never commit it).
+`INNER_SPACE_CATALOG_READ_URL` optionally overrides the default live endpoint.
+Tokens require `catalog:read_sales` or `catalog:read_cost`; this client does not
+change the service's filtering of commercial fields.
+
+`AssetManager.resolve(key)` exposes the authoritative `image`, first available
+`life`, complete `lifestyle_images` and `images` lists, and collection
+`technical_spec_pdf_url`. Existing presentation copy/spec formatting is retained.
+No technical pages or PDF layout changes are introduced. Catalogue matches never
+reuse hardcoded asset URLs. Missing primary/lifestyle assets fail when required;
+authentication, network, malformed responses and ambiguous names also fail closed.
+Only confirmed catalogue absence retains the existing supplied-URL path.
+There is no website scraper or image-generation fallback.
+
+Asset caches include the resolved URL hash, preventing an older cached product
+image from overriding the live catalogue. Resolution is cached per AssetManager
+instance; a new build process reads the catalogue again. Builder runs now require
+the catalogue token, including CI; no workflow or secret configuration is changed here.
+
+Asset-only checks (no presentation builds, publishing or delivery):
+
+```sh
+python -m pytest tests/test_catalog_read.py -q
+# Live name/slug checks for Assisi and Roma, plus SKU NL0212; prints asset URLs.
+# Skips explicitly when the environment token is unavailable.
+python -m pytest tests/test_catalog_read.py -k live -s -q
+```
+
+Mock asset URLs under `assets.example` are synthetic test fixtures, not live results.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID

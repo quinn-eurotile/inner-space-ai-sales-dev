@@ -1,21 +1,29 @@
-import io, os
+import io, os, hashlib
 from pathlib import Path
 import requests
 from PIL import Image,ImageOps
 from reportlab.lib.utils import ImageReader
+from .catalog_read import CatalogReadClient, resolve_assets
 
 class AssetManager:
-    def __init__(self,products,asset_dir:Path):
+    def __init__(self,products,asset_dir:Path,catalog_client=None):
         self.products=products; self.asset_dir=asset_dir; self.asset_dir.mkdir(parents=True,exist_ok=True)
+        self.catalog_client=catalog_client if catalog_client is not None else CatalogReadClient()
+        self.resolved_products={}
+    def resolve(self,key):
+        if key not in self.resolved_products:
+            self.resolved_products[key]=resolve_assets(self.products[key],self.catalog_client)
+        return self.resolved_products[key]
     def get(self,key,kind):
-        p=self.products[key]; url=p['image' if kind=='image' else 'life']
-        ext='.jpg' if '.jpg' in url.lower() or '.jpeg' in url.lower() else '.png'
-        path=self.asset_dir/f'{key}_{kind}{ext}'
-        if path.exists() and path.stat().st_size>5000: return path
-        r=requests.get(url,timeout=60,headers={'User-Agent':'Mozilla/5.0 InnerSpacePresentation/1.0'}); r.raise_for_status(); path.write_bytes(r.content)
-        im=Image.open(path).convert('RGB')
+        p=self.resolve(key); url=p['image' if kind=='image' else 'life']
+        if not url: raise RuntimeError(f'{key}: no catalogue {kind} asset; no scraping or generation fallback')
+        digest=hashlib.sha256(url.encode()).hexdigest()[:16]
+        norm=self.asset_dir/f'{key}_{kind}_{digest}.jpg'
+        if norm.exists() and norm.stat().st_size>5000: return norm
+        r=requests.get(url,timeout=60,headers={'User-Agent':'Mozilla/5.0 InnerSpacePresentation/1.0'}); r.raise_for_status()
+        im=Image.open(io.BytesIO(r.content)).convert('RGB')
         if max(im.size)>1800: im.thumbnail((1800,1800),Image.Resampling.LANCZOS)
-        norm=self.asset_dir/f'{key}_{kind}.jpg'; im.save(norm,'JPEG',quality=94,subsampling=0); return norm
+        im.save(norm,'JPEG',quality=94,subsampling=0); return norm
     def validate(self,keys):
         for key in sorted(set(keys)):
             for kind in ('image','life'):
